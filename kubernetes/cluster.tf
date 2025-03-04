@@ -13,10 +13,7 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
 
     public_ip = true
 
-    security_group_ids = [ 
-      yandex_vpc_security_group.k8s-cluster-nodegroup-traffic.id,
-      yandex_vpc_security_group.k8s-cluster-traffic.id
-     ]
+    security_group_ids = local.k8s_cluster_security_group_ids
     
     maintenance_policy {
       auto_upgrade = true

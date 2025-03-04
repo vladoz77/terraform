@@ -2,7 +2,7 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
   cluster_id  = yandex_kubernetes_cluster.k8s-cluster.id
   name        = local.k8s_node_group_name
   description = "worker node"
-  version     = "1.30"
+  version     = local.k8s_version
   
 
   scale_policy {
@@ -24,18 +24,13 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
     }
 
     boot_disk {
-      size = 64
-      type = "network-hdd"
+      size = local.k8s_node_boot_disk_size
+      type = local.k8s_node_boot_disk_type
     }
     network_interface {
       nat        = true
       subnet_ids = [yandex_vpc_subnet.subnet.id]
-      security_group_ids = [
-        yandex_vpc_security_group.k8s-cluster-nodegroup-traffic.id,
-        yandex_vpc_security_group.k8s-nodegroup-traffic.id,
-        yandex_vpc_security_group.k8s-services-access.id,
-        yandex_vpc_security_group.k8s-ssh-access.id
-      ]
+      security_group_ids = local.k8s_node_security_group_ids
     }
     scheduling_policy {
       preemptible = true
