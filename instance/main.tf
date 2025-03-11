@@ -12,7 +12,7 @@ resource "yandex_vpc_subnet" "subnet" {
 module "yandex-instance" {
   source = "../tf-modules/instance"
 
-  count = 1
+  count = 2
 
   name = "${local.instance_name}-${count.index + 1}"
   zone = local.instance_zone
@@ -25,4 +25,6 @@ module "yandex-instance" {
   network_interfaces = local.instance_network_interface
   boot_disk = local.instance_boot_disk
   labels = {}
+  additional_disks = []
+
 }

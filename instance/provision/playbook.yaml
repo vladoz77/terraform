@@ -1,0 +1,34 @@
+- name: install webserver
+  hosts: instance
+  become: true
+  tasks:
+      
+    - name: install soft
+      ansible.builtin.apt:
+        name: "{{ packages }}"
+        state: latest
+        update_cache: true
+    
+    - name: create site directory
+      ansible.builtin.file:
+        path: "{{ site_directory }}"
+        state: directory
+      
+    - name: copy site to directory
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/template/index.html.j2"
+        dest: "{{ site_directory }}/{{ site_file }}"
+    
+    - name: Copy nginx default config
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/template/default.j2"
+        dest: "{{ site_config_dir }}/default"
+      notify: reload_nginx
+
+  handlers:  
+    - name: reload_nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+        enabled: true
+

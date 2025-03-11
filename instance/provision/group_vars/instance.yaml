@@ -1,0 +1,11 @@
+packages:
+- nginx
+- curl
+
+# Nginx config
+listening_port: 80
+server_name: example.com
+site_directory: /var/www/instance
+endpoint: instance
+site_file: index.html
+site_config_dir: /etc/nginx/sites-available/
