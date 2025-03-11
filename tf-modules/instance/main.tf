@@ -8,6 +8,15 @@ terraform {
   required_version = ">=1.9.8"
 }
 
+resource "yandex_compute_disk" "additional_disks" {
+  count = length(var.additional_disks)
+
+  name = lower("${var.name}-disk-${count.index}") 
+  type = var.additional_disks[count.index].type
+  size = var.additional_disks[count.index].size
+  zone = var.zone
+}
+
 # Instance config
 resource "yandex_compute_instance" "instance" {
   # count = var.count_vm
@@ -34,6 +43,14 @@ resource "yandex_compute_instance" "instance" {
     }
   }
 
+  dynamic "secondary_disk" {
+    for_each = yandex_compute_disk.additional_disks[*].id
+
+    content{
+      disk_id = secondary_disk.value
+    }
+  }
+
   dynamic "network_interface" {
     for_each = var.network_interfaces
     content {
@@ -54,5 +71,7 @@ resource "yandex_compute_instance" "instance" {
   scheduling_policy {
     preemptible = true
   }
+
+  depends_on = [yandex_compute_disk.additional_disks]
 }
 

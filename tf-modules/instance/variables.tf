@@ -68,6 +68,14 @@ variable "boot_disk" {
   })
 }
 
+variable "additional_disks" {
+  nullable = true
+  type = list(object({
+    size = number
+    type = string  # Тип диска (network-hdd, network-ssd, network-ssd-nonreplicated)
+  }))
+}
+
 variable "labels" {
   type = map(string)
   nullable = true
