@@ -1,5 +1,5 @@
 resource "yandex_iam_service_account" "sa-k8s-admin" {
-  name        = local.sa_name
+  name        = var.sa-name
   description = "k8s account admin"
 }
 

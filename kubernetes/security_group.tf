@@ -40,7 +40,7 @@ resource "yandex_vpc_security_group" "k8s-nodegroup-traffic" {
     from_port      = 0
     to_port        = 65535
     protocol       = "ANY"
-    v4_cidr_blocks = [local.k8s_cluster_ipv4_range, local.k8s_service_ipv4_range]
+    v4_cidr_blocks = [local.cluster.ipv4_range, local.cluster.service_ipv4_range]
   }
   egress {
     description    = "Правило для исходящего трафика, разрешающее узлам в группе узлов подключаться к внешним ресурсам."

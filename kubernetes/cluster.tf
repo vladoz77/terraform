@@ -1,11 +1,11 @@
 
 resource "yandex_kubernetes_cluster" "k8s-cluster" {
-  name = local.k8s_cluster_name
+  name = var.cluster_name
 
   network_id = yandex_vpc_network.network.id
 
   master {
-    version = local.k8s_version
+    version = var.k8s_version
     master_location {
       zone      = var.zone
       subnet_id = yandex_vpc_subnet.subnet.id
@@ -13,7 +13,7 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
 
     public_ip = true
 
-    security_group_ids = local.k8s_cluster_security_group_ids
+    # security_group_ids = local.cluster.security_group_ids
     
     maintenance_policy {
       auto_upgrade = true
@@ -31,8 +31,8 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
   
   release_channel = "STABLE"
   
-  cluster_ipv4_range = local.k8s_cluster_ipv4_range
-  service_ipv4_range = local.k8s_service_ipv4_range
+  cluster_ipv4_range = local.cluster.ipv4_range
+  service_ipv4_range = local.cluster.service_ipv4_range
 
   service_account_id      = yandex_iam_service_account.sa-k8s-admin.id
   node_service_account_id = yandex_iam_service_account.sa-k8s-admin.id
