@@ -40,3 +40,9 @@ variable "ssh_key" {
   description = "ssh-keys for host"  
   # export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
 }
+
+variable "roles" {
+  type = set(string)
+  description = "list roles for sa-account"
+  default = [ "k8s.admin", "vpc.publicAdmin"]
+}
