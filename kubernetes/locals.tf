@@ -1,3 +1,4 @@
+
 locals {
   network = {
     network_name = "k8s_network"
@@ -21,7 +22,7 @@ locals {
     memory = 4
     disk_type = "network-hdd"
     disk_size = 64
-    scale = 3
+    scale = 1
     ssh = "${var.username}:${var.ssh_key}"
     security_group_ids = [
       yandex_vpc_security_group.k8s-cluster-nodegroup-traffic.id,
