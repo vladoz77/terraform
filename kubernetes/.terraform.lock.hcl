@@ -9,9 +9,9 @@ provider "registry.terraform.io/hashicorp/null" {
 }
 
 provider "registry.terraform.io/hashicorp/vault" {
-  version = "4.6.0"
+  version = "4.7.0"
   hashes = [
-    "h1:DBJW9MNDXydZFJEGoeXmREzx+O49tprgcto+1U/b8s4=",
+    "h1:eKOYbQnhfCyx91h8NDEaGCI274SANgONUnwT4J3j5+M=",
   ]
 }
 
