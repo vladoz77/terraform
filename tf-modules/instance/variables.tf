@@ -74,9 +74,23 @@ variable "additional_disks" {
     size = number
     type = string  # Тип диска (network-hdd, network-ssd, network-ssd-nonreplicated)
   }))
+  description = "add additional disk for vm"
+  default = [ {
+    size = null
+    type = null
+  } ]
 }
 
 variable "labels" {
   type = map(string)
+  nullable = true
+}
+
+variable "env_vars" {
+  type = map(string)
+  default = {
+    DB = "db.test.local"
+  }
+  description = "Env vars to inject to instance"
   nullable = true
 }
