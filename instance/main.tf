@@ -12,7 +12,7 @@ resource "yandex_vpc_subnet" "subnet" {
 module "yandex-instance" {
   source = "../tf-modules/instance"
 
-  count = 2
+  count = 1
 
   name = "${local.instance_name}-${count.index + 1}"
   zone = local.instance_zone

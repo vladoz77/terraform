@@ -12,11 +12,8 @@ resource "yandex_storage_bucket" "s3" {
   bucket = var.bucket_name
   acl    = var.acl 
   tags   = var.tags
-
-  website {
-    index_document = var.index
-    error_document = var.index
-  }
+  default_storage_class = var.storage_class
+  max_size = var.size
 
   versioning {
     enabled = var.versioning_enable

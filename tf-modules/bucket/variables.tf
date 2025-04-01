@@ -3,6 +3,15 @@ variable "bucket_name" {
   description = "bucket name"
 }
 
+variable "storage_class" {
+  description = "storage class for bucket standart, cold, ice"
+  type = string
+}
+
+variable "size" {
+  type = number
+  description = "max size for bucket"
+}
 variable "tags" {
   type        = map(string)
   description = "A map of tags to assign to the bucket."
@@ -14,11 +23,6 @@ variable "acl" {
     description = "acl bucket"
 }
 
-variable "index" {
-    default = "index.html"
-    type = string
-    description = "site file"
-}
 
 variable "versioning_enable" {
   default = true
