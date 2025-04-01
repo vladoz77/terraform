@@ -1,0 +1,89 @@
+- name: install jenkins-agent
+  hosts: jenkins-agent
+  become: true
+  tasks:
+
+  - name: Generate ssh key
+    community.crypto.openssh_keypair:
+      path: /home/{{ username }}/.ssh/id_rsa
+      size: 2048
+      type: ed25519
+      owner: "{{ username }}"
+      force: true
+
+  - name: copy ssh pub key to autorize
+    ansible.builtin.shell: 
+      cat /home/{{ username }}/.ssh/id_rsa.pub >> /home/{{ username }}/.ssh/authorized_keys
+
+  - name: Read ssh private key
+    ansible.builtin.slurp:
+      path: /home/{{ username }}/.ssh/id_rsa
+    register: id_rsa
+  
+
+  - name: set fact ssh key
+    ansible.builtin.set_fact:
+      jenkins_agent_id_rsa: "{{ id_rsa.content | b64decode | replace('\n', '\\n') }}"
+
+  - name: add gpg key
+    ansible.builtin.apt_key:
+      url: "{{ item }}"
+      state: present
+      validate_certs: no
+    loop: "{{ gpg_keys }}"
+
+  - name: add repo
+    ansible.builtin.apt_repository:
+      repo: "{{ item }}"
+      state: present
+    loop: "{{ repo }}"
+
+  - name: install base soft
+    ansible.builtin.apt:
+      name: "{{ soft }}"
+      state: present
+      update_cache: true
+
+  - name: Check if trivy is installed
+    command: dpkg-query -W trivy
+    register: trivy_deb
+    failed_when: trivy_deb.rc > 1
+    changed_when: trivy_deb.rc == 1
+
+  - name: install trivy scaner
+    block:
+    - name: download trivi
+      ansible.builtin.uri:
+        url: "{{ trivi_url }}"
+        dest: /tmp/trivy.deb
+
+    - name: install trivi from deb
+      ansible.builtin.apt:
+        deb: /tmp/trivy.deb
+
+    - name: delete file
+      ansible.builtin.file:
+        path: /tmp/trivy.deb
+        state: absent
+
+    when: trivy_deb.rc == 1
+
+
+  - name: Change /var/run/docker.sock permission
+    ansible.builtin.file:
+      path: /var/run/docker.sock
+      mode: '0666'
+
+- name: install jenkins
+  hosts: jenkins
+  become: true
+  tasks:
+
+  - name: Add SSH_PRIVATE_KEY to the environment in .bashrc
+    ansible.builtin.lineinfile:
+      path: /home/{{ username }}/.bashrc
+      line: 'export SSH_PRIVATE_KEY="{{ hostvars[groups["jenkins-agent"][0]].jenkins_agent_id_rsa }}"'
+      create: yes
+      owner: "{{ username }}"
+      group: "{{ username }}"
+      mode: '0600'
