@@ -1,0 +1,32 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: {{ container_name}}
+    privileged: true
+    restart: unless-stopped
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+      - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+    volumes:
+      - ./certs:/certs/client:rw
+      - jenkins-data:/var/jenkins_home:rw
+      - {{ ssh_dir }}/:{{ ssh_dir }}:ro
+    ports:
+      - 2376:2376
+      - 8080:8080
+      - 50000:50000
+    networks: 
+      jenkins-network:
+  
+volumes:
+ jenkins-data:
+
+networks:
+  jenkins-network:
+      
+      
+
+      
+  

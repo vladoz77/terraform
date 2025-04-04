@@ -1,0 +1,7 @@
+jenkins_home: /var/jenkins_home
+jenkins_docker_dir: "/home/{{ username }}/jenkins"
+jenkins_install_file:
+- docker-compose.yaml
+- jenkins.yaml
+- Dockerfile
+- plugins.txt

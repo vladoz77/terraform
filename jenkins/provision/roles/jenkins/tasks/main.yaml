@@ -1,0 +1,11 @@
+- name: check if runing jenkins in docker
+  community.docker.docker_container_info:
+    name: "{{ container_name }}"
+  register: container_status
+  ignore_errors: true
+
+
+- name: install jenkins with docker
+  ansible.builtin.include_tasks:
+    jenkins-install.yaml
+  when: container_status.exists == false or container_status.container.State.Running == false

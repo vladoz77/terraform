@@ -1,0 +1,4 @@
+# work-_dir: /home/{{ username }}
+ssh_dir: "/home/{{ username }}/.ssh"
+agent_ssh_tmp_key: /tmp/fetched_key
+agent_ssh_key: "id_rsa_agent"

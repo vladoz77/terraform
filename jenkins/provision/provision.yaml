@@ -1,42 +1,25 @@
+
 - name: install jenkins-agent
   hosts: jenkins-agent
   become: true
   tasks:
+  
+  - name: add hostname
+    ansible.builtin.hostname:
+      name: "{{ hostname }}"
 
   - name: Generate ssh key
     community.crypto.openssh_keypair:
-      path: /home/{{ username }}/.ssh/id_rsa
+      path: "{{ ssh_dir }}/{{ agent_ssh_key }}"
       size: 2048
       type: ed25519
       owner: "{{ username }}"
+      group: "{{ username }}"
       force: true
 
   - name: copy ssh pub key to autorize
     ansible.builtin.shell: 
-      cat /home/{{ username }}/.ssh/id_rsa.pub >> /home/{{ username }}/.ssh/authorized_keys
-
-  - name: Read ssh private key
-    ansible.builtin.slurp:
-      path: /home/{{ username }}/.ssh/id_rsa
-    register: id_rsa
-  
-
-  - name: set fact ssh key
-    ansible.builtin.set_fact:
-      jenkins_agent_id_rsa: "{{ id_rsa.content | b64decode | replace('\n', '\\n') }}"
-
-  - name: add gpg key
-    ansible.builtin.apt_key:
-      url: "{{ item }}"
-      state: present
-      validate_certs: no
-    loop: "{{ gpg_keys }}"
-
-  - name: add repo
-    ansible.builtin.apt_repository:
-      repo: "{{ item }}"
-      state: present
-    loop: "{{ repo }}"
+      cat {{ ssh_dir }}/{{ agent_ssh_key }}.pub >> {{ ssh_dir }}/authorized_keys
 
   - name: install base soft
     ansible.builtin.apt:
@@ -68,22 +51,57 @@
 
     when: trivy_deb.rc == 1
 
+  - name: install docker
+    ansible.builtin.include_role:
+      name: docker
+  
+- name: Copy SSH private key from jenkins-agent to jenkins using fetch
+  hosts: localhost
+  become: false
+  vars:
+    username: "{{ hostvars[groups['jenkins'][0]]['username'] }}"
+  tasks:
+    - name: Fetch SSH private key from jenkins-agent
+      ansible.builtin.fetch:
+        src: "{{ ssh_dir }}/{{ agent_ssh_key }}"
+        dest: "{{ agent_ssh_tmp_key }}"
+        flat: yes
+      delegate_to: "{{ groups['jenkins-agent'][0] }}"
 
-  - name: Change /var/run/docker.sock permission
-    ansible.builtin.file:
-      path: /var/run/docker.sock
-      mode: '0666'
+    - name: Copy fetched SSH private key to jenkins
+      ansible.builtin.copy:
+        src: "{{ agent_ssh_tmp_key }}"
+        dest: "{{ ssh_dir }}/{{ agent_ssh_key }}"
+        # owner: "{{ username }}"
+        # group: "{{ username }}"
+        mode: '0600'
+      delegate_to: "{{ groups['jenkins'][0] }}"
+
+    - name: Clean up temporary file
+      ansible.builtin.file:
+        path: "/tmp/fetched_key"
+        state: absent
+
+
+
 
 - name: install jenkins
   hosts: jenkins
   become: true
   tasks:
+  - name: add hostname
+    ansible.builtin.hostname:
+      name: "{{ hostname }}"
 
-  - name: Add SSH_PRIVATE_KEY to the environment in .bashrc
-    ansible.builtin.lineinfile:
-      path: /home/{{ username }}/.bashrc
-      line: 'export SSH_PRIVATE_KEY="{{ hostvars[groups["jenkins-agent"][0]].jenkins_agent_id_rsa }}"'
-      create: yes
-      owner: "{{ username }}"
-      group: "{{ username }}"
-      mode: '0600'
+  - name: install docker
+    ansible.builtin.include_role:
+      name: docker
+
+  - name: install jenkins
+    ansible.builtin.include_role:
+      name: jenkins
+      
+
+  
+
+  

@@ -1,0 +1,64 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - basicSSHUserPrivateKey:
+          scope: SYSTEM
+          id: ubuntu-agent-ssh
+          username: {{ username }}
+          description: "SSH passphrase with private key file."
+          privateKeySource:
+                directEntry:
+                  privateKey: "${readFile:{{ ssh_dir }}/{{ agent_ssh_key }}}"
+
+unclassified:
+  location:
+    url: http://jenkins.home.local
+
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+      - id: "admin"
+        password: "admin"
+  nodes:
+  - permanent:
+      labelString: "ubuntu-agent"
+      mode: NORMAL
+      name: "ubuntu-agent"
+      remoteFS: "/home/{{ username }}/jenkins-agent"
+      launcher:
+        ssh:
+          host: {{ hostvars[groups['jenkins-agent'][0]].ansible_default_ipv4.address }}
+          port: 22
+          credentialsId: ubuntu-agent-ssh
+          launchTimeoutSeconds: 60
+          maxNumRetries: 3
+          retryWaitTime: 30
+          sshHostKeyVerificationStrategy:
+            manuallyTrustedKeyVerificationStrategy:
+              requireInitialManualTrust: false
+  # Tool Configuration
+tool:
+  git:
+    installations:
+    - name: "Default"
+      home: "/usr/bin/git"
+  maven:
+    installations:
+    - name: maven3
+      properties:
+      - installSource:
+          installers:
+          - maven:
+              id: "3.8.4"
+  jdk:
+    installations:
+    - name: jdk11
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-11.0.14+9"
