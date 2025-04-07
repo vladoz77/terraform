@@ -13,10 +13,11 @@ credentials:
 
 unclassified:
   location:
-    url: http://jenkins.home.local
+    url: http://{{ jenkins_url_address }}
 
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+  numExecutors: 0
   securityRealm:
     local:
       allowsSignup: false

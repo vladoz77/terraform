@@ -1,0 +1,19 @@
+- name: install nginx on ubuntu
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: install nginx on Rhell
+  ansible.builtin.yum:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_facts.os_family == "RedHat"
+
+- name: copy config file
+  ansible.builtin.template:
+    src: templates/default.j2
+    dest: /etc/nginx/sites-available/default
+  notify: nginx-restart

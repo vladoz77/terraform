@@ -30,9 +30,9 @@ resource "null_resource" "run-ansible" {
   }
 
   # Запустим плейбук
-#   provisioner "local-exec" {
-#     command = "ansible-playbook -i provision/inventory.ini provision/playbook.yaml -u ${var.username}"
-#   }
+  provisioner "local-exec" {
+    command = "ansible-playbook -i provision/inventory.ini provision/provision.yaml -u ${var.username}"
+  }
 
-#   depends_on = [module.yandex-instance, local_file.inventory]
+  depends_on = [module.jenkins, module.jenkins-agent]
 }

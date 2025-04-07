@@ -8,7 +8,6 @@ services:
     restart: unless-stopped
     environment:
       - DOCKER_TLS_CERTDIR=/certs
-      - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
     volumes:
       - ./certs:/certs/client:rw
       - jenkins-data:/var/jenkins_home:rw
