@@ -1,6 +1,11 @@
 hostname: jenkins
+sysctl_params:
+- key: net.ipv4.ip_forward
+  value: 1
+- key: vm.max_map_count
+  value: 262144
+# Jenkins config
 jenkins_url_address: jenkins.home.local
-container_name: jenkins
 jenkins_plugin_list:
 - ant:latest
 - antisamy-markup-formatter:latest
@@ -23,3 +28,9 @@ jenkins_plugin_list:
 - workflow-aggregator:latest
 - ws-cleanup:latest
 - adoptopenjdk:1.7
+- sonar:latest
+
+maven_enable: true
+java_enable: true
+sonarqube: true
+sonarqube_url: "http://localhost:9090"

@@ -1,0 +1,7 @@
+sonarqube_container_name: sonarqube
+sonarqube_docker_dir: "/home/{{ username }}/sonarqube"
+sonarqube_install_file:
+- docker-compose.yaml
+sonarqube_user: vladoz77
+sonarqube_password: password
+sonarqube_token_name: jenkins_token

@@ -34,5 +34,5 @@ resource "null_resource" "run-ansible" {
     command = "ansible-playbook -i provision/inventory.ini provision/provision.yaml -u ${var.username}"
   }
 
-  depends_on = [module.jenkins, module.jenkins-agent]
+  depends_on = [module.jenkins, module.jenkins-agent, local_file.inventory]
 }

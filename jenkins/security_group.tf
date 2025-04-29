@@ -18,11 +18,19 @@ resource "yandex_vpc_security_group" "vpc_group" {
 
   }
 
+    ingress {
+    protocol = "TCP"
+    port = 9090
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    description = "accept all trafic to 9090 port"
+
+  }
+
   ingress {
     protocol = "TCP"
     port = 80
     v4_cidr_blocks = ["0.0.0.0/0"]
-    description = "accept all trafic to 8080 port"
+    description = "accept all trafic to 80 port"
   }
 
    ingress {

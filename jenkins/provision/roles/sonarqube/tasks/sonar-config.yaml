@@ -1,0 +1,82 @@
+- name: Wait for SonarQube to become available
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/system/status"
+    method: GET
+    status_code: 200
+    body_format: json
+  register: sonar_status
+  until: sonar_status.status == 200 and sonar_status.json.status == "UP"
+  retries: 60
+  delay: 10
+  ignore_errors: yes
+
+- name: check if {{ sonarqube_user }} user already exist
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/users/search"
+    method: GET
+    url_username: admin
+    url_password: admin
+    status_code: 200
+    body_format: json
+    return_content: yes
+    force_basic_auth: yes 
+    body: 
+      login: "{{ sonarqube_user }}"
+  register: users_status
+  ignore_errors: yes
+
+- name: Create user via Jenkins REST API using query parameters
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/users/create"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    body_format: form-urlencoded
+    body:
+      login: "{{ sonarqube_user }}"
+      name: "{{ sonarqube_user }}"
+      password: "{{ sonarqube_password }}"
+    status_code: 
+      - 200
+      - 400
+    return_content: yes
+  when: sonarqube_user not in users_status.json.users | map(attribute='login') | list
+
+- name: check if token already exist
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/user_tokens/search"
+    method: GET
+    url_username: "{{ sonarqube_user }}"
+    url_password: "{{ sonarqube_password }}"
+    status_code: 200
+    body_format: json
+    return_content: yes
+    force_basic_auth: yes 
+    body: 
+      login: "{{ sonarqube_user }}"
+  register: token_status
+
+- name: create user token
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/user_tokens/generate"
+    method: POST
+    user: "{{ sonarqube_user }}"
+    password: "{{ sonarqube_password }}"
+    force_basic_auth: yes
+    body:
+      name: "{{ sonarqube_token_name }}"
+    status_code: 
+      - 200
+      - 400
+    validate_certs: no
+    body_format: form-urlencoded
+    return_content: yes
+  register: token_response
+  when: sonarqube_token_name not in token_status.json.userTokens | map(attribute='name') | list 
+
+- name: Save token to fact for next play
+  ansible.builtin.set_fact:
+    sonar_token: "{{ token_response.json.token }}"
+    cacheable: yes
+  when: sonarqube_token_name not in token_status.json.userTokens | map(attribute='name') | list 

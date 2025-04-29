@@ -5,6 +5,9 @@
     owner: "{{ username }}"
     state: directory
 
+- ansible.builtin.debug:
+   var: sonar_token
+
 - name: Copy templates to {{ jenkins_docker_dir }}
   ansible.builtin.template:
     src: "templates/{{ item }}.j2"
@@ -16,4 +19,7 @@
 - name: start docker-compose
   community.docker.docker_compose_v2:
     project_src: "{{ jenkins_docker_dir }}"
+    recreate: always
+    remove_volumes: true
     state: present
+    

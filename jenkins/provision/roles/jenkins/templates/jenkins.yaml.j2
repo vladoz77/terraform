@@ -10,10 +10,26 @@ credentials:
           privateKeySource:
                 directEntry:
                   privateKey: "${readFile:{{ ssh_dir }}/{{ agent_ssh_key }}}"
+    {% if sonarqube -%}
+    - credentials:
+      - string:
+          scope: GLOBAL
+          id: "sonarqube_token"
+          secret: {{ sonar_token}}
+          description: "Sonar token"
+    {%- endif %}
 
 unclassified:
   location:
     url: http://{{ jenkins_url_address }}
+  {% if sonarqube -%}
+  sonarglobalconfiguration:                  
+    buildWrapperEnabled: true
+    installations:                           
+      - name: "sonarqube"                         
+        serverUrl: {{  sonarqube_url}}
+        credentialsId: sonarqube_token       
+  {%- endif %}
 
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
@@ -41,25 +57,41 @@ jenkins:
           sshHostKeyVerificationStrategy:
             manuallyTrustedKeyVerificationStrategy:
               requireInitialManualTrust: false
-  # Tool Configuration
+# Tool Configuration
 tool:
   git:
     installations:
-    - name: "Default"
-      home: "/usr/bin/git"
+      - name: "Default"
+        home: "/usr/bin/git"
+
+  {% if maven_enable | default(false) -%}
   maven:
     installations:
-    - name: maven3
-      properties:
-      - installSource:
-          installers:
-          - maven:
-              id: "3.8.4"
+      - name: maven3
+        properties:
+          - installSource:
+              installers:
+                - maven:
+                    id: "3.8.4"
+  {%- endif %}
+
+  {% if java_enable | default(false) -%}
   jdk:
     installations:
-    - name: jdk11
+      - name: jdk11
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: "jdk-11.0.14+9"
+  {%- endif %}
+  sonarRunnerInstallation:
+    installations:
+    - name: "Sonar"
       properties:
       - installSource:
           installers:
-          - adoptOpenJdkInstaller:
-              id: "jdk-11.0.14+9"
+          - sonarRunnerInstaller:
+              id: "7.1.0.4889"
+
+  
