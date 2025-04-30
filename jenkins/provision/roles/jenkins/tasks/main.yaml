@@ -1,3 +1,9 @@
+- name: add {{ container_name }} url to hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ jenkins_url_address }}"
+    state: present
+
 - name: check if runing jenkins in docker
   community.docker.docker_container_info:
     name: "{{ container_name }}"
@@ -14,7 +20,7 @@
 
 - name: install nginx
   ansible.builtin.include_tasks:
-    nginx-install.yaml
+    nginx-config.yaml
   when: "'nginx' not in ansible_facts.services or ansible_facts.services['nginx'].state != 'running'"
 
 

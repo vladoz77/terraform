@@ -1,3 +1,9 @@
+- name: add {{ container_name }} url to hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ sonarqube_url_address }}"
+    state: present
+
 - name: check if runing {{ sonarqube_container_name }} in docker
   community.docker.docker_container_info:
     name: "{{ sonarqube_container_name }}"
@@ -22,6 +28,6 @@
 
 - name: config user and token in sonarqube
   ansible.builtin.include_tasks: sonar-config.yaml
-  # when: 
-  #  - 
-  #  - sonarqube_token_name not in (token_status.get('json', {}).get('userTokens', []) | map(attribute='name') | list) 
+
+- name: add nginx config for sonarqube
+  ansible.builtin.include_tasks: nginx-config.yaml

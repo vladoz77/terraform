@@ -15,7 +15,7 @@ credentials:
       - string:
           scope: GLOBAL
           id: "sonarqube_token"
-          secret: {{ sonar_token}}
+          secret: {{ sonar_token}} 
           description: "Sonar token"
     {%- endif %}
 
@@ -85,6 +85,8 @@ tool:
                 - adoptOpenJdkInstaller:
                     id: "jdk-11.0.14+9"
   {%- endif %}
+
+  {% if sonarqube -%}
   sonarRunnerInstallation:
     installations:
     - name: "Sonar"
@@ -93,5 +95,6 @@ tool:
           installers:
           - sonarRunnerInstaller:
               id: "7.1.0.4889"
+  {%- endif %}
 
   

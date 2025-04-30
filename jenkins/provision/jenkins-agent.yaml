@@ -1,9 +1,11 @@
-
 - name: install jenkins-agent
   hosts: jenkins-agent
   become: true
-  tasks:
+  pre_tasks:
+    - name: Gather facts 
+      setup:
   
+  tasks:
   - name: add hostname
     ansible.builtin.hostname:
       name: "{{ hostname }}"
@@ -18,8 +20,7 @@
       force: true
 
   - name: copy ssh pub key to autorize
-    ansible.builtin.shell: 
-      cat {{ ssh_dir }}/{{ agent_ssh_key }}.pub >> {{ ssh_dir }}/authorized_keys
+    ansible.builtin.shell: cat {{ ssh_dir }}/{{ agent_ssh_key }}.pub >> {{ ssh_dir }}/authorized_keys
 
   - name: install base soft
     ansible.builtin.apt:
@@ -54,7 +55,7 @@
   - name: install docker
     ansible.builtin.include_role:
       name: docker
-  
+
 - name: Copy SSH private key from jenkins-agent to jenkins using fetch
   hosts: localhost
   become: false
@@ -81,44 +82,3 @@
       ansible.builtin.file:
         path: "/tmp/fetched_key"
         state: absent
-
-- name: install jenkins
-  hosts: jenkins
-  become: true
-  tasks:
-  - name: add hostname
-    ansible.builtin.hostname:
-      name: "{{ hostname }}"
-
-  - name: set "{{ item.key }}" to "{{ item.value}}"
-    ansible.posix.sysctl:
-      name: "{{ item.key }}"
-      state: present
-      value: "{{ item.value}}"
-      reload: true
-    loop: "{{ sysctl_params }}"
-
-  - name: install nginx on ubuntu
-    ansible.builtin.apt:
-      name: nginx
-      state: present
-      update_cache: true
-
-  - name: install docker
-    ansible.builtin.include_role:
-      name: docker
-
-  - name: install sonarqube
-    ansible.builtin.include_role:
-      name: sonarqube
-    when: sonarqube == true
-
-  - name: install jenkins
-    ansible.builtin.include_role:
-      name: jenkins
-      
-
-
-  
-
-  

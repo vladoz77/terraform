@@ -5,8 +5,18 @@
     owner: "{{ username }}"
     state: directory
 
-- ansible.builtin.debug:
-   var: sonar_token
+- name: Read token from fetched file
+  ansible.builtin.slurp:
+    src: "/tmp/sonar_token.txt"
+  register: token_data
+
+- name: Set token as variable
+  ansible.builtin.set_fact:
+    sonar_token: "{{ token_data.content | b64decode }}"
+
+- name: Debug token
+  ansible.builtin.debug:
+    msg: "Sonar Token: {{ sonar_token }}"
 
 - name: Copy templates to {{ jenkins_docker_dir }}
   ansible.builtin.template:
@@ -22,4 +32,3 @@
     recreate: always
     remove_volumes: true
     state: present
-    

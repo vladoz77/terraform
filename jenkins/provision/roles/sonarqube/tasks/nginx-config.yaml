@@ -1,0 +1,11 @@
+- name: copy config file
+  ansible.builtin.template:
+    src: templates/sonarqube.conf.j2
+    dest: /etc/nginx/sites-available/sonarqube.conf
+
+- name: enable site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/sonarqube.conf
+    dest: /etc/nginx/sites-enabled/sonarqube.conf
+    state: link
+  notify: nginx-restart

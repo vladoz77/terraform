@@ -34,3 +34,4 @@ maven_enable: true
 java_enable: true
 sonarqube: true
 sonarqube_url: "http://localhost:9090"
+sonarqube_url_address: sonarqube.home.local

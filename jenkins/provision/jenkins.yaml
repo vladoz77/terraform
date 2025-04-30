@@ -1,0 +1,37 @@
+- name: install jenkins
+  hosts: jenkins
+  become: true
+  pre_tasks:
+    - name: Gather facts 
+      setup:
+  tasks:
+  - name: add hostname
+    ansible.builtin.hostname:
+      name: "{{ hostname }}"
+
+  - name: set "{{ item.key }}" to "{{ item.value}}"
+    ansible.posix.sysctl:
+      name: "{{ item.key }}"
+      state: present
+      value: "{{ item.value}}"
+      reload: true
+    loop: "{{ sysctl_params }}"
+
+  - name: install nginx on ubuntu
+    ansible.builtin.apt:
+      name: nginx
+      state: present
+      update_cache: true
+
+  - name: install docker
+    ansible.builtin.include_role:
+      name: docker
+
+  - name: install sonarqube
+    ansible.builtin.include_role:
+      name: sonarqube
+    when: sonarqube == true
+
+  - name: install jenkins
+    ansible.builtin.include_role:
+      name: jenkins

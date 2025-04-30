@@ -2,6 +2,11 @@ sonarqube_container_name: sonarqube
 sonarqube_docker_dir: "/home/{{ username }}/sonarqube"
 sonarqube_install_file:
 - docker-compose.yaml
-sonarqube_user: vladoz77
+sonarqube_default_admin_password: admin
+sonarqube_admin_password: "!QAZ2wsx#EDC4rfv"
+sonarqube_user: vlad
 sonarqube_password: password
-sonarqube_token_name: jenkins_token
+sonarqube_user_group: sonar-administrators
+sonarqube_token_name: token
+sonarqube_jenkins_webhook_name: jenkins-webhook
+sonaqube_jenkins_webhook_url: http://jenkins.home.local/sonarqube-webhook

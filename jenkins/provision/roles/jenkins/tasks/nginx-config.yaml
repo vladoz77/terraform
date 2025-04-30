@@ -1,0 +1,11 @@
+- name: copy config file
+  ansible.builtin.template:
+    src: templates/jenkins.conf.j2
+    dest: /etc/nginx/sites-available/jenkins.conf
+
+- name: enable site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/jenkins.conf
+    dest: /etc/nginx/sites-enabled/jenkins.conf
+    state: link
+  notify: nginx-restart

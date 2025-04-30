@@ -1,0 +1,14 @@
+- name: install jenkins
+  hosts: jenkins
+  become: true
+  tasks:
+
+  - name: Gather facts for all hosts
+    setup:
+
+  - ansible.builtin.debug:
+      msg: "{{ hostvars[groups['jenkins-agent'][0]].ansible_facts }}"
+    register: test
+
+  - ansible.builtin.debug:
+      var: test
