@@ -1,2 +1,2 @@
-role_id = "fac78a2a-ed15-7dd1-8a23-dcab95b63db8"
-secret_id = "b52e5c77-347d-e7b0-40b9-3b419b0c0b00"
+role_id = "2efa27bf-8d0c-0717-e844-05cea7530561"
+secret_id = "1435a367-eb7a-9e17-c6b2-aaff523f362b"
