@@ -1,0 +1,41 @@
+- name: Create private key (RSA, 4096 bits)
+  community.crypto.openssl_privatekey:
+    path: "{{ private_key }}"
+
+- name: Create certificate signing request (CSR) for self-signed certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ private_key }}"
+    common_name: "{{ CN }}"
+    organization_name: "{{ O }}"
+    locality_name: "{{ L }}"
+    country_name: "{{ C }}"
+    subject_alt_name: "{{ altname | join(',') }}"
+  register: nginx_csr
+
+- name: Create self-signed certificate from CSR
+  community.crypto.x509_certificate:
+    path: "{{ certificate }}"
+    csr_content: "{{ nginx_csr.csr }}"
+    privatekey_path: "{{ private_key }}"
+    provider: selfsigned
+
+- name: check if {{ openssl_dhparam }} exist
+  ansible.builtin.stat:
+    path: "{{ openssl_dhparam }}"
+  register: openssl_dhparam_result
+
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: "{{ openssl_dhparam }}"
+    size: 2048
+  when: openssl_dhparam_result.stat.exists == false
+
+- name: Copy self-signed snippet
+  ansible.builtin.template:
+    src: templates/self-signed.conf.j2
+    dest: "{{ snippets_dir }}/self-signed.conf"
+
+- name: Copy ssl parametrs
+  ansible.builtin.template:
+    src: templates/ssl-params.conf.j2
+    dest: "{{ snippets_dir }}/ssl-params.conf"

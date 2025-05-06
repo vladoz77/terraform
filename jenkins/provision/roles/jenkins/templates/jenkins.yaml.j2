@@ -21,13 +21,14 @@ credentials:
 
 unclassified:
   location:
-    url: http://{{ jenkins_url_address }}
+    url: https://{{ jenkins_url_address }}
+    
   {% if sonarqube -%}
   sonarglobalconfiguration:                  
     buildWrapperEnabled: true
     installations:                           
       - name: "sonarqube"                         
-        serverUrl: {{  sonarqube_url}}
+        serverUrl: http://sonarqube:9000
         credentialsId: sonarqube_token       
   {%- endif %}
 
@@ -40,6 +41,11 @@ jenkins:
       users:
       - id: "admin"
         password: "admin"
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "USER:Overall/Administer:admin"  
+        - "GROUP:Overall/Read:authenticated"
   nodes:
   - permanent:
       labelString: "ubuntu-agent"
@@ -67,23 +73,23 @@ tool:
   {% if maven_enable | default(false) -%}
   maven:
     installations:
-      - name: maven3
+      - name: "maven3"
         properties:
-          - installSource:
-              installers:
-                - maven:
-                    id: "3.8.4"
+        - installSource:
+            installers:
+            - maven:
+                id: "3.9.9"
   {%- endif %}
 
   {% if java_enable | default(false) -%}
   jdk:
     installations:
-      - name: jdk11
+      - name: "jdk17"
         properties:
-          - installSource:
-              installers:
-                - adoptOpenJdkInstaller:
-                    id: "jdk-11.0.14+9"
+        - installSource:
+            installers:
+            - adoptOpenJdkInstaller:
+                id: "jdk-17+35"
   {%- endif %}
 
   {% if sonarqube -%}

@@ -1,5 +1,6 @@
 hostname: jenkins-agent
 # soft for install
+docker_network_name: extra_network
 soft:
 - curl
 - nmap

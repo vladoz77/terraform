@@ -6,3 +6,5 @@ jenkins_install_file:
 - jenkins.yaml
 - Dockerfile
 - plugins.txt
+site_available_dir: /etc/nginx/sites-available
+site_enabled_dir: /etc/nginx/sites-enabled

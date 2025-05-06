@@ -18,12 +18,15 @@ services:
       - 50000:50000
     networks: 
       jenkins-network:
+      {{ docker_network_name }}:
   
 volumes:
  jenkins-data:
 
 networks:
   jenkins-network:
+  {{ docker_network_name }}:
+    external: true
       
       
 

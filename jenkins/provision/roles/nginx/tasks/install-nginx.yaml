@@ -1,0 +1,20 @@
+- name: create folder jenkins
+  ansible.builtin.file:
+    path: "{{ cert_dir }}"
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    state: directory
+
+- name: install nginx on Ubuntu
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_os_family == 'Debian'
+
+- name: install nginx on RedHat
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_os_family == 'RedHat'

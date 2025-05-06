@@ -1,4 +1,13 @@
-- name: add {{ container_name }} url to hosts
+- name: set "{{ item.key }}" to "{{ item.value}}"
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value}}"
+    reload: true
+  loop: "{{ sysctl_params }}"
+
+
+- name: add sonarqube url to hosts
   ansible.builtin.lineinfile:
     path: /etc/hosts
     line: "{{ ansible_default_ipv4.address }} {{ sonarqube_url_address }}"

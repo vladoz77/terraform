@@ -1,9 +1,10 @@
 hostname: jenkins
-sysctl_params:
-- key: net.ipv4.ip_forward
-  value: 1
-- key: vm.max_map_count
-  value: 262144
+# Docker config
+docker_network_name: extra_network
+# TLS config
+cert_dir: "/home/{{ username }}/certs"
+private_key: "{{ cert_dir }}/nginx.key"
+certificate: "{{ cert_dir }}/nginx.crt"
 # Jenkins config
 jenkins_url_address: jenkins.home.local
 jenkins_plugin_list:
@@ -29,9 +30,10 @@ jenkins_plugin_list:
 - ws-cleanup:latest
 - adoptopenjdk:1.7
 - sonar:latest
+- role-strategy:latest
+- maven-plugin:latest
 
 maven_enable: true
 java_enable: true
 sonarqube: true
-sonarqube_url: "http://localhost:9090"
 sonarqube_url_address: sonarqube.home.local

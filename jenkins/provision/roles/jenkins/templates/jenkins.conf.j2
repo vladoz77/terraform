@@ -1,25 +1,36 @@
 upstream jenkins {
-  keepalive 32; # keepalive connections
-  server 127.0.0.1:8080; # jenkins ip and port
+  keepalive 32; 
+  server 127.0.0.1:8080;
+  keepalive_timeout 60s;
 }
 
+
+
 server {
-  listen          80;       # Listen on port 80 for IPv4 requests
-  server_name     {{ jenkins_url_address }};  # replace 'jenkins.example.com' with your server domain name
+  listen          443 ssl http2;
+  server_name     {{ jenkins_url_address }};  
   access_log      /var/log/nginx/jenkins.access.log;
   error_log       /var/log/nginx/jenkins.error.log;
+
+  # SSL
+  include snippets/self-signed.conf;
+  include snippets/ssl-params.conf;
+
+  # WebSocket
+  proxy_set_header Upgrade           $http_upgrade;
+  proxy_set_header Connection        "upgrade";
 
 
   location / {
       sendfile off;
       proxy_pass         http://jenkins;
-      proxy_redirect     default;
       proxy_http_version 1.1;
 
-      proxy_set_header   Host              $http_host;
+      proxy_set_header   Host              $host;
       proxy_set_header   X-Real-IP         $remote_addr;
       proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
       proxy_set_header   X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port    $server_port;
       proxy_max_temp_file_size 0;
 
 
@@ -30,7 +41,6 @@ server {
       proxy_connect_timeout      90;
       proxy_send_timeout         90;
       proxy_read_timeout         90;
-      proxy_request_buffering    off; # Required for HTTP CLI commands
+      proxy_request_buffering    off;
   }
-
 }

@@ -1,0 +1,14 @@
+CN: '*.home.local'
+O: Home_Lab
+L: RZN
+C: RU
+altname:
+  - 'DNS:*.home.local'
+  - 'DNS:jenkins.home.local'
+  - 'DNS:sonaqube.home.local'
+  - 'DNS:localhost'
+  - 'IP:127.0.0.1'
+
+openssl_dhparam: /etc/nginx/dhparam.pem
+
+snippets_dir: /etc/nginx/snippets

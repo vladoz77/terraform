@@ -1,11 +1,14 @@
 - name: copy config file
   ansible.builtin.template:
     src: templates/jenkins.conf.j2
-    dest: /etc/nginx/sites-available/jenkins.conf
+    dest: "{{ site_available_dir}}/jenkins.conf"
 
 - name: enable site
   ansible.builtin.file:
-    src: /etc/nginx/sites-available/jenkins.conf
-    dest: /etc/nginx/sites-enabled/jenkins.conf
+    src: "{{ site_available_dir}}/jenkins.conf"
+    dest: "{{ site_enabled_dir  }}/jenkins.conf"
     state: link
   notify: nginx-restart
+
+- name: start handler force
+  meta: flush_handlers

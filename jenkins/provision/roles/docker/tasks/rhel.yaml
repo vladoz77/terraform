@@ -27,4 +27,8 @@
       group: docker
       append: true
 
+  - name: Create a network
+    docker_network:
+      name: "{{ docker_network_name }}"
+
   when: service_name not in ansible_facts.services
