@@ -94,3 +94,10 @@ variable "env_vars" {
   description = "Env vars to inject to instance"
   nullable = true
 }
+
+variable "username" {
+  type = string
+  default = "ubuntu"
+  description = "default user for vm"
+}
+
