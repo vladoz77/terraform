@@ -5,13 +5,6 @@
     owner: "{{ username }}"
     state: directory
 
-- name: copy certificate to {{ jenkins_docker_dir }}
-  ansible.builtin.copy:
-    src: "{{ cert_dir }}/nginx.crt"
-    dest: "{{ jenkins_docker_dir }}/nginx.crt"
-    mode: '0644'
-    remote_src: true
-
 - name: Read token from fetched file
   ansible.builtin.slurp:
     src: "/tmp/sonar_token.txt"

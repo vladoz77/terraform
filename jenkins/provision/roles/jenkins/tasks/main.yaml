@@ -18,11 +18,7 @@
     jenkins-install.yaml
   # when: container_status.exists == false or container_status.container.State.Running == false
 
-<<<<<<< HEAD
-- name: add nginx config for jenkins
-=======
-- name: сconfig nginx
->>>>>>> 71329b6 (fix)
+- name: config nginx
   ansible.builtin.include_tasks: nginx-config.yaml
   
 
