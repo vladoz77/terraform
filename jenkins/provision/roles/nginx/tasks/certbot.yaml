@@ -1,0 +1,45 @@
+- name: check existing certificate
+  ansible.builtin.stat:
+    path: "{{ cert_dir }}/{{ cert_name }}/cert.pem"
+  register: certbot_stat
+
+- name: create certificate
+  ansible.builtin.shell: |
+    certbot certonly \
+    --non-interactive \
+    --nginx \
+    --email {{ email }} \
+    --agree-tos \
+    --cert-name {{ cert_name }} \
+    -d {{ domains | join(' -d ') }} > /tmp/certbot.log 2>&1
+  when: certbot_stat.stat.exists == false
+
+- name: Setup certbot auto renew
+  ansible.builtin.cron:
+    name: "Renew Let's Encrypt certificate"
+    minute: "{{ certbot_renew_minutes }}"
+    hour: "{{ certbot_renew_hours }}"
+    job: "certbot renew --quiet --deploy-hook 'systemctl reload nginx'"
+    state: present
+
+- name: check if {{ openssl_dhparam }} exist
+  ansible.builtin.stat:
+    path: "{{ openssl_dhparam }}"
+  register: openssl_dhparam_result
+
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: "{{ openssl_dhparam }}"
+    size: 2048
+  when: openssl_dhparam_result.stat.exists == false
+
+- name: Copy self-signed snippet
+  ansible.builtin.template:
+    src: templates/self-signed.conf.j2
+    dest: "{{ snippets_dir }}/self-signed.conf"
+
+- name: Copy ssl parametrs
+  ansible.builtin.template:
+    src: templates/ssl-params.conf.j2
+    dest: "{{ snippets_dir }}/ssl-params.conf"
+

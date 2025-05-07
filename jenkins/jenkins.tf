@@ -24,7 +24,7 @@ module "jenkins" {
   labels = {}  # Дополнительные метки
   
   # Дополнительные диски
-  additional_disks = local.jenkins.other_disks
+  additional_disks = []
   
   # Переменные окружения
   env_vars = local.jenkins.environment

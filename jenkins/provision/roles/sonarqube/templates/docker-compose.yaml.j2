@@ -1,7 +1,7 @@
 services:
   sonarqube:
     image: sonarqube:community
-    container_name: {{ sonarqube_container_name }}
+    container_name: {{ container_name }}
     restart: unless-stopped
     depends_on:
       - db

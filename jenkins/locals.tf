@@ -36,14 +36,6 @@ locals {
       }
     ]
     
-    # Дополнительные диски
-    other_disks = [
-      {
-        size = 10
-        type = "network-hdd"
-      }
-    ]
-    
     # Переменные окружения
     environment = {
       DB_HOST = "db.home.local"  # Хост БД

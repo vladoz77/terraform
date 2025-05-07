@@ -13,9 +13,9 @@
     line: "{{ ansible_default_ipv4.address }} {{ sonarqube_url_address }}"
     state: present
 
-- name: check if runing {{ sonarqube_container_name }} in docker
+- name: check if runing {{ container_name }} in docker
   community.docker.docker_container_info:
-    name: "{{ sonarqube_container_name }}"
+    name: "{{ container_name }}"
   register: container_status
   ignore_errors: true
    

@@ -1,84 +1,54 @@
-upstream {{ sonarqube_container_name }} {
-    keepalive 32;
-    server 127.0.0.1:9090 fail_timeout=3s;
-    keepalive_timeout 60s;
+upstream {{ container_name }} {
+  keepalive 32; 
+  server 127.0.0.1:9090;
+  keepalive_timeout 60s;
+}
+
+server {
+    listen 80;
+    server_name {{ sonarqube_url_address }};
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
 }
 
 
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name {{ sonarqube_url_address }};
-    
-    # SSL Configuration 
-    include snippets/self-signed.conf;
-    include snippets/ssl-params.conf;
-    
-    # Логирование с буферизацией
-    access_log /var/log/nginx/{{ sonarqube_container_name }}.access.log combined buffer=16k flush=1m;
-    error_log  /var/log/nginx/{{ sonarqube_container_name }}.error.log warn;
-    
-    # HTTP/2 оптимизация
-    http2_max_concurrent_streams 256;
-    http2_recv_timeout 120s;
-    
-    # Security Headers
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options "nosniff";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header Referrer-Policy "strict-origin-when-cross-origin";
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:";
-    
-    # Проксирование
-    location / {
-        proxy_pass http://{{ sonarqube_container_name }};
-        proxy_http_version 1.1;
-        
-        # Базовые заголовки
-        proxy_set_header Host              $http_host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port  $server_port;
-        
-        # Оптимизация соединения
-        proxy_set_header Connection "";
-        proxy_redirect default;
-        
-        # Таймауты (увеличены для длительных билдов)
-        proxy_connect_timeout 5s;
-        proxy_send_timeout    30s;
-        proxy_read_timeout    300s;
-        
-        # WebSocket support
-        proxy_set_header Upgrade    $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        
-        # Буферизация
-        proxy_buffering on;
-        proxy_buffer_size 16k;
-        proxy_buffers 256 16k;
-        
-        # Лимиты
-        client_max_body_size        50m;
-        client_body_buffer_size     256k;
-        proxy_max_temp_file_size    0;
-    }
-    
-    # Блокировка опасных эндпоинтов
-    location ~* ^/(cli|manage|script|whoAmI|asynchPeople) {
-        deny all;
-        return 403;
-    }
-    
-    # Статика 
-    location ~ ^/static/[0-9a-f]+/ {
-        expires 365d;
-        add_header Cache-Control "public, immutable";
-        proxy_pass http://{{ sonarqube_container_name }};
-    }
-    
-    # Обработка ошибок
-    error_page 403 404 /static/error.html;
-    error_page 500 502 503 504 /static/error.html;
+  listen          443 ssl http2;
+  server_name     {{ sonarqube_url_address }};  
+  access_log      /var/log/nginx/{{ container_name }}.access.log;
+  error_log       /var/log/nginx/{{ container_name }}.error.log;
+
+  # SSL
+  include snippets/self-signed.conf;
+  include snippets/ssl-params.conf;
+
+  # WebSocket
+  proxy_set_header Upgrade           $http_upgrade;
+  proxy_set_header Connection        "upgrade";
+
+
+  location / {
+      sendfile off;
+      proxy_pass         http://{{ container_name }};
+      proxy_http_version 1.1;
+
+      proxy_set_header   Host              $host;
+      proxy_set_header   X-Real-IP         $remote_addr;
+      proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+      proxy_set_header   X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port    $server_port;
+      proxy_max_temp_file_size 0;
+
+
+      #this is the maximum upload size
+      client_max_body_size       10m;
+      client_body_buffer_size    128k;
+
+      proxy_connect_timeout      90;
+      proxy_send_timeout         90;
+      proxy_read_timeout         90;
+      proxy_request_buffering    off;
+  }
 }

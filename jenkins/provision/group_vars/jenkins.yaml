@@ -1,12 +1,20 @@
 hostname: jenkins
 # Docker config
 docker_network_name: extra_network
+
 # TLS config
-cert_dir: "/home/{{ username }}/certs"
-private_key: "{{ cert_dir }}/nginx.key"
-certificate: "{{ cert_dir }}/nginx.crt"
+cert_name: home-local.site
+email: vladoz77@yandex.ru
+certbot_renew_minutes: 0
+certbot_renew_hours: 0
+
+# Soft install
+soft:
+- certbot
+- python3-certbot-nginx
+
 # Jenkins config
-jenkins_url_address: jenkins.home.local
+jenkins_url_address: jenkins.home-local.site
 jenkins_plugin_list:
 - ant:latest
 - antisamy-markup-formatter:latest
@@ -32,8 +40,10 @@ jenkins_plugin_list:
 - sonar:latest
 - role-strategy:latest
 - maven-plugin:latest
+- docker-plugin:latest
+- docker-workflow:latest
 
 maven_enable: true
 java_enable: true
 sonarqube: true
-sonarqube_url_address: sonarqube.home.local
+sonarqube_url_address: sonarqube.home-local.site

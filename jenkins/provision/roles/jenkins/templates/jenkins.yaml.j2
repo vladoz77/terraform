@@ -28,7 +28,7 @@ unclassified:
     buildWrapperEnabled: true
     installations:                           
       - name: "sonarqube"                         
-        serverUrl: http://sonarqube:9000
+        serverUrl: https://{{ sonarqube_url_address }}
         credentialsId: sonarqube_token       
   {%- endif %}
 

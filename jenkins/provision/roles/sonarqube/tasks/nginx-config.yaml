@@ -1,12 +1,12 @@
 - name: copy config file
   ansible.builtin.template:
-    src: templates/{{ sonarqube_container_name }}.conf.j2
-    dest: "{{ site_available_dir}}/{{ sonarqube_container_name }}.conf"
+    src: templates/{{ container_name }}.conf.j2
+    dest: "{{ site_available_dir}}/{{ sonarqube_url_address }}"
 
 - name: enable site
   ansible.builtin.file:
-    src: "{{ site_available_dir}}/{{ sonarqube_container_name }}.conf"
-    dest: "{{ site_enabled_dir  }}/{{ sonarqube_container_name }}.conf"
+    src: "{{ site_available_dir}}/{{ sonarqube_url_address }}"
+    dest: "{{ site_enabled_dir  }}/{{ sonarqube_url_address }}"
     state: link
   notify: nginx-restart
 

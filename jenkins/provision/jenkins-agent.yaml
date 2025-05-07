@@ -4,11 +4,17 @@
   pre_tasks:
     - name: Gather facts 
       setup:
-  
+
+    - name: add hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+    
+    - name: install base soft
+      ansible.builtin.apt:
+        name: "{{ soft }}"
+        state: present
+        update_cache: true
   tasks:
-  - name: add hostname
-    ansible.builtin.hostname:
-      name: "{{ hostname }}"
 
   - name: Generate ssh key
     community.crypto.openssh_keypair:
@@ -21,12 +27,6 @@
 
   - name: copy ssh pub key to autorize
     ansible.builtin.shell: cat {{ ssh_dir }}/{{ agent_ssh_key }}.pub >> {{ ssh_dir }}/authorized_keys
-
-  - name: install base soft
-    ansible.builtin.apt:
-      name: "{{ soft }}"
-      state: present
-      update_cache: true
 
   - name: Check if trivy is installed
     command: dpkg-query -W trivy

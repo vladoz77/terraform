@@ -2,6 +2,10 @@
   ansible.builtin.include_tasks:
     install-nginx.yaml
 
-- name: Create certificate
-  ansible.builtin.include_tasks: ssl-config-nginx.yaml
+# - name: Create certificate
+#   ansible.builtin.include_tasks: ssl-config-nginx.yaml
+
+- name: Create certificate wuth certbot
+  ansible.builtin.include_tasks: certbot.yaml
+    
     

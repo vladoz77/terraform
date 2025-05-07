@@ -32,11 +32,10 @@ resource "yandex_dns_recordset" "jenkins_record" {
   data    = [module.jenkins[0].public_ips[0]]  # Публичный IP адрес Jenkins
 }
 
-# DNS запись типа A для сервиса SonarQube
 resource "yandex_dns_recordset" "sonarqube_record" {
-  zone_id = yandex_dns_zone.zone1.id  # Ссылка на созданную DNS зону
-  name    = "sonarqube.home-local.site."  # Полное доменное имя
-  type    = "A"  # Тип записи - IPv4 адрес
-  ttl     = 300  # Время жизни записи в секундах
-  data    = [module.jenkins[0].public_ips[0]]  # Публичный IP адрес (тот же что у Jenkins)
+  zone_id = yandex_dns_zone.zone1.id  
+  name    = "sonarqube.home-local.site."  
+  type    = "A"  
+  ttl     = 300  
+  data    = [module.jenkins[0].public_ips[0]]  
 }

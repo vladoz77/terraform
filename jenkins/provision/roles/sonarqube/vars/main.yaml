@@ -3,7 +3,7 @@ sysctl_params:
   value: 1
 - key: vm.max_map_count
   value: 262144
-sonarqube_container_name: sonarqube
+container_name: sonarqube
 sonarqube_docker_dir: "/home/{{ username }}/sonarqube"
 sonarqube_url: http://localhost:9090
 sonarqube_install_file:
@@ -15,6 +15,6 @@ sonarqube_password: password
 sonarqube_user_group: sonar-administrators
 sonarqube_token_name: token
 sonarqube_jenkins_webhook_name: jenkins-webhook
-sonaqube_jenkins_webhook_url: http://jenkins:8080/sonarqube-webhook
+sonaqube_jenkins_webhook_url: https://{{ jenkins_url_address }}/sonarqube-webhook
 site_available_dir: /etc/nginx/sites-available
 site_enabled_dir: /etc/nginx/sites-enabled

@@ -5,6 +5,13 @@
   - name: add hostname
     ansible.builtin.hostname:
       name: "{{ hostname }}"
+
+  - name: install req soft
+    ansible.builtin.apt:
+      name: "{{ soft }}"
+      state: present
+      update_cache: true
+  
   tasks:
   - name: install nginx
     ansible.builtin.include_role:

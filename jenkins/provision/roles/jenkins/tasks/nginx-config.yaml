@@ -1,12 +1,12 @@
 - name: copy config file
   ansible.builtin.template:
     src: templates/jenkins.conf.j2
-    dest: "{{ site_available_dir}}/jenkins.conf"
+    dest: "{{ site_available_dir}}/{{ jenkins_url_address}}"
 
 - name: enable site
   ansible.builtin.file:
-    src: "{{ site_available_dir}}/jenkins.conf"
-    dest: "{{ site_enabled_dir  }}/jenkins.conf"
+    src: "{{ site_available_dir}}/{{ jenkins_url_address}}"
+    dest: "{{ site_enabled_dir  }}/{{ jenkins_url_address}}"
     state: link
   notify: nginx-restart
 
