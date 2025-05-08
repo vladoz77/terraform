@@ -1,7 +1,42 @@
+- name: install req soft
+  ansible.builtin.apt:
+    name: "{{ soft }}"
+    state: present
+    update_cache: true
+
+- name: Install jc python package
+  ansible.builtin.pip:
+    name: jc
+    state: present
+
 - name: check existing certificate
   ansible.builtin.stat:
     path: "{{ cert_dir }}/{{ cert_name }}/cert.pem"
   register: certbot_stat
+
+- name: Get current domain list from {{ cert_name }} 
+  ansible.builtin.shell: 
+    certbot certificates | jc --certbot | jq -r '.certificates[] | select(.name == "{{ cert_name }}").domains'
+  register: cert_domains
+  ignore_errors: yes  # Если сертификата нет, команда вернёт ошибку
+  changed_when: false
+
+- ansible.builtin.set_fact:
+    current_domains: "{{ cert_domains.stdout }}"
+
+- ansible.builtin.debug:
+    var: current_domains
+
+- ansible.builtin.debug:
+    var: domains
+
+- name: Check if cert needs update
+  ansible.builtin.set_fact:
+    cert_needs_update: "{{ domains | symmetric_difference(current_domains) | length > 0 }}"
+    # cert_needs_update: "{{ domains != current_domains }}"
+
+- ansible.builtin.debug:
+    var: cert_needs_update
 
 - name: create certificate
   ansible.builtin.shell: |
@@ -9,10 +44,11 @@
     --non-interactive \
     --nginx \
     --email {{ email }} \
+    --expand \
     --agree-tos \
     --cert-name {{ cert_name }} \
     -d {{ domains | join(' -d ') }} > /tmp/certbot.log 2>&1
-  when: certbot_stat.stat.exists == false
+  when: certbot_stat.stat.exists == false or cert_needs_update == true
 
 - name: Setup certbot auto renew
   ansible.builtin.cron:

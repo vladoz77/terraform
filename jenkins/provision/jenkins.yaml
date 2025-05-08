@@ -6,17 +6,7 @@
     ansible.builtin.hostname:
       name: "{{ hostname }}"
 
-  - name: install req soft
-    ansible.builtin.apt:
-      name: "{{ soft }}"
-      state: present
-      update_cache: true
-  
   tasks:
-  - name: install nginx
-    ansible.builtin.include_role:
-      name: nginx
-
   - name: install docker
     ansible.builtin.include_role:
       name: docker
@@ -26,6 +16,15 @@
       name: sonarqube
     when: sonarqube == true
 
+  - name: install nexus
+    ansible.builtin.include_role:
+      name: nexus
+    when: nexus == true
+
   - name: install jenkins
     ansible.builtin.include_role:
       name: jenkins
+
+  - name: install nginx
+    ansible.builtin.include_role:
+      name: nginx

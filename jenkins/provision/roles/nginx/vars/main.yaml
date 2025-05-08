@@ -1,6 +1,6 @@
-cert_dir: /etc/letsencrypt/live
-domains:
-- "{{ jenkins_url_address }}"
-- "{{ sonarqube_url_address }}"
-openssl_dhparam: /etc/nginx/dhparam.pem
-snippets_dir: /etc/nginx/snippets
+# Soft install
+soft:
+- certbot
+- python3-certbot-nginx
+- python3-pip
+- jq

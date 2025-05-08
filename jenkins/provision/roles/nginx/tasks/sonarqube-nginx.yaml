@@ -1,6 +1,6 @@
 - name: copy config file
   ansible.builtin.template:
-    src: templates/{{ container_name }}.conf.j2
+    src: templates/{{ sonarqube_url_address }}.j2
     dest: "{{ site_available_dir}}/{{ sonarqube_url_address }}"
 
 - name: enable site

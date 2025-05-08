@@ -39,3 +39,19 @@ resource "yandex_dns_recordset" "sonarqube_record" {
   ttl     = 300  
   data    = [module.jenkins[0].public_ips[0]]  
 }
+
+resource "yandex_dns_recordset" "nexus_record" {
+  zone_id = yandex_dns_zone.zone1.id  
+  name    = "nexus.home-local.site."  
+  type    = "A"  
+  ttl     = 300  
+  data    = [module.jenkins[0].public_ips[0]]  
+}
+
+resource "yandex_dns_recordset" "registry_record" {
+  zone_id = yandex_dns_zone.zone1.id  
+  name    = "registry.home-local.site."  
+  type    = "A"  
+  ttl     = 300  
+  data    = [module.jenkins[0].public_ips[0]]  
+}

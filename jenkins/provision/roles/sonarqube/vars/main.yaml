@@ -1,20 +1,11 @@
-sysctl_params:
-- key: net.ipv4.ip_forward
-  value: 1
-- key: vm.max_map_count
-  value: 262144
 container_name: sonarqube
-sonarqube_docker_dir: "/home/{{ username }}/sonarqube"
+sonarqube_docker_dir: "/home/{{ username }}/{{ container_name }}"
 sonarqube_url: http://localhost:9090
-sonarqube_install_file:
-- docker-compose.yaml
 sonarqube_default_admin_password: admin
 sonarqube_admin_password: "!QAZ2wsx#EDC4rfv"
-sonarqube_user: vlad
-sonarqube_password: password
+sonarqube_user: "{{ container_name }}"
+sonarqube_password: "{{ container_name }}"
 sonarqube_user_group: sonar-administrators
 sonarqube_token_name: token
 sonarqube_jenkins_webhook_name: jenkins-webhook
 sonaqube_jenkins_webhook_url: https://{{ jenkins_url_address }}/sonarqube-webhook
-site_available_dir: /etc/nginx/sites-available
-site_enabled_dir: /etc/nginx/sites-enabled

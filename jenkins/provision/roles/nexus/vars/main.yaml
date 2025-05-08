@@ -1,0 +1,2 @@
+container_name: nexus
+nexus_docker_dir: "/home/{{ username }}/{{ container_name }}"

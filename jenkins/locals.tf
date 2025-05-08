@@ -12,8 +12,8 @@ locals {
     instance_name = "jenkins-vm"      # Имя инстанса
     instance_zone = "ru-central1-a"   # Зона доступности
     instance_platform_id = "standard-v1" # Тип платформы
-    instance_core = 2                 # Количество vCPU
-    instance_memory = 4               # Объем RAM (ГБ)
+    instance_core = 2                # Количество vCPU
+    instance_memory = 8               # Объем RAM (ГБ)
     instance_core_fraction = 20       # Гарантированная доля vCPU
     instance_disk_type = "network-hdd" # Тип диска
     instance_disk_size = 20           # Размер диска (ГБ)

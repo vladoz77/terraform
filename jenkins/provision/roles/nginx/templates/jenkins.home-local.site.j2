@@ -1,24 +1,23 @@
-upstream {{ container_name }} {
+upstream jenkins {
   keepalive 32; 
-  server 127.0.0.1:9090;
+  server 127.0.0.1:8080;
   keepalive_timeout 60s;
 }
 
 server {
     listen 80;
-    server_name {{ sonarqube_url_address }};
+    server_name {{ jenkins_url_address }};
 
     location / {
         return 301 https://$host$request_uri;
     }
 }
 
-
 server {
   listen          443 ssl http2;
-  server_name     {{ sonarqube_url_address }};  
-  access_log      /var/log/nginx/{{ container_name }}.access.log;
-  error_log       /var/log/nginx/{{ container_name }}.error.log;
+  server_name     {{ jenkins_url_address }};  
+  access_log      /var/log/nginx/jenkins.access.log;
+  error_log       /var/log/nginx/jenkins.error.log;
 
   # SSL
   include snippets/self-signed.conf;
@@ -31,7 +30,7 @@ server {
 
   location / {
       sendfile off;
-      proxy_pass         http://{{ container_name }};
+      proxy_pass         http://jenkins;
       proxy_http_version 1.1;
 
       proxy_set_header   Host              $host;

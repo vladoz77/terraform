@@ -7,23 +7,17 @@
   loop: "{{ sysctl_params }}"
 
 
-- name: add sonarqube url to hosts
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    line: "{{ ansible_default_ipv4.address }} {{ sonarqube_url_address }}"
-    state: present
-
 - name: check if runing {{ container_name }} in docker
   community.docker.docker_container_info:
     name: "{{ container_name }}"
   register: container_status
   ignore_errors: true
    
-- name: install SonarQube with docker
-  ansible.builtin.include_tasks: sonar-install.yaml
+- name: install {{ container_name }} with docker
+  ansible.builtin.include_tasks: "{{ container_name }}-install.yaml"
   when: container_status.exists == false or container_status.container.State.Running == false
 
-- name: Wait for SonarQube to become available
+- name: Wait for {{ container_name }} to become available
   ansible.builtin.uri:
     url: "{{ sonarqube_url }}/api/system/status"
     method: GET
@@ -35,8 +29,6 @@
   delay: 10
   ignore_errors: yes
 
-- name: config user and token in sonarqube
-  ansible.builtin.include_tasks: sonar-config.yaml
+- name: config user and token in {{ container_name }}
+  ansible.builtin.include_tasks: "{{ container_name }}-config.yaml"
 
-- name: add nginx config for sonarqube
-  ansible.builtin.include_tasks: nginx-config.yaml

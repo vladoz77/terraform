@@ -7,43 +7,20 @@ cert_name: home-local.site
 email: vladoz77@yandex.ru
 certbot_renew_minutes: 0
 certbot_renew_hours: 0
-
-# Soft install
-soft:
-- certbot
-- python3-certbot-nginx
-
+domains:
+- "{{ jenkins_url_address }}"
+- "{{ sonarqube_url_address }}"
+- "{{ nexus_url_address }}"
+- "{{ registry_url_address }}"
 # Jenkins config
 jenkins_url_address: jenkins.home-local.site
-jenkins_plugin_list:
-- ant:latest
-- antisamy-markup-formatter:latest
-- build-timeout:latest
-- cloudbees-folder:latest
-- configuration-as-code:latest
-- credentials-binding:latest
-- email-ext:latest
-- git:latest
-- github-branch-source:latest
-- gradle:latest
-- ldap:latest
-- mailer:latest
-- matrix-auth:latest
-- pam-auth:latest
-- pipeline-github-lib:latest
-- pipeline-stage-view:latest
-- ssh-slaves:latest
-- timestamper:latest
-- workflow-aggregator:latest
-- ws-cleanup:latest
-- adoptopenjdk:1.7
-- sonar:latest
-- role-strategy:latest
-- maven-plugin:latest
-- docker-plugin:latest
-- docker-workflow:latest
-
-maven_enable: true
-java_enable: true
+# Sonarqube
 sonarqube: true
 sonarqube_url_address: sonarqube.home-local.site
+# Nexus
+nexus: true
+nexus_url_address: nexus.home-local.site
+registry_url_address: registry.home-local.site 
+
+site_available_dir: /etc/nginx/sites-available
+site_enabled_dir: /etc/nginx/sites-enabled

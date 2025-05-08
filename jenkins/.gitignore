@@ -1,4 +1,5 @@
 .terraform
 .vscode
-.terraform.lock.hcl
+*.lock.hcl
 *.tfvars
+provision/inventory.ini

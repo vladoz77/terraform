@@ -1,6 +1,6 @@
 - name: copy config file
   ansible.builtin.template:
-    src: templates/jenkins.conf.j2
+    src: templates/{{ jenkins_url_address}}.j2
     dest: "{{ site_available_dir}}/{{ jenkins_url_address}}"
 
 - name: enable site

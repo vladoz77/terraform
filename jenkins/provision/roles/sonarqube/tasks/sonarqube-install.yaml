@@ -1,4 +1,4 @@
-- name: create folder sonarqube
+- name: create folder {{ container_name }}
   ansible.builtin.file:
     path: "{{ sonarqube_docker_dir }}"
     group: "{{ username }}"
@@ -7,11 +7,10 @@
 
 - name: Copy templates to {{ sonarqube_docker_dir }}
   ansible.builtin.template:
-    src: "templates/{{ item }}.j2"
-    dest: "{{ sonarqube_docker_dir }}/{{ item }}"
+    src: "templates/docker-compose.yaml.j2"
+    dest: "{{ sonarqube_docker_dir }}/docker-compose.yaml"
     group: "{{ username }}"
     owner: "{{ username }}"
-  loop: "{{ sonarqube_install_file }}"
 
 - name: start docker-compose
   community.docker.docker_compose_v2:

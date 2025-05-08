@@ -1,0 +1,5 @@
+sysctl_params:
+- key: net.ipv4.ip_forward
+  value: 1
+- key: vm.max_map_count
+  value: 262144

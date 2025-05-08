@@ -2,10 +2,16 @@
   ansible.builtin.include_tasks:
     install-nginx.yaml
 
-# - name: Create certificate
-#   ansible.builtin.include_tasks: ssl-config-nginx.yaml
-
 - name: Create certificate wuth certbot
   ansible.builtin.include_tasks: certbot.yaml
     
-    
+- name: add nginx config for nexus
+  ansible.builtin.include_tasks: "nexus-nginx.yaml"
+  when: nexus == true
+
+- name: add nginx config for sonarqube
+  ansible.builtin.include_tasks: "sonarqube-nginx.yaml"
+  when: sonarqube == true
+
+- name: config nginx
+  ansible.builtin.include_tasks: "jenkins-nginx.yaml"
