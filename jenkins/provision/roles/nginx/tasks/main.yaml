@@ -13,5 +13,6 @@
   ansible.builtin.include_tasks: "sonarqube-nginx.yaml"
   when: sonarqube == true
 
-- name: config nginx
+- name: add nginx config for jenkins
   ansible.builtin.include_tasks: "jenkins-nginx.yaml"
+  when: jenkins == true

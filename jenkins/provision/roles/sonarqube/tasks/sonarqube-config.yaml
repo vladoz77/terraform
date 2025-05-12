@@ -15,7 +15,7 @@
     url: "{{ sonarqube_url }}/api/authentication/validate"
     method: GET
     user: admin
-    password: "{{ sonarqube_admin_password }}"
+    password: "{{ vault_secrets.sonarqube_new_admin_password }}"
     force_basic_auth: yes
     status_code: 200
   register: auth_check
@@ -27,7 +27,7 @@
     url: "{{ sonarqube_url }}/api/users/change_password"
     method: POST
     user: admin
-    password: "{{ sonarqube_default_admin_password }}"
+    password: "{{ vault_secrets.sonarqube_default_admin_password }}"
     force_basic_auth: yes
     body_format: form-urlencoded
     status_code:
@@ -36,8 +36,8 @@
     - 401 # Неавторизован
     body:
       login: admin
-      previousPassword: "{{ sonarqube_default_admin_password }}"
-      password: "{{ sonarqube_admin_password }}"
+      previousPassword: "{{ vault_secrets.sonarqube_default_admin_password }}"
+      password: "{{ vault_secrets.sonarqube_new_admin_password }}"
   when: auth_check.json.valid == false
 
 - name: check if {{ sonarqube_user }} user already exist
@@ -45,7 +45,7 @@
     url: "{{ sonarqube_url }}/api/users/search"
     method: GET
     url_username: admin
-    url_password: "{{ sonarqube_admin_password }}"
+    url_password: "{{ vault_secrets.sonarqube_new_admin_password }}"
     status_code: 200
     body_format: json
     return_content: yes
@@ -55,18 +55,18 @@
   register: users_status
   ignore_errors: yes
 
-- name: Create {{ sonarqube_user }} via Jenkins REST API using query parameters
+- name: Create {{ sonarqube_user }} via Sonarqube REST API
   ansible.builtin.uri:
     url: "{{ sonarqube_url }}/api/users/create"
     method: POST
     user: admin
-    password: "{{ sonarqube_admin_password }}"
+    password: "{{ vault_secrets.sonarqube_new_admin_password }}"
     force_basic_auth: yes
     body_format: form-urlencoded
     body:
       login: "{{ sonarqube_user }}"
       name: "{{ sonarqube_user }}"
-      password: "{{ sonarqube_password }}"
+      password: "{{ vault_secrets.sonarqube_password }}"
     status_code:
     - 200
     - 400
@@ -79,7 +79,7 @@
     url: "{{ sonarqube_url }}/api/user_groups/add_user"
     method: POST
     user: admin
-    password: "{{ sonarqube_admin_password }}"
+    password: "{{ vault_secrets.sonarqube_new_admin_password }}"
     body_format: form-urlencoded
     body:
       login: "{{ sonarqube_user }}"
@@ -97,7 +97,7 @@
     url: "{{ sonarqube_url }}/api/user_tokens/search"
     method: GET
     url_username: "{{ sonarqube_user }}"
-    url_password: "{{ sonarqube_password }}"
+    url_password: "{{ vault_secrets.sonarqube_password }}"
     status_code: 200
     body_format: json
     return_content: yes
@@ -112,7 +112,7 @@
       url: "{{ sonarqube_url }}/api/user_tokens/generate"
       method: POST
       user: "{{ sonarqube_user }}"
-      password: "{{ sonarqube_password }}"
+      password: "{{ vault_secrets.sonarqube_password }}"
       force_basic_auth: yes
       body:
         name: "{{ sonarqube_token_name }}"
@@ -136,7 +136,7 @@
     url: "{{ sonarqube_url }}/api/webhooks/create"
     method: POST
     user: "{{ sonarqube_user }}"
-    password: "{{ sonarqube_password }}"
+    password: "{{ vault_secrets.sonarqube_password }}"
     force_basic_auth: yes
     body_format: form-urlencoded
     body:

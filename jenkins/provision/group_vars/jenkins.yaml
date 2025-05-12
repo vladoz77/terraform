@@ -13,14 +13,12 @@ domains:
 - "{{ nexus_url_address }}"
 - "{{ registry_url_address }}"
 # Jenkins config
+jenkins: true
 jenkins_url_address: jenkins.home-local.site
 # Sonarqube
 sonarqube: true
 sonarqube_url_address: sonarqube.home-local.site
 # Nexus
-nexus: true
+nexus: false
 nexus_url_address: nexus.home-local.site
 registry_url_address: registry.home-local.site 
-
-site_available_dir: /etc/nginx/sites-available
-site_enabled_dir: /etc/nginx/sites-enabled

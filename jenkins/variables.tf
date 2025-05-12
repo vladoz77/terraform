@@ -38,3 +38,9 @@ variable "ssh_key" {
   # export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
   # или через terraform.tfvars
 }
+
+variable "ansible_secret" {
+  description = "Password for ansible vault"
+  type = string
+}
+# export TF_VAR_ansible_secret=

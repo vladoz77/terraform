@@ -1,3 +1,8 @@
+- name: Load Vault variables
+  ansible.builtin.include_vars:
+    file: ../../group_vars/all/vault.yaml
+    name: vault_secrets
+
 - name: check if runing {{ container_name }} in docker
   community.docker.docker_container_info:
     name: "{{ container_name }}"

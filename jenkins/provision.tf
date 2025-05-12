@@ -42,8 +42,13 @@ resource "null_resource" "run-ansible" {
   }
 
   # Выполняем плейбук
+
   provisioner "local-exec" {
-    command = "ansible-playbook -i provision/inventory.ini provision/provision-all.yaml -u ${var.username}"
+    command = <<EOT
+      echo ${var.ansible_secret} > ./vault_secret
+      ansible-playbook -i provision/inventory.ini provision/provision-all.yaml -u ${var.username} --vault-password-file ./vault_secret
+      rm -r ./vault_secret
+    EOT
   }
 
   # Зависимости - ждем создания всех ресурсов перед выполнением

@@ -24,6 +24,7 @@
   - name: install jenkins
     ansible.builtin.include_role:
       name: jenkins
+    when: jenkins == true
 
   - name: install nginx
     ansible.builtin.include_role:
