@@ -66,7 +66,7 @@ resource "yandex_compute_instance" "instance" {
   metadata = {
     ssh-keys = var.ssh
     tags     = join(",", var.tags)
-    user-data = local.cloud_init
+    user-data = var.cloud_init
   }
 
   scheduling_policy {

@@ -101,3 +101,10 @@ variable "username" {
   description = "default user for vm"
 }
 
+variable "cloud_init" {
+  description = "YAML content for cloud-init configuration"
+  type        = string
+  default     = null
+  sensitive   = false
+  nullable = true
+}

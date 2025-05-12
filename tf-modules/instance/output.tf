@@ -17,7 +17,3 @@ output "tags" {
 output "instance_name" {
   value = yandex_compute_instance.instance[*].name
 }
-
-output "cloud_init" {
-  value = local.cloud_init
-}
