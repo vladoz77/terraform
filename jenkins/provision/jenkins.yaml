@@ -29,3 +29,4 @@
   - name: install nginx
     ansible.builtin.include_role:
       name: nginx
+    when: nginx == true

@@ -2,7 +2,8 @@ hostname: jenkins
 # Docker config
 docker_network_name: extra_network
 
-# TLS config
+# nginx config
+nginx: true
 cert_name: home-local.site
 email: vladoz77@yandex.ru
 certbot_renew_minutes: 0
@@ -13,12 +14,12 @@ domains:
 - "{{ nexus_url_address }}"
 - "{{ registry_url_address }}"
 # Jenkins config
-jenkins: true
+jenkins: false
 jenkins_url_address: jenkins.home-local.site
 # Sonarqube
-sonarqube: true
+sonarqube: false
 sonarqube_url_address: sonarqube.home-local.site
 # Nexus
 nexus: false
 nexus_url_address: nexus.home-local.site
-registry_url_address: registry.home-local.site 
+registry_url_address: registry.home-local.site

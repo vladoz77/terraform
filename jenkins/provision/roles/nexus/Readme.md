@@ -9,7 +9,7 @@ NEXUS_URL=https://nexus.home-local.site
 ```
 
 ```bash
-curl  -ifu admin:"${OLD_PASSWORD}" -X GET "${NEXUS_URL}/service/rest/v1/status/check" 
+curl  -if -X GET "${NEXUS_URL}/service/rest/v1/status" 
 ```
 
 ```bash

@@ -28,4 +28,7 @@ module "jenkins" {
   
   # Переменные окружения
   env_vars = local.jenkins.environment
+
+  # Дополнительная настройка через CloudInit
+  cloud_init = ""
 }
