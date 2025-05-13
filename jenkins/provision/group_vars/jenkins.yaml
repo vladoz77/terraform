@@ -14,12 +14,14 @@ domains:
 - "{{ nexus_url_address }}"
 - "{{ registry_url_address }}"
 # Jenkins config
-jenkins: false
+jenkins: true
 jenkins_url_address: jenkins.home-local.site
 # Sonarqube
-sonarqube: false
+sonarqube: true
 sonarqube_url_address: sonarqube.home-local.site
 # Nexus
-nexus: false
+nexus: true
 nexus_url_address: nexus.home-local.site
 registry_url_address: registry.home-local.site
+repo_name: docker-hosted
+repo_port: 8082

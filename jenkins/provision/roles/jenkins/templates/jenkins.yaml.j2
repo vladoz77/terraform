@@ -10,14 +10,23 @@ credentials:
           privateKeySource:
                 directEntry:
                   privateKey: "${readFile:{{ ssh_dir }}/{{ agent_ssh_key }}}"
-    {% if sonarqube -%}
     - credentials:
+      {% if sonarqube -%}
       - string:
           scope: GLOBAL
-          id: "sonarqube_token"
+          id: "sonarqube-token"
           secret: {{ sonar_token}} 
           description: "Sonar token"
-    {%- endif %}
+      {%- endif %}
+
+      {% if nexus -%}
+      - usernamePassword:
+          description: "token for nexus repo"
+          id: "nexus-token"
+          password: "jenkins"
+          scope: GLOBAL
+          username: "jenkins"
+      {%- endif %}
 
 unclassified:
   location:
@@ -29,7 +38,7 @@ unclassified:
     installations:                           
       - name: "sonarqube"                         
         serverUrl: https://{{ sonarqube_url_address }}
-        credentialsId: sonarqube_token       
+        credentialsId: sonarqube-token       
   {%- endif %}
 
 jenkins:

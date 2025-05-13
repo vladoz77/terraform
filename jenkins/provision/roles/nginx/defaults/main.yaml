@@ -3,3 +3,8 @@ snippets_dir: /etc/nginx/snippets
 cert_dir: /etc/letsencrypt/live
 site_available_dir: /etc/nginx/sites-available
 site_enabled_dir: /etc/nginx/sites-enabled
+cert_file_list:
+  - cert.pem
+  - chain.pem
+  - fullchain.pem
+  - privkey.pem

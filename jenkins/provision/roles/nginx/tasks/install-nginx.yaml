@@ -5,16 +5,14 @@
     owner: "{{ username }}"
     state: directory
 
-- name: install nginx on Ubuntu
+- name: install req packages
   ansible.builtin.apt:
-    name: nginx
+    name: "{{ soft }}"
     state: present
     update_cache: true
   when: ansible_os_family == 'Debian'
 
-- name: install nginx on RedHat
-  ansible.builtin.apt:
-    name: nginx
+- name: Install jc python package
+  ansible.builtin.pip:
+    name: jc
     state: present
-    update_cache: true
-  when: ansible_os_family == 'RedHat'

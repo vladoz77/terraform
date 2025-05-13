@@ -4,3 +4,4 @@ soft:
 - python3-certbot-nginx
 - python3-pip
 - jq
+- nginx

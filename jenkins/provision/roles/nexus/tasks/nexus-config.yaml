@@ -63,6 +63,10 @@
       - 404
   register: role_result
 
+- ansible.builtin.debug:
+    msg: "Role {{ role_id }} already exist in Nexus"
+  when: role_result.status == 200
+
 - name: create new role
   ansible.builtin.uri:
     url: "{{ nexus_url }}/{{ create_role }}"
@@ -89,7 +93,7 @@
 
 - name: check if {{ nexus_username }} exist
   ansible.builtin.uri:
-    url: "{{ nexus_url }}/{{ get_user }}/?userId={{ nexus_username }}"
+    url: "{{ nexus_url }}/{{ get_user }}"
     method: GET
     url_username: "{{ admin_user }}"
     url_password: "{{ vault_secrets.new_admin_password }}"
@@ -98,6 +102,13 @@
       - 200
       - 404
   register: user_result
+
+- ansible.builtin.set_fact:
+    user_exist: "{{ user_result.json | selectattr('userId', 'equalto', nexus_username) | map(attribute = 'userId'  ) | list | length > 0 }}"
+
+- ansible.builtin.debug:
+    msg: "User {{ nexus_username }} already exist in Nexus"
+  when: user_exist
 
 - name: Create user
   ansible.builtin.uri:
@@ -122,7 +133,55 @@
       - 200
       - 403
       - 400
-  when: user_result.status == 404
+  when: not user_exist
 
+- name: Check if repo {{ repo_name }} if exist
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/{{ get_repo }}/{{ repo_name }}"
+    method: GET
+    url_username: "{{ admin_user }}"
+    url_password: "{{ vault_secrets.new_admin_password }}"
+    force_basic_auth: yes
+    status_code:
+      - 200
+      - 404
+  register: repo_result
+
+- ansible.builtin.debug:
+    msg: "Repo {{ repo_name }} already exist in Nexus"
+  when: repo_result.status == 200
+
+- name: Create repositories
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/{{ create_repo_hosted }}"
+    method: POST
+    headers:
+        Content-Type: "application/json"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ vault_secrets.new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body: 
+      name: "{{ repo_name }}"
+      online: true
+      storage:
+        blobStoreName: "default"
+        strictContentTypeValidation: true
+        writePolicy: "allow_once"
+        latestPolicy: true
+      cleanup:
+        policyNames: []
+      component:
+        proprietaryComponents: true
+      docker:
+        v1Enabled: true
+        forceBasicAuth: true
+        httpPort: "{{ repo_port }}"
+        subdomain: docker-a
+    status_code:
+      - 201
+      - 401
+      - 403
+  when: repo_result.status == 404
     
 
