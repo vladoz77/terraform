@@ -2,16 +2,16 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/hashicorp/null" {
-  version = "3.2.3"
+  version = "3.2.4"
   hashes = [
-    "h1:et7UFgRi/FtALhVrItMeSWc/HPuMnnnkDw7fk18dkDQ=",
+    "h1:dNVrmZwFvVPlL2FqTMDasI6mbDIr9pcn7tHexkZU9z8=",
   ]
 }
 
 provider "registry.terraform.io/hashicorp/vault" {
-  version = "4.7.0"
+  version = "4.8.0"
   hashes = [
-    "h1:eKOYbQnhfCyx91h8NDEaGCI274SANgONUnwT4J3j5+M=",
+    "h1:tQXAzq4kOy57cg9D0xk3pdBnYnox8eqAiZj512sRuNo=",
   ]
 }
 

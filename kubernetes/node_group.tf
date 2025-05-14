@@ -31,7 +31,7 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
     }
     network_interface {
       nat        = true
-      subnet_ids = [yandex_vpc_subnet.subnet.id]
+      subnet_ids = [yandex_vpc_subnet.k8s_subnet.id]
       # security_group_ids = local.node_group.security_group_ids
     }
     scheduling_policy {

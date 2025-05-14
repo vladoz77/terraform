@@ -3,7 +3,7 @@ locals {
   network = {
     network_name = "k8s_network"
     subnet_name = "k8s_subnet"
-    v4_cidr_blocks = "172.16.10.0/24"
+    v4_cidr_blocks = "172.16.11.0/24"
   }
   
   cluster = {

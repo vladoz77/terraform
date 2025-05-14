@@ -2,13 +2,13 @@
 resource "yandex_kubernetes_cluster" "k8s-cluster" {
   name = var.cluster_name
 
-  network_id = yandex_vpc_network.network.id
+  network_id = data.terraform_remote_state.network.outputs.network_id
 
   master {
     version = var.k8s_version
     master_location {
       zone      = var.zone
-      subnet_id = yandex_vpc_subnet.subnet.id
+      subnet_id = yandex_vpc_subnet.k8s_subnet.id
     }
 
     public_ip = true

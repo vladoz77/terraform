@@ -1,6 +1,6 @@
 resource "yandex_vpc_security_group" "k8s-cluster-nodegroup-traffic" {
   name = "k8s-cluster-nodegroup-traffic"
-  network_id = yandex_vpc_network.network.id
+  network_id = data.terraform_remote_state.network.outputs.network_id
   description = "node group security group"
 
   ingress {
@@ -34,7 +34,7 @@ resource "yandex_vpc_security_group" "k8s-cluster-nodegroup-traffic" {
 resource "yandex_vpc_security_group" "k8s-nodegroup-traffic" {
   name        = "k8s-nodegroup-traffic"
   description = "Правила группы разрешают служебный трафик для групп узлов. Примените ее к группам узлов."
-  network_id  = yandex_vpc_network.network.id
+  network_id  = data.terraform_remote_state.network.outputs.network_id
   ingress {
     description    = "Правило для входящего трафика, разрешающее передачу трафика между подами и сервисами."
     from_port      = 0
@@ -54,7 +54,7 @@ resource "yandex_vpc_security_group" "k8s-nodegroup-traffic" {
 resource "yandex_vpc_security_group" "k8s-services-access" {
   name        = "k8s-services-access"
   description = "Правила группы разрешают подключение к сервисам из интернета. Примените ее к группам узлов."
-  network_id  = yandex_vpc_network.network.id
+  network_id  = data.terraform_remote_state.network.outputs.network_id
   ingress {
     description    = "Правило для входящего трафика, разрешающее подключение к сервисам."
     from_port      = 30000
@@ -67,7 +67,7 @@ resource "yandex_vpc_security_group" "k8s-services-access" {
 resource "yandex_vpc_security_group" "k8s-ssh-access" {
   name        = "k8s-ssh-access"
   description = "Правила группы разрешают подключение к узлам по SSH. Примените ее к группам узлов."
-  network_id  = yandex_vpc_network.network.id
+  network_id  = data.terraform_remote_state.network.outputs.network_id
   ingress {
     description    = "Правило для входящего трафика, разрешающее подключение к узлам по SSH."
     port           = 22
@@ -79,7 +79,7 @@ resource "yandex_vpc_security_group" "k8s-ssh-access" {
 resource "yandex_vpc_security_group" "k8s-cluster-traffic" {
   name        = "k8s-cluster-traffic"
   description = "Правила группы разрешают трафик для кластера. Примените ее к кластеру."
-  network_id  = yandex_vpc_network.network.id
+  network_id  = data.terraform_remote_state.network.outputs.network_id
   ingress {
     description    = "Правило для входящего трафика, разрешающее доступ к API Kubernetes (порт 443)."
     port           = 443

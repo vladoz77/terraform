@@ -17,11 +17,29 @@ terraform {
 
     skip_region_validation      = true
     skip_credentials_validation = true
-    skip_requesting_account_id  = true # Необходимая опция Terraform для версии 1.6.1 и старше.
-    skip_s3_checksum            = true # Необходимая опция при описании бэкенда для Terraform версии 1.6.3 и старше.
-
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
   }
 }
+
+data "terraform_remote_state" "network" {
+  backend = "s3"
+  
+  config = {
+    bucket = "vladis-terraform-state"
+    region = "ru-central1" 
+    key    = "jenkins.tfstate"
+    endpoints = {
+      s3 = "https://storage.yandexcloud.net"
+    }
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+  }
+}
+
+
 // Настройка  vault провайдера
 provider "vault" {
   address          = "http://127.0.0.1:8200"
