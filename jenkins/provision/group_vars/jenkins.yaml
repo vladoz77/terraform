@@ -1,6 +1,6 @@
 hostname: jenkins
 # Docker config
-docker_network_name: extra_network
+
 
 # nginx config
 nginx: true

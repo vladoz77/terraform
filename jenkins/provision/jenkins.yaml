@@ -1,4 +1,7 @@
-- name: install jenkins
+- name: copy ssh
+  ansible.builtin.import_playbook: copy-ssh.yaml
+  
+- name: install jenkins node
   hosts: jenkins
   become: true
   pre_tasks:
