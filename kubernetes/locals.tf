@@ -3,7 +3,8 @@ locals {
   network = {
     network_name = "k8s_network"
     subnet_name = "k8s_subnet"
-    v4_cidr_blocks = "172.16.11.0/24"
+    v4_cidr_blocks = "172.16.20.0/24"
+    network_id = data.terraform_remote_state.network.outputs.network_id
   }
   
   cluster = {
