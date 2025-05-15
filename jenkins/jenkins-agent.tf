@@ -17,8 +17,14 @@ module "jenkins-agent" {
   
   # Теги и сетевые интерфейсы
   tags  = local.jenkins-agent.instance_tag
-  network_interfaces = local.jenkins-agent.instance_network_interface
-  
+  network_interfaces = [
+      {
+          subnet_id  = yandex_vpc_subnet.subnet.id
+          nat        = true
+          security_group = []
+          ip_address = "172.16.10.2${count.index}"
+      }
+    ]
   # Загрузочный диск
   boot_disk = local.jenkins-agent.instance_boot_disk
   labels = {}  # Дополнительные метки

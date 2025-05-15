@@ -10,7 +10,10 @@ output "jenkins-agent_public_ip" {
   value = module.jenkins-agent[*].public_ips     # Список публичных IP-адресов всех агентов Jenkins
 }
 
-
+# Вывод информации о id сети
+output "network_id" {
+  value = yandex_vpc_network.network.id
+}
 
 
 

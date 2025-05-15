@@ -9,6 +9,7 @@ locals {
 
   # Конфигурация Jenkins сервера
   jenkins = {
+    count = 1
     instance_name = "jenkins-vm"      # Имя инстанса
     instance_zone = "ru-central1-a"   # Зона доступности
     instance_platform_id = "standard-v1" # Тип платформы
@@ -27,15 +28,6 @@ locals {
       disk_image_id = "fd81hgrcv6lsnkremf32"
     }
     
-    # Конфигурация сетевого интерфейса
-    instance_network_interface = [
-      {
-          subnet_id  = yandex_vpc_subnet.subnet.id # Подключение к подсети
-          nat        = true         # Включение NAT для выхода в интернет
-          security_group = []       # Группы безопасности
-      }
-    ]
-    
     # Переменные окружения
     environment = {
       DB_HOST = "db.home.local"  # Хост БД
@@ -45,6 +37,7 @@ locals {
 
   # Конфигурация Jenkins агента
   jenkins-agent = {
+    count = 1
     instance_name = "jenkins-agent-vm"
     instance_zone = "ru-central1-a"
     instance_platform_id = "standard-v1"
@@ -62,13 +55,6 @@ locals {
       disk_image_id = "fd81hgrcv6lsnkremf32"
     }
     
-    instance_network_interface = [
-      {
-          subnet_id  = yandex_vpc_subnet.subnet.id
-          nat        = true
-          security_group = []
-      }
-    ]
     
     environment = {
       AGENT = "jenkins"    # Идентификатор агента

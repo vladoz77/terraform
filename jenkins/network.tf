@@ -3,6 +3,16 @@ resource "yandex_vpc_network" "network" {
   name = local.network.network_name  # Имя сети берется из локальной переменной
 }
 
+# Публичный статический адрес для jenkins
+resource "yandex_vpc_address" "jenkins_address" {
+  name = "jenkins_address"
+  deletion_protection = true
+  external_ipv4_address {
+    zone_id = var.zone
+  }
+}
+
+
 # Создание подсети в созданной VPC сети
 resource "yandex_vpc_subnet" "subnet" {
   name           = local.network.network_subnet  # Имя подсети из локальной переменной

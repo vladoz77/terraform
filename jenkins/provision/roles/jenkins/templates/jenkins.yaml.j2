@@ -63,7 +63,7 @@ jenkins:
       remoteFS: "/home/{{ username }}/jenkins-agent"
       launcher:
         ssh:
-          host: "{{ groups['jenkins-agent'][0] }}"
+          host: "{{ hostvars[groups['jenkins-agent'][0]].ansible_facts.default_ipv4.address }}"
           port: 22
           credentialsId: ubuntu-agent-ssh
           launchTimeoutSeconds: 60

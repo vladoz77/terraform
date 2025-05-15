@@ -2,7 +2,7 @@
 module "jenkins" {
   source = "../tf-modules/instance"  # Путь к модулю создания инстанса
 
-  count = 1  # Количество создаваемых инстансов
+  count = local.jenkins.count  # Количество создаваемых инстансов
 
   # Основные параметры инстанса
   name = "${local.jenkins.instance_name}-${count.index + 1}" # Генерация имени
@@ -17,7 +17,15 @@ module "jenkins" {
   
   # Теги и сетевые интерфейсы
   tags  = local.jenkins.instance_tag
-  network_interfaces = local.jenkins.instance_network_interface
+  network_interfaces = [
+      {
+          subnet_id  = yandex_vpc_subnet.subnet.id # Подключение к подсети
+          nat        = true         # Включение NAT для выхода в интернет
+          nat_ip_address = yandex_vpc_address.jenkins_address.external_ipv4_address[0].address
+          security_group = []       # Группы безопасности
+          ip_address = "172.16.10.1${count.index}"
+      }
+    ]
   
   # Загрузочный диск
   boot_disk = local.jenkins.instance_boot_disk
