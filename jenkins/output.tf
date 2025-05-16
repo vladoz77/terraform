@@ -15,9 +15,10 @@ output "network_id" {
   value = yandex_vpc_network.network.id
 }
 
-
-
-
+# Вывод zone_id
+output "zone_id" {
+  value = yandex_dns_zone.zone1.id
+}
 
 
 

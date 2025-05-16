@@ -1,5 +1,6 @@
 - name: check if folder exist in local
   delegate_to: localhost
+  become: no
   ansible.builtin.stat:
     path: "{{ playbook_dir }}/certificates/{{ cert_name }}"
   register: local_cert

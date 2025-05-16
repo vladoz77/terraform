@@ -3,3 +3,4 @@
 *.lock.hcl
 *.tfvars
 provision/inventory.ini
+provision/certificates
