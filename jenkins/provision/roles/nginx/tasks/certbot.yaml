@@ -58,7 +58,10 @@
       remote_src: true
       flat: yes
     loop:
-    - cert.pem - chain.pem - fullchain.pem - privkey.pem
+    - cert.pem 
+    - chain.pem 
+    - fullchain.pem 
+    - privkey.pem
 
   when: skip_cerbot == false
 
