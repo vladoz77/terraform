@@ -50,6 +50,7 @@ variable "network_interfaces" {
     nat       = bool
     ip_address = optional(string)
     security_group = optional(set(string))
+    static_nat_ip_address = optional(string)
   }))
   description = "List of network interfaces for the VM."
   default = [{
@@ -57,6 +58,7 @@ variable "network_interfaces" {
     nat       = true
     ip_address = null
     security_group = null
+    static_nat_ip_address = null
   }]
 }
 

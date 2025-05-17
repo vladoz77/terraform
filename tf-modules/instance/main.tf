@@ -57,7 +57,8 @@ resource "yandex_compute_instance" "instance" {
       subnet_id           = network_interface.value.subnet_id
       nat                 = network_interface.value.nat
       ip_address          = network_interface.value.ip_address
-      security_group_ids = network_interface.value.security_group
+      security_group_ids  = network_interface.value.security_group
+      nat_ip_address      = network_interface.value.static_nat_ip_address
     }
   }
 
