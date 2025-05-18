@@ -21,7 +21,7 @@ module "jenkins" {
       {
           subnet_id  = yandex_vpc_subnet.subnet.id # Подключение к подсети
           nat        = true         # Включение NAT для выхода в интернет
-          nat_ip_address = yandex_vpc_address.jenkins_address.external_ipv4_address[0].address
+          static_nat_ip_address = yandex_vpc_address.jenkins_address.external_ipv4_address[0].address
           security_group = []       # Группы безопасности
           ip_address = "172.16.10.1${count.index}"
       }

@@ -30,5 +30,4 @@
   community.docker.docker_compose_v2:
     project_src: "{{ jenkins_docker_dir }}"
     recreate: always
-    remove_volumes: true
     state: present

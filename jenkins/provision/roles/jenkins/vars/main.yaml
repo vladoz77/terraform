@@ -35,6 +35,7 @@ jenkins_plugin_list:
 - maven-plugin:latest
 - docker-plugin:latest
 - docker-workflow:latest
+- hashicorp-vault-plugin:latest
 
 # Jenkins-tools
 maven_enable: true

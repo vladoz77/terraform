@@ -10,7 +10,7 @@ services:
       - DOCKER_TLS_CERTDIR=/certs
     volumes:
       - ./certs:/certs/client:rw
-      - jenkins-data:/var/jenkins_home:rw
+      - jenkins-data:/var/jenkins_home
       - {{ ssh_dir }}/:{{ ssh_dir }}:ro
     ports:
       - 2376:2376
