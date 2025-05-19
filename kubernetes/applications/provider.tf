@@ -1,4 +1,12 @@
 terraform {
+
+  required_providers {
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
+    }
+  }
+
   backend "s3" {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
@@ -33,11 +41,15 @@ data "terraform_remote_state" "k8s_cluster" {
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    config_path = var.kube_config_path
   }
 }
 
-provider "kubernetes" {
-  config_path = "~/.kube/config"
+
+provider "kubectl" {
+  config_path = var.kube_config_path
 }
 
+provider "kubernetes" {
+  config_path = var.kube_config_path
+}

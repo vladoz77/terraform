@@ -65,3 +65,4 @@ provider "yandex" {
   folder_id = data.vault_kv_secret_v2.yc_creds.data["folder_id"]
   zone      = var.zone
 }
+

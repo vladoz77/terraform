@@ -1,0 +1,5 @@
+ingress:
+  appHost: "plane.home-local.site"
+  ingress_annotations: { "cert-manager.io/cluster-issuer": "letsencrypt-issuer" }
+ssl:
+  tls_secret_name: plane-tls

@@ -1,8 +1,4 @@
-output "k8s_version" {
-  value = yandex_kubernetes_cluster.k8s-cluster.master[*].version
-}
-
-output "k8s_cluster_id" {
+output "cluster_id" {
   value = yandex_kubernetes_cluster.k8s-cluster[*].id
 }
 
@@ -12,4 +8,8 @@ output "external-ipv4" {
 
 output "service-range" {
   value = yandex_kubernetes_cluster.k8s-cluster[*].service_ipv4_range
+}
+
+output "ingress-static-ip" {
+  value = yandex_vpc_address.lb-static-ip.external_ipv4_address[0].address
 }
