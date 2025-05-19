@@ -113,7 +113,7 @@
 
 После развертывания настройте kubectl:
 ```bash
-yc managed-kubernetes cluster get-credentials $(terraform output -raw cluster_id) --external
+yc managed-kubernetes cluster get-credentials $(terraform output -json cluster_id | jq -r  '.[]') --external
 ```
 
 Проверьте доступ к кластеру:
