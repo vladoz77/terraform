@@ -1,17 +1,13 @@
 # Получить образ⁠ диска
 data "openstack_images_image_v2" "os_image" {
-  name        = "Ubuntu 20.04 LTS 64-bit"
+  name        = local.instance.os_version
   most_recent = true
   visibility  = "public"
-
-  depends_on = [
-    selectel_iam_serviceuser_v1.instance-sa
-  ]
 }
 
 #Создать загрузочный сетевой диск⁠
 resource "openstack_blockstorage_volume_v3" "boot_disk" {
-  count = local.count
+  count                = local.instance.count
   name                 = "boot-volume-for-server"
   size                 = local.instance.disk_size
   image_id             = data.openstack_images_image_v2.os_image.id
@@ -33,11 +29,10 @@ resource "openstack_compute_flavor_v2" "flavor" {
 resource "openstack_compute_instance_v2" "server_1" {
   name              = "${local.instance.name}-${count.index}"
   flavor_id         = openstack_compute_flavor_v2.flavor.id
-  key_pair          = selectel_vpc_keypair_v2.ssh_key.name
   availability_zone = "${var.zone_id}a"
-  image_id = data.openstack_images_image_v2.os_image.id
-  count = local.count
-  user_data = local.instance.cloud_init
+  image_id          = data.openstack_images_image_v2.os_image.id
+  count             = local.instance.count
+  user_data         = local.instance.cloud_init
 
   network {
     port = openstack_networking_port_v2.port[count.index].id
@@ -57,4 +52,12 @@ resource "openstack_compute_instance_v2" "server_1" {
   vendor_options {
     ignore_resize_confirmation = true
   }
+}
+
+module "cloudinit" {
+  source = "./modules/cloudinit_devops_factory"
+
+  username   = var.selectel_username
+  password   = var.selectel_password
+  account_id = local.selectel_domain_name
 }
