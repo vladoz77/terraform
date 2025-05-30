@@ -11,11 +11,6 @@ resource "openstack_networking_subnet_v2" "subnet_1" {
   cidr       = local.network.cidr
 }
 
-# Получаем внешнюю сеть
-data "openstack_networking_network_v2" "external_network" {
-  external = true
-}
-
 # Создадим роутер
 resource "openstack_networking_router_v2" "router_1" {
   name                = "router"
@@ -28,27 +23,52 @@ resource "openstack_networking_router_interface_v2" "router_interface_1" {
   subnet_id = openstack_networking_subnet_v2.subnet_1.id
 }
 
-# Создадим порты для облачных серверов
-resource "openstack_networking_port_v2" "port" {
+# Создадим порты для plane
+resource "openstack_networking_port_v2" "plane_port" {
   name           = "port"
   network_id     = openstack_networking_network_v2.private-network.id
   admin_state_up = "true"
-  count          = local.instance.count
+  count          = local.plane.count
 
   fixed_ip {
     subnet_id = openstack_networking_subnet_v2.subnet_1.id
   }
 }
 
-# Создать публичный IP-адрес
-resource "openstack_networking_floatingip_v2" "public_ip" {
-  depends_on = [openstack_networking_router_interface_v2.router_interface_1]
-  pool       = "external-network"
-  count      = local.instance.count
+# Создадим порты для backend
+resource "openstack_networking_port_v2" "backend_port" {
+  name           = "port"
+  network_id     = openstack_networking_network_v2.private-network.id
+  admin_state_up = "true"
+  count          = local.backend.count
+
+  fixed_ip {
+    subnet_id = openstack_networking_subnet_v2.subnet_1.id
+  }
 }
 
-resource "openstack_networking_floatingip_associate_v2" "association_1" {
-  count       = local.instance.count
-  port_id     = openstack_networking_port_v2.port[count.index].id
-  floating_ip = openstack_networking_floatingip_v2.public_ip[count.index].address
+# Создать публичный IP-адрес plane
+resource "openstack_networking_floatingip_v2" "plane_public_ip" {
+  depends_on = [openstack_networking_router_interface_v2.router_interface_1]
+  pool       = "external-network"
+  count      = local.plane.count
+}
+
+resource "openstack_networking_floatingip_associate_v2" "association_plane" {
+  count       = local.plane.count
+  port_id     = openstack_networking_port_v2.plane_port[count.index].id
+  floating_ip = openstack_networking_floatingip_v2.plane_public_ip[count.index].address
+}
+
+# Создать публичный IP-адрес backend
+resource "openstack_networking_floatingip_v2" "backend_public_ip" {
+  depends_on = [openstack_networking_router_interface_v2.router_interface_1]
+  pool       = "external-network"
+  count      = local.backend.count
+}
+
+resource "openstack_networking_floatingip_associate_v2" "association_backend" {
+  count       = local.backend.count
+  port_id     = openstack_networking_port_v2.backend_port[count.index].id
+  floating_ip = openstack_networking_floatingip_v2.backend_public_ip[count.index].address
 }

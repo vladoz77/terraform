@@ -21,3 +21,4 @@ provider "openstack" {
   password    = var.selectel_password
   region      = var.zone_id
 }
+
