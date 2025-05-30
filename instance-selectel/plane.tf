@@ -47,4 +47,15 @@ resource "openstack_compute_instance_v2" "plane" {
   }
 }
 
+# Создадим порты для plane
+resource "openstack_networking_port_v2" "plane_port" {
+  name           = "port"
+  network_id     = openstack_networking_network_v2.private-network.id
+  admin_state_up = "true"
+  count          = local.plane.count
+
+  fixed_ip {
+    subnet_id = openstack_networking_subnet_v2.subnet_1.id
+  }
+}
 
