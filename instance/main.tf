@@ -26,5 +26,4 @@ module "yandex-instance" {
   boot_disk = local.instance_boot_disk
   labels = {}
   additional_disks = []
-
 }
