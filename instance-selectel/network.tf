@@ -53,7 +53,7 @@ resource "openstack_networking_floatingip_associate_v2" "association_backend" {
 resource "openstack_networking_floatingip_v2" "runner_public_ip" {
   depends_on = [openstack_networking_router_interface_v2.router_interface_1]
   pool       = "external-network"
-  count      = local.backend.count
+  count      = local.runner.count
 }
 
 resource "openstack_networking_floatingip_associate_v2" "association_runner" {

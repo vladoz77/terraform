@@ -28,7 +28,7 @@ locals {
     name       = "runner"
     vcpu       = 1
     memory     = 1024
-    disk_size  = 100
+    disk_size  = 40
     disk_type  = "basic.ru-7a"
     cloud_init = module.cloudinit.cloudinit
   
