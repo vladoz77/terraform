@@ -58,3 +58,16 @@ resource "openstack_networking_port_v2" "backend_port" {
     subnet_id = openstack_networking_subnet_v2.subnet_1.id
   }
 }
+
+# Создать публичный IP-адрес backend
+resource "openstack_networking_floatingip_v2" "backend_public_ip" {
+  depends_on = [openstack_networking_router_interface_v2.router_interface_1]
+  pool       = "external-network"
+  count      = local.backend.count
+}
+
+resource "openstack_networking_floatingip_associate_v2" "association_backend" {
+  count       = local.backend.count
+  port_id     = openstack_networking_port_v2.backend_port[count.index].id
+  floating_ip = openstack_networking_floatingip_v2.backend_public_ip[count.index].address
+}

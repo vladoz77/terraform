@@ -58,3 +58,16 @@ resource "openstack_networking_port_v2" "plane_port" {
     subnet_id = openstack_networking_subnet_v2.subnet_1.id
   }
 }
+
+# Создать публичный IP-адрес plane
+resource "openstack_networking_floatingip_v2" "plane_public_ip" {
+  depends_on = [openstack_networking_router_interface_v2.router_interface_1]
+  pool       = "external-network"
+  count      = local.plane.count
+}
+
+resource "openstack_networking_floatingip_associate_v2" "association_plane" {
+  count       = local.plane.count
+  port_id     = openstack_networking_port_v2.plane_port[count.index].id
+  floating_ip = openstack_networking_floatingip_v2.plane_public_ip[count.index].address
+}
