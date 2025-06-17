@@ -17,8 +17,4 @@ variable "zone_id" {
   description = "zone id"
 }
 
-variable "disk_type" {
-  default     = "basic.ru-7a"
-  description = "disk type"
-  type        = string
-}
+

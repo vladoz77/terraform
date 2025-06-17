@@ -6,11 +6,13 @@ terraform {
     }
     openstack = {
       source  = "terraform-provider-openstack/openstack"
-      version = "3.1.0"
+      version = "~> 3.1.0"
     }
   }
   required_version = "~> 1.2"
 }
+
+
 
 # Провайдер опенстак
 provider "openstack" {
