@@ -9,31 +9,33 @@ data "openstack_networking_subnet_ids_v2" "external_subnet" {
 }
 
 data "openstack_images_image_v2" "os_image" {
-  name        = local.os_version
+  name        = var.os_version
   most_recent = true
   visibility  = "public"
 }
 
 module "cloudinit" {
-  source = "./modules/cloudinit_devops_factory"
+  source = "../modules/cloudinit_devops_factory"
 
   username   = var.selectel_username
   password   = var.selectel_password
-  account_id = local.selectel_domain_name
+  account_id = var.selectel_domain_name
 }
 
 module "network" {
-  source = "./modules/network"
+  source = "../modules/network"
 
+  network_name = "network-${var.environment}"
+  subnet_name = "subnet-${var.environment}"
   cidr                = "172.16.10.0/24"
   external_network_id = data.openstack_networking_network_v2.external_network.id
 }
 
 module "plane" {
-  source = "./modules/instance"
+  source = "../modules/instance"
   count  = 1
 
-  instance_name = "instance-plane-${count.index}"
+  instance_name = "instance-plane-${var.environment}-${count.index}"
   disk_size     = 100
   disk_type     = "basic.ru-7a"
   os_image_id   = data.openstack_images_image_v2.os_image.id

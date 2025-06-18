@@ -1,0 +1,6 @@
+selectel_username    = "sa-admin"
+selectel_password    = "!QAZ2wsx"
+selectel_domain_name = "434641"
+project_id           = "92e9cd27a36b4be5a8b78685e6dd7a3e"
+access_key = "607f729d3fb5466bbb1249deb377ebb4"
+secret_key = "ddf9419449eb4c1090919c5618a26185"
