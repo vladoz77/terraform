@@ -33,7 +33,7 @@ module "network" {
 
 module "plane" {
   source = "../modules/instance"
-  count  = 1
+  count  = 3
 
   instance_name = "instance-plane-${var.environment}-${count.index}"
   disk_size     = 100
@@ -43,7 +43,6 @@ module "plane" {
   memory        = 2048
   network_id    = module.network.network_id
   subnet_id     = module.network.subnet_id
-  port_id       = module.network.port_id
   zone_id       = var.zone_id
   cloud_init    = module.cloudinit.cloudinit
 
