@@ -31,7 +31,15 @@ locals {
     disk_size  = 40
     disk_type  = "basic.ru-7a"
     cloud_init = module.cloudinit.cloudinit
-  
+  }
+  monitoring = {
+    count      = 1
+    name       = "instance-monitoring"
+    vcpu       = 2
+    memory     = 2048
+    disk_size  = 100
+    disk_type  = "basic.ru-7a"
+    cloud_init = module.cloudinit.cloudinit
   }
 }
 

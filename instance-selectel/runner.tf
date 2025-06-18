@@ -59,3 +59,16 @@ resource "openstack_networking_port_v2" "runner_port" {
     subnet_id = openstack_networking_subnet_v2.subnet_1.id
   }
 }
+
+# Создать публичный IP-адрес runner
+resource "openstack_networking_floatingip_v2" "runner_public_ip" {
+  depends_on = [openstack_networking_router_interface_v2.router_interface_1]
+  pool       = "external-network"
+  count      = local.runner.count
+}
+
+resource "openstack_networking_floatingip_associate_v2" "association_runner" {
+  count       = local.runner.count
+  port_id     = openstack_networking_port_v2.runner_port[count.index].id
+  floating_ip = openstack_networking_floatingip_v2.runner_public_ip[count.index].address
+}
