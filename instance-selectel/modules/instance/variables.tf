@@ -58,7 +58,8 @@ variable "subnet_id" {
   description = "subnet id"
 }
 
-variable "port_id" {
+variable "ip_address" {
+  description = "fixed ip address for port"
   type = string
-  description = "port_id"
+  nullable = true
 }

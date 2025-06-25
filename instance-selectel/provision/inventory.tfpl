@@ -1,0 +1,41 @@
+%{ if length(monitoring) > 0 ~}
+[monitoring]
+%{ for ip in monitoring ~}
+${ip} 
+%{ endfor ~}
+%{ endif ~}
+
+%{ if length(runner) > 0 ~}
+[runner]
+%{ for ip in runner ~}
+${ip} 
+%{ endfor ~}
+%{ endif ~}
+
+%{ if length(plane_prod) > 0 ~}
+[plane_prod]
+%{ for ip in plane_prod ~}
+${ip} 
+%{ endfor ~}
+%{ endif ~}
+
+%{ if length(plane_dev) > 0 ~}
+[plane_dev]
+%{ for ip in plane_dev ~}
+${ip} 
+%{ endfor ~}
+%{ endif ~}
+
+%{ if length(backend_prod) > 0 ~}
+[backend_prod]
+%{ for ip in backend_prod ~}
+${ip} 
+%{ endfor ~}
+%{ endif ~}
+
+%{ if length(backend_dev) > 0 ~}
+[backend_dev]
+%{ for ip in backend_dev ~}
+${ip} 
+%{ endfor ~}
+%{ endif ~}

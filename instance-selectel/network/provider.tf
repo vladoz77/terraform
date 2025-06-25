@@ -9,11 +9,10 @@ terraform {
       version = "~> 3.1.0"
     }
   }
-
   backend "s3" {
     endpoints                   = { s3 = "https://s3.ru-7.storage.selcloud.ru" }
-    key                         = "instance-dev.tfstate"
     region                      = "ru-7"
+    key                         = "network/terraform.tfstate"
     bucket                      = "plane-state-bucket"
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -23,6 +22,23 @@ terraform {
   }
 
   required_version = "~> 1.2"
+}
+
+data "terraform_remote_state" "network" {
+  backend = "s3"
+  
+  config = {
+    bucket = "plane-state-bucket"
+    region = "ru-7" 
+    key    = "common/terraform.tfstate"
+    endpoints = {
+      s3 = "https://s3.ru-7.storage.selcloud.ru"
+    }
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+  }
 }
 
 

@@ -20,17 +20,6 @@ resource "openstack_networking_subnet_v2" "subnet" {
   cidr       = var.cidr
 }
 
-# Создадим порты 
-resource "openstack_networking_port_v2" "port" {
-  name           = "port"
-  network_id     = openstack_networking_network_v2.network.id
-  admin_state_up = "true"
-
-  fixed_ip {
-    subnet_id = openstack_networking_subnet_v2.subnet.id
-  }
-}
-
 # Создадим роутер
 resource "openstack_networking_router_v2" "router" {
   name                = var.router_name

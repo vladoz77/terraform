@@ -45,7 +45,3 @@ variable "os_version" {
   description = "Os for instance"
 }
 
-variable "environment" {
-  type        = string
-  default     = "dev"
-}

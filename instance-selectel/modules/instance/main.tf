@@ -26,6 +26,18 @@ resource "openstack_compute_flavor_v2" "flavor" {
   is_public = false
 }
 
+# Создадим порты 
+resource "openstack_networking_port_v2" "port" {
+  name           = "port"
+  network_id     = var.network_id
+  admin_state_up = "true"
+
+  fixed_ip {
+    subnet_id  = var.subnet_id
+    ip_address = var.ip_address
+  }
+}
+
 # Создать облачный сервер⁠ 
 resource "openstack_compute_instance_v2" "instance" {
   name              = "${var.instance_name}"
@@ -35,7 +47,7 @@ resource "openstack_compute_instance_v2" "instance" {
   user_data         = var.cloud_init
 
   network {
-    port = var.port_id
+    port = openstack_networking_port_v2.port.id
   }
 
   block_device {
@@ -60,6 +72,7 @@ resource "openstack_networking_floatingip_v2" "public_ip" {
 }
 
 resource "openstack_networking_floatingip_associate_v2" "association" {
-  port_id     = var.port_id
+  port_id     = openstack_networking_port_v2.port.id
   floating_ip = openstack_networking_floatingip_v2.public_ip.address
+  
 }
