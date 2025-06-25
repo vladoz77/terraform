@@ -1,81 +1,166 @@
-# MVP Проект Terraform для Selectel Cloud
+# Infrastructure as Code Project PLANE
 
-Эта конфигурация Terraform использует два провайдера:
+> Это репозиторий с инфраструктурой как кодом (Infrastructure as Code), построенной с использованием Terraform.  
+> Он позволяет создавать облачную инфраструктуру в Selectel / OpenStack, включая сеть, инстансы и автоматизацию через cloud-init.
 
-- `selectel/selectel` — для управления пользователями и SSH-ключами.
-- `terraform-provider-openstack/openstack` — для сетей, ВМ и хранилища.
+---
 
 ## Структура проекта
 
-```plain-text
-terraform-selectel-instance/
-├── main.tf
-├── provider.tf           # Провайдеры и авторизация
-├── variables.tf          # Входные переменные
-├── locals.tf             # Локальные значения
-├── network.tf            # Сеть (VPC)
-├── instance.tf           # Конфигурация ВМ
-├── outputs.tf            # Вывод информации
-├── README.md             # Этот файл
-└── cloud-init.yaml       # Опционально: скрипт cloud-init
+```
+project/
+├── common_instances/     ← Общие инстансы (runner, monitoring)
+│   ├── main.tf
+│   ├── locals.tf
+│   ├── provider.tf
+│   ├── terraform.tfvars
+│   └── variables.tf
+│
+├── instances/            ← Инстансы под конкретное окружение (plane, backend)
+│   ├── environments/
+│   │   ├── dev/
+│   │   │   ├── backend-config-dev.tfvars
+│   │   │   └── terraform-dev.tfvars
+│   │   └── prod/
+│   │       ├── backend-config-prod.tfvars
+│   │       └── terraform-prod.tfvars
+│   ├── main.tf
+│   ├── output.tf
+│   ├── provider.tf
+│   ├── variables.tf
+│   └── terraform.tfvars
+│
+├── modules/              ← Переиспользуемые модули
+│   ├── network/
+│   ├── instance/
+│   └── cloudinit_devops_factory/
+│
+├── README.md             ← Этот файл
+└── ...
 ```
 
-## Требуемые секреты
+## Основные компоненты
+
+| Компонент | Описание |
+|----------|----------|
+| `modules/network` | Создаёт приватную сеть и подсети |
+| `modules/instance` | Создаёт виртуальные машины с дисками, сетью и публичным IP |
+| `modules/cloudinit_devops_factory` | Генерирует cloud-init конфигурацию |
+| `common_instances` | Общие инстансы (например, `runner`, `monitoring`) — создаются всегда |
+| `instances` | Переменные инстансы (например, `plane`, `backend`) — управляются через окружение |
+
+
+## Возможности
+
+- Поддержка нескольких окружений: `dev`, `prod`
+- Динамическое создание инстансов через `count` и `enable`
+- Единая сетевая инфраструктура через модуль `network`
+- Автоматизация через `cloud-init`
+- Remote state в S3 (Selectel Storage)
+
+
+## Переменные и секреты
+
+Все чувствительные данные передаются через:
+- `.tfvars` файлы (не коммитятся в Git!)
+- Переменные окружения: `TF_VAR_*`
+
+Пример переменных:
 
 ```hcl
-selectel_username     = "ваш_selectel_логин"
-selectel_password     = "ваш_selectel_пароль"
-selectel_domain_name  = "ваш_selectel_домен "
-project_id            = "ваш_project_id"
+selectel_username = "devops-admin"
+selectel_password = "your-secret-password"
+os_version        = "Ubuntu 24.04 LTS 64-bit"
+
+instances = {
+  plane = {
+    enable    = true
+    count     = 1
+    vcpu      = 2
+    memory    = 2048
+    disk_size = 50
+  }
+}
 ```
 
->[!Warning]
-> Не сохраняйте этот файл в системе контроля версий!
+## Как использовать инстансы с окружением
 
-## Детали инфраструктуры
-
-### Сеть
-- Приватная сеть : private-network
-- Подсеть : 172.16.10.0/24
-- Роутер : Подключён к внешней сети (external_network)
-- Плавающий IP : Выделяется динамически из пула
-
-### Виртуальная машина
-- Имя : instance-0, instance-1 и т.д.
-- ОС : Ubuntu 20.04 LTS
-- Флейвор : Настроен вручную (1 vCPU, 1 ГБ ОЗУ)
-- Диск : Загрузочный объём 100 ГБ
-- SSH-ключ : Автоматически добавляется
-- Cloud-init : Из файла cloud-init.yaml
-
-## Как использовать
-
-1. Инициализируйте Terraform
+### 1. Перейдите в instances
 
 ```bash
-terraform init
+cd instances
 ```
 
-2. Проверьте план изменений
+### 2. Инициализируйте Terraform
 
 ```bash
-terraform plan
+terraform init -backend-config=environments/dev/backend-config-dev.tfvars -reconfigure
 ```
 
-3. Примените конфигурацию
+### 3. Проверьте план
 
 ```bash
-terraform apply
+terraform plan -var-file=environments/dev/terraform-dev.tfvars
+
 ```
-После применения вы получите список публичных IP, по которым можно подключиться через SSH:
+
+### 4. Примените изменения
 
 ```bash
-ssh root@<публичный_ip>
+terraform apply -var-file=environments/dev/terraform-dev.tfvars
 ```
-## Удаление ресурсов
 
-Чтобы удалить все созданные ресурсы:
+## Как использовать common_instances
+
+### 1. Перейдите в common_instances
 
 ```bash
-terraform destroy
+cd common_instances
 ```
+
+### 2. Инициализируйте Terraform
+
+```bash
+terraform init 
+```
+
+### 3. Проверьте план
+
+```bash
+terraform plan 
+
+```
+
+### 4. Примените изменения
+
+```bash
+terraform apply 
+```
+
+---
+
+## Окружения
+
+| Окружение | Файл стейта | Включает |
+|-----------|-------------|----------|
+| `dev`     | `dev/terraform.tfstate` | `plane`, `backend` (выключен) |
+| `prod`    | `prod/terraform.tfstate` | `plane`, `backend` (включен) |
+| `common`  | `prod/terraform.tfstate` | `runner`, `monitoring` (всегда включены) |
+
+---
+
+## Что создаётся
+
+### Для всех окружений:
+- `runner` (1 инстанс, общая роль)
+- `monitoring` (1 инстанс, общая роль)
+
+### Для `dev`:
+- `plane` (1 инстанс)
+- `backend` (отключен)
+
+### Для `prod`:
+- `plane` (1 инстанс)
+- `backend` (1 инстанс)
+
+
