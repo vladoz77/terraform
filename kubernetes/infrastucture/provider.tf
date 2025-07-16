@@ -54,10 +54,10 @@ data "terraform_remote_state" "network" {
 #   }
 # }
 // Настройка секретов
-data "vault_kv_secret_v2" "yc_creds" {
-  mount = "kv"
-  name  = "yc-sa-admin"
-}
+# data "vault_kv_secret_v2" "yc_creds" {
+#   mount = "kv"
+#   name  = "yc-sa-admin"
+# }
 
 provider "yandex" {
   token     = var.token
