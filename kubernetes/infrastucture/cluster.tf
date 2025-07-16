@@ -21,7 +21,7 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
 
     master_logging {
       enabled = true
-      folder_id = data.vault_kv_secret_v2.yc_creds.data["folder_id"]
+      folder_id = var.folder_id
       kube_apiserver_enabled = true
       cluster_autoscaler_enabled = true
       events_enabled = true
