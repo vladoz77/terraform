@@ -1,11 +1,15 @@
-variable "role_id" {
-  description = "vault role"
-  type        = string
+variable "cloud_id" {
+  type = string
+  description = "yandex cloud_id"
 }
 
-variable "secret_id" {
-  description = "vault secret-id"
-  type        = string
+variable "folder_id" {
+  type = string
+  description = "yandex folder_id"
+}
+
+variable "token" {
+  description = "yandex cloud token"
 }
 
 variable "zone" {

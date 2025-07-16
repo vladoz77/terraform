@@ -41,18 +41,18 @@ data "terraform_remote_state" "network" {
 
 
 // Настройка  vault провайдера
-provider "vault" {
-  address          = "http://127.0.0.1:8200"
-  skip_child_token = true
-  auth_login {
-    path = "auth/approle/login"
+# provider "vault" {
+#   address          = "http://127.0.0.1:8200"
+#   skip_child_token = true
+#   auth_login {
+#     path = "auth/approle/login"
 
-    parameters = {
-      role_id   = var.role_id
-      secret_id = var.secret_id
-    }
-  }
-}
+#     parameters = {
+#       role_id   = var.role_id
+#       secret_id = var.secret_id
+#     }
+#   }
+# }
 // Настройка секретов
 data "vault_kv_secret_v2" "yc_creds" {
   mount = "kv"
@@ -60,9 +60,9 @@ data "vault_kv_secret_v2" "yc_creds" {
 }
 
 provider "yandex" {
-  token     = data.vault_kv_secret_v2.yc_creds.data["iam_token"]
-  cloud_id  = data.vault_kv_secret_v2.yc_creds.data["cloud_id"]
-  folder_id = data.vault_kv_secret_v2.yc_creds.data["folder_id"]
+  token     = var.token
+  cloud_id  = var.cloud_id
+  folder_id = var.folder_id
   zone      = var.zone
 }
 
