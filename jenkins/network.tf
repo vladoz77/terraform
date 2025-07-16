@@ -29,8 +29,6 @@ resource "yandex_dns_zone" "zone1" {
   zone             = "home-local.site."  # Доменное имя зоны (заканчивается точкой)
   public           = true  # Публичная зона (доступна из интернета)
   private_networks = [yandex_vpc_network.network.id]  # Привязка к частной сети
-
-  deletion_protection = true  # Защита от случайного удаления
 }
 
 # DNS запись типа A для сервиса Jenkins

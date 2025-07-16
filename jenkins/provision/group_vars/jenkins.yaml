@@ -13,12 +13,15 @@ domains:
 - "{{ sonarqube_url_address }}"
 - "{{ nexus_url_address }}"
 - "{{ registry_url_address }}"
-# Jenkins config
+
+#. Jenkins config
 jenkins: true
 jenkins_url_address: jenkins.home-local.site
+
 # Sonarqube
 sonarqube: true
 sonarqube_url_address: sonarqube.home-local.site
+
 # Nexus
 nexus: true
 nexus_url_address: nexus.home-local.site
