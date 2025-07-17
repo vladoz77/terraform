@@ -1,25 +1,28 @@
 pipeline {
     agent any
+    tools {
+        terraform 'terraform'
+    }
     environment {
         AWS_ACCESS = credentials('aws_access_key_id')
         AWS_SECRET = credentials('aws_secret_access_key')
-        CLOUD_ID = credentials('cloud_id')
-        FOLDER_ID = credentials('folder_id')
-        IAM_TOKEN = credentials('iam_token')
+        CLOUD_ID   = credentials('cloud_id')
+        FOLDER_ID  = credentials('folder_id')
+        IAM_TOKEN  = credentials('iam_token')
+    }
+
+    parameters {
+        choice choices: ['apply', 'destroy'], description: 'apply or destroy terraform', name: 'action'
     }
     
     stages{
-        stage('Clean WS'){
-            steps {
-                cleanWs()
-            }
-        }
         
         stage('git checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/vladoz77/terraform'
             }
         }
+
 
         stage('config terraform') {
             steps {
@@ -60,6 +63,10 @@ pipeline {
         stage('terraform plan') {
             steps {
                 sh '''
+                    # Передаем AWS креды через переменные окружения
+                    export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
+                    export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
+
                     export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
 
                     cd kubernetes/infrastucture
@@ -70,6 +77,42 @@ pipeline {
                             -var "folder_id=${FOLDER_ID}" \
                             -var "token=${IAM_TOKEN}"
                 '''
+            }
+            
+        }
+
+        stage('terraform apply') {
+            steps {
+                script{
+                    if (params.action == 'apply') {
+                        sh'''
+                        cd kubernetes/infrastucture
+
+                        export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
+                        export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
+                        export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
+
+                        terraform apply -auto-approve \
+                            -var "cloud_id=${CLOUD_ID}" \
+                            -var "folder_id=${FOLDER_ID}" \
+                            -var "token=${IAM_TOKEN}"
+                        '''
+                    } else if (params.action == 'destroy') {
+                        sh'''
+                        cd kubernetes/infrastucture
+
+                        export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
+                        export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
+                        export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
+
+                        terraform destroy -auto-approve \
+                            -var "cloud_id=${CLOUD_ID}" \
+                            -var "folder_id=${FOLDER_ID}" \
+                            -var "token=${IAM_TOKEN}"
+                        '''
+                    }
+                }
+
             }
             
         }
