@@ -24,10 +24,10 @@ terraform {
 
 data "terraform_remote_state" "network" {
   backend = "s3"
-  
+
   config = {
     bucket = "vladis-terraform-state"
-    region = "ru-central1" 
+    region = "ru-central1"
     key    = "jenkins.tfstate"
     endpoints = {
       s3 = "https://storage.yandexcloud.net"

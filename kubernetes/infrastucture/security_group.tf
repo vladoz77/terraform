@@ -1,13 +1,13 @@
 resource "yandex_vpc_security_group" "k8s-cluster-nodegroup-traffic" {
-  name = "k8s-cluster-nodegroup-traffic"
-  network_id = local.network.network_id
+  name        = "k8s-cluster-nodegroup-traffic"
+  network_id  = local.network.network_id
   description = "node group security group"
 
   ingress {
-    description = "Правило для проверок состояния сетевого балансировщика нагрузки."
-    protocol = "TCP"
-    from_port = 0
-    to_port = 65535
+    description       = "Правило для проверок состояния сетевого балансировщика нагрузки."
+    protocol          = "TCP"
+    from_port         = 0
+    to_port           = 65535
     predefined_target = "loadbalancer_healthchecks"
   }
   ingress {

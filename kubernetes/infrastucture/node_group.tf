@@ -3,16 +3,16 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
   name        = local.node_group.group_name
   description = "worker node"
   version     = var.k8s_version
-  
-  
-  
+
+
+
 
   scale_policy {
     fixed_scale {
       size = local.node_group.scale
     }
   }
-  
+
   instance_template {
     platform_id = local.node_group.platform_id
     resources {
@@ -43,5 +43,5 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
     }
   }
 
-  
+
 }

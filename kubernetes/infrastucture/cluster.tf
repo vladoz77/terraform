@@ -14,23 +14,23 @@ resource "yandex_kubernetes_cluster" "k8s-cluster" {
     public_ip = true
 
     # security_group_ids = local.cluster.security_group_ids
-    
+
     maintenance_policy {
       auto_upgrade = true
     }
 
     master_logging {
-      enabled = true
-      folder_id = var.folder_id
-      kube_apiserver_enabled = true
+      enabled                    = true
+      folder_id                  = var.folder_id
+      kube_apiserver_enabled     = true
       cluster_autoscaler_enabled = true
-      events_enabled = true
-      audit_enabled = true
+      events_enabled             = true
+      audit_enabled              = true
     }
   }
-  
+
   release_channel = "STABLE"
-  
+
   cluster_ipv4_range = local.cluster.ipv4_range
   service_ipv4_range = local.cluster.service_ipv4_range
 
