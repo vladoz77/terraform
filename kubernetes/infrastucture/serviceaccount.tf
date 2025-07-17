@@ -19,6 +19,6 @@ resource "yandex_iam_service_account_key" "sa-k8s-admin-key" {
 
 resource "null_resource" "get_iam_token" {
   provisioner "local-exec" {
-    command = "chmod +x ${path.module}/get-token.sh && ${path.module}/get-token.sh '${yandex_iam_service_account_key.k8s-admin-key.private_key}'"
+    command = "chmod +x ${path.module}/get-token.sh && ${path.module}/get-token.sh '${yandex_iam_service_account_key.sa-k8s-admin-key.private_key}'"
   }
 }
