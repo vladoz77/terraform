@@ -16,3 +16,9 @@ resource "yandex_iam_service_account_key" "sa-k8s-admin-key" {
   description = "sa-k8s-admin-key file"
   key_algorithm      = "RSA_2048"
 }
+
+resource "null_resource" "get_iam_token" {
+  provisioner "local-exec" {
+    command = "chmod +x ${path.module}/get-token.sh && ${path.module}/get-token.sh '${yandex_iam_service_account_key.k8s-admin-key.private_key}'"
+  }
+}
