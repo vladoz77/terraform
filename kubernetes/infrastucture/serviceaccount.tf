@@ -27,10 +27,6 @@ data "template_file" "sa_key_json" {
   }
 }
 
-resource "local_file" "sa_key_json" {
-  filename = "${path.module}/sa-key.json"
-  content  = data.template_file.sa_key_json.rendered
-}
 
 
 # resource "null_resource" "get_iam_token" {
