@@ -48,5 +48,5 @@ variable "ssh_key" {
 variable "roles" {
   type        = set(string)
   description = "list roles for sa-account"
-  default     = ["vpc.publicAdmin", "k8s.clusters.agent", "logging.writer", "load-balancer.admin", "container-registry.images.puller"]
+  default     = ["vpc.publicAdmin", "k8s.clusters.agent", "logging.writer", "load-balancer.admin", "container-registry.images.puller", "editor"]
 }
