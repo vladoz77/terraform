@@ -13,7 +13,3 @@ output "service-range" {
 output "ingress-static-ip" {
   value = yandex_vpc_address.lb-static-ip.external_ipv4_address[0].address
 }
-
-output "kubeconfig" {
-  value = local.kubeconfig
-}
