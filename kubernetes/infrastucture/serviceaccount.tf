@@ -11,11 +11,25 @@ resource "yandex_resourcemanager_folder_iam_member" "sa-k8s-admin-permissions" {
   member    = "serviceAccount:${yandex_iam_service_account.sa-k8s-admin.id}"
 }
 
-# resource "yandex_iam_service_account_key" "sa-k8s-admin-key" {
-#   service_account_id = yandex_iam_service_account.sa-k8s-admin.id
-#   description = "sa-k8s-admin-key file"
-#   key_algorithm      = "RSA_2048"
-# }
+resource "yandex_iam_service_account_key" "sa-k8s-admin-key" {
+  service_account_id = yandex_iam_service_account.sa-k8s-admin.id
+  description = "sa-k8s-admin-key file"
+  key_algorithm      = "RSA_2048"
+}
+
+resource "local_file" "sa-key-file" {
+  filename = "sa-k8s-key.json"
+  content  = yandex_iam_service_account_key.sa-k8s-admin-key.private_key
+  file_permission = "0600" # Устанавливаем правильные права доступа
+}
+
+resource "null_resource" "configure-yc" {
+  depends_on = [local_file.sa-key-file]
+  
+  provisioner "local-exec" {
+    command = "yc config set service-account-key sa-k8s-key.json"
+  }
+}
 
 # data "template_file" "sa_key_json" {
 #   template = file("${path.module}/templates/sa-key.json.tpl")
