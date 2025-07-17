@@ -21,4 +21,4 @@ TOKEN=$(curl -s -X POST \
   https://iam.api.cloud.yandex.net/iam/v1/tokens  | jq -r .access_token)
 
 # Сохраняем токен в файл
-echo "$TOKEN" > ${path.module}/iam_token.txt
+echo "$TOKEN" > ./iam_token.txt
