@@ -10,5 +10,5 @@ data "template_file" "kubeconfig" {
 
 resource "local_file" "kubeconfig" {
   content  = data.template_file.kubeconfig.rendered
-  filename = "/home/${USER}/.kube/config"
+  filename = "${pathexpand("~")}/.kube/config"
 }
