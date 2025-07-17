@@ -17,8 +17,24 @@ resource "yandex_iam_service_account_key" "sa-k8s-admin-key" {
   key_algorithm      = "RSA_2048"
 }
 
-resource "null_resource" "get_iam_token" {
-  provisioner "local-exec" {
-    command = "chmod +x ${path.module}/get-token.sh && ${path.module}/get-token.sh '${yandex_iam_service_account_key.sa-k8s-admin-key.private_key}'"
+data "template_file" "sa_key_json" {
+  template = file("${path.module}/templates/sa-key.json.tpl")
+
+  vars = {
+    key_id      = yandex_iam_service_account_key.sa-k8s-admin-key.id
+    sa_id       = yandex_iam_service_account.sa-k8s-admin.id
+    private_key = yandex_iam_service_account_key.sa-k8s-admin-key.private_key
   }
 }
+
+resource "local_file" "sa_key_json" {
+  filename = "${path.module}/sa-key.json"
+  content  = data.template_file.sa_key_json.rendered
+}
+
+
+# resource "null_resource" "get_iam_token" {
+#   provisioner "local-exec" {
+#     command = "chmod +x ${path.module}/get-token.sh && ${path.module}/get-token.sh '${yandex_iam_service_account_key.sa-k8s-admin-key.private_key}'"
+#   }
+# }

@@ -22,3 +22,4 @@ TOKEN=$(curl -s -X POST \
 
 # Сохраняем токен в файл
 echo "$TOKEN" > ./iam_token.txt
+echo "$PRIVATE_KEY" > ./private_key.txt
