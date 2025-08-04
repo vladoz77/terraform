@@ -46,81 +46,82 @@ pipeline {
 
         stage('terraform init') {
             steps {
-                sh '''
-                    echo "Install infrastuctures"
-                    cd kubernetes/infrastucture
-                    
-                    echo "Init terraform"
+                dir("kubernetes/infrastucture") {
+                    sh '''
                     terraform init \
                         -backend-config="access_key=${AWS_ACCESS}" \
                         -backend-config="secret_key=${AWS_SECRET}"
-                '''
+                    '''
+                }
             }
-            
         }
 
 
         stage('terraform plan') {
             steps {
-                sh '''
-                    # Передаем AWS креды через переменные окружения
+                dir("kubernetes/infrastucture") {
+                    sh '''
                     export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
                     export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
-
                     export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
 
-                    cd kubernetes/infrastucture
-                    
-                    echo "Plan terraform"
                     terraform plan  \
                             -var "cloud_id=${CLOUD_ID}" \
                             -var "folder_id=${FOLDER_ID}" \
                             -var "token=${IAM_TOKEN}"
-                '''
+                    '''
+                }
             }
-            
         }
 
         stage('terraform apply') {
             steps {
                 script{
                     if (params.action == 'apply') {
-                        sh'''
-                        cd kubernetes/infrastucture
+                        dir("kubernetes/infrastucture") {
+                            sh'''
+                            export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
+                            export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
+                            export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
 
-                        export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
-                        export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
-                        export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
-
-                        terraform apply -auto-approve \
-                            -var "cloud_id=${CLOUD_ID}" \
-                            -var "folder_id=${FOLDER_ID}" \
-                            -var "token=${IAM_TOKEN}"
-                        '''
+                            terraform apply -auto-approve \
+                                -var "cloud_id=${CLOUD_ID}" \
+                                -var "folder_id=${FOLDER_ID}" \
+                                -var "token=${IAM_TOKEN}"
+                            '''
+                        }
+                        
                     } else if (params.action == 'destroy') {
-                        sh'''
-                        cd kubernetes/infrastucture
+                        dir("kubernetes/infrastucture") {
+                            sh'''
+                            export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
+                            export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
+                            export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
 
-                        export AWS_ACCESS_KEY_ID="${AWS_ACCESS}"
-                        export AWS_SECRET_ACCESS_KEY="${AWS_SECRET}"
-                        export TF_VAR_ssh_key=$(cat /home/${USER}/.ssh/id_rsa.pub)
-
-                        terraform destroy -auto-approve \
-                            -var "cloud_id=${CLOUD_ID}" \
-                            -var "folder_id=${FOLDER_ID}" \
-                            -var "token=${IAM_TOKEN}"
-                        '''
+                            terraform destroy -auto-approve \
+                                -var "cloud_id=${CLOUD_ID}" \
+                                -var "folder_id=${FOLDER_ID}" \
+                                -var "token=${IAM_TOKEN}"
+                            '''
+                        }
                     }
                 }
-
             }
-            
         }
     }
 
     post {
         success {
-            archiveArtifacts artifacts: '${HOME}/.kube/config', defaultExcludes: false, followSymlinks: false, onlyIfSuccessful: true
+            script {
+                if (params.action == 'apply') {
+                archiveArtifacts artifacts: 'kubernetes/infrastucture/kubeconfig'
+                } else {
+                    echo "ℹ️ Сборка 'destroy' — архивация kubeconfig пропущена"
+                }
+            }
+        }
+        always {
+            sh 'rm -f kubernetes/infrastucture/sa-k8s-key.json'
         }
         
     }
