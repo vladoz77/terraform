@@ -16,7 +16,7 @@ resource "yandex_iam_service_account_key" "sa-k8s-admin-key" {
   description        = "sa-k8s-admin-key file"
   key_algorithm      = "RSA_2048"
 }
-# Создание файла с ключом в полном формате JSON
+# Создание файла с ключом в формате JSON
 resource "local_file" "sa-key-file" {
   filename = "sa-k8s-key.json"
   content = jsonencode({
@@ -34,24 +34,7 @@ resource "null_resource" "configure-yc" {
   depends_on = [local_file.sa-key-file]
 
   provisioner "local-exec" {
-    command = "yc config set service-account-key sa-k8s-key.json"
+    command = "/home/ubuntu/yandex-cloud/bin/yc config set service-account-key sa-k8s-key.json"
   }
 }
 
-# data "template_file" "sa_key_json" {
-#   template = file("${path.module}/templates/sa-key.json.tpl")
-
-#   vars = {
-#     key_id      = yandex_iam_service_account_key.sa-k8s-admin-key.id
-#     sa_id       = yandex_iam_service_account.sa-k8s-admin.id
-#     private_key = yandex_iam_service_account_key.sa-k8s-admin-key.private_key
-#   }
-# }
-
-
-
-# resource "null_resource" "get_iam_token" {
-#   provisioner "local-exec" {
-#     command = "chmod +x ${path.module}/get-token.sh && ${path.module}/get-token.sh '${yandex_iam_service_account_key.sa-k8s-admin-key.private_key}'"
-#   }
-# }
