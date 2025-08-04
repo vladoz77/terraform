@@ -117,4 +117,11 @@ pipeline {
             
         }
     }
+
+    post {
+        success {
+            archiveArtifacts artifacts: '${HOME}/.kube/config', defaultExcludes: false, followSymlinks: false, onlyIfSuccessful: true
+        }
+        
+    }
 }
