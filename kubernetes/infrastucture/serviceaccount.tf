@@ -34,7 +34,7 @@ resource "null_resource" "configure-yc" {
   depends_on = [local_file.sa-key-file]
 
   provisioner "local-exec" {
-    command = "/home/jenkins/yandex-cloud/bin/yc config set service-account-key sa-k8s-key.json"
+    command = "yc config set service-account-key sa-k8s-key.json"
   }
 }
 
