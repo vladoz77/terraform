@@ -7,7 +7,7 @@ resource "lxd_storage_pool" "root" {
 
 # Create pool app-data
 resource "lxd_storage_pool" "app-data" {
-  name = "app-data"
+  name   = "app-data"
   driver = "dir"
   source = "/mnt/lxd-pools/pool-1"
 }
@@ -16,8 +16,8 @@ resource "lxd_storage_pool" "app-data" {
 resource "lxd_volume" "data-volume" {
   for_each = local.instances
 
-  name = "data-${each.key}"
-  pool = lxd_storage_pool.app-data.name
+  name         = "data-${each.key}"
+  pool         = lxd_storage_pool.app-data.name
   content_type = "block"
 
   config = {
@@ -60,14 +60,14 @@ module "instance" {
   network_name = module.network.network_name
 
   instance = {
-    profile = lxd_profile.vm.name
-    name = "ubuntu-${each.key}"
-    image = "ubuntu:22.04"
+    profile      = lxd_profile.vm.name
+    name         = "ubuntu-${each.key}"
+    image        = "ubuntu:22.04"
     ipv4_address = each.value.ipv4_address
-    root_name = lxd_storage_pool.root.name
-    cpu = each.value.cpu
-    memory = each.value.memory
-    cloud_init = file("${path.module}/cloud-init.yaml")
+    root_name    = lxd_storage_pool.root.name
+    cpu          = each.value.cpu
+    memory       = each.value.memory
+    cloud_init   = file("${path.module}/cloud-init.yaml")
   }
   attached_volume = {
     data = {
@@ -75,5 +75,5 @@ module "instance" {
       name = "data-${each.key}"
     }
   }
-  depends_on = [ lxd_volume.data-volume ]
+  depends_on = [lxd_volume.data-volume]
 }

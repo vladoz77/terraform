@@ -26,4 +26,12 @@ variable "instance" {
     description = optional(string)
     cloud_init = optional(string, null)
   })
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.instance.name))
+    error_message = "Имя инстанса должно содержать только латинские буквы, цифры и дефисы."
+  }
+  validation {
+    condition     = var.instance.cpu > 0
+    error_message = "Количество CPU должно быть больше 0."
+  }
 }

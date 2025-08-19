@@ -36,5 +36,4 @@ resource "lxd_instance" "instance" {
   config = {
     "user.user-data" = var.instance.cloud_init
   }
-
 }
