@@ -6,7 +6,6 @@ resource "yandex_vpc_network" "network" {
 # Публичный статический адрес для jenkins
 resource "yandex_vpc_address" "jenkins_address" {
   name = "jenkins_address"
-  deletion_protection = true
   external_ipv4_address {
     zone_id = var.zone
   }
@@ -29,6 +28,8 @@ resource "yandex_dns_zone" "zone1" {
   zone             = "home-local.site."  # Доменное имя зоны (заканчивается точкой)
   public           = true  # Публичная зона (доступна из интернета)
   private_networks = [yandex_vpc_network.network.id]  # Привязка к частной сети
+
+  deletion_protection = true
 }
 
 # DNS запись типа A для сервиса Jenkins
@@ -40,26 +41,26 @@ resource "yandex_dns_recordset" "jenkins_record" {
   data    = [module.jenkins[0].public_ips[0]]  # Публичный IP адрес Jenkins
 }
 
-resource "yandex_dns_recordset" "sonarqube_record" {
+resource "yandex_dns_recordset" "home_local_records" {
   zone_id = yandex_dns_zone.zone1.id  
-  name    = "sonarqube.home-local.site."  
+  name    = "*.yc.home-local.site."  
   type    = "A"  
   ttl     = 300  
   data    = [module.jenkins[0].public_ips[0]]  
 }
 
-resource "yandex_dns_recordset" "nexus_record" {
-  zone_id = yandex_dns_zone.zone1.id  
-  name    = "nexus.home-local.site."  
-  type    = "A"  
-  ttl     = 300  
-  data    = [module.jenkins[0].public_ips[0]]  
-}
+# resource "yandex_dns_recordset" "nexus_record" {
+#   zone_id = yandex_dns_zone.zone1.id  
+#   name    = "nexus.home-local.site."  
+#   type    = "A"  
+#   ttl     = 300  
+#   data    = [module.jenkins[0].public_ips[0]]  
+# }
 
-resource "yandex_dns_recordset" "registry_record" {
-  zone_id = yandex_dns_zone.zone1.id  
-  name    = "registry.home-local.site."  
-  type    = "A"  
-  ttl     = 300  
-  data    = [module.jenkins[0].public_ips[0]]  
-}
+# resource "yandex_dns_recordset" "registry_record" {
+#   zone_id = yandex_dns_zone.zone1.id  
+#   name    = "registry.home-local.site."  
+#   type    = "A"  
+#   ttl     = 300  
+#   data    = [module.jenkins[0].public_ips[0]]  
+# }

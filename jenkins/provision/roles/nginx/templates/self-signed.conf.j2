@@ -1,2 +1,2 @@
-ssl_certificate {{ cert_dir }}/live/{{ cert_name }}/fullchain.pem;
-ssl_certificate_key {{ cert_dir }}/live/{{ cert_name }}/privkey.pem;
+ssl_certificate /etc/letsencrypt/live/{{ cert_name }}/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live//{{ cert_name }}/privkey.pem;

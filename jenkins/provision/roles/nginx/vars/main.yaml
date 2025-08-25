@@ -1,6 +1,5 @@
 # Default dir
 openssl_dhparam: /etc/nginx/dhparam.pem
 snippets_dir: /etc/nginx/snippets
-cert_dir: /opt/certs
 site_available_dir: /etc/nginx/sites-available
 site_enabled_dir: /etc/nginx/sites-enabled

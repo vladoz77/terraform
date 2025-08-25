@@ -1,9 +1,9 @@
-- name: create folder jenkins
-  ansible.builtin.file:
-    path: "{{ cert_dir }}"
-    group: "{{ username }}"
-    owner: "{{ username }}"
-    state: directory
+# - name: create folder jenkins
+#   ansible.builtin.file:
+#     path: "{{ cert_dir }}"
+#     group: "{{ username }}"
+#     owner: "{{ username }}"
+#     state: directory
 
 - name: install req packages
   ansible.builtin.apt:

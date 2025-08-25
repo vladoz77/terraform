@@ -3,7 +3,7 @@
 
 - name: check existing certificate
   ansible.builtin.stat:
-    path: "{{ cert_dir }}/live/{{ cert_name }}/cert.pem"
+    path: "/etc/letsencrypt/live/{{ cert_name }}/cert.pem"
   register: certbot_stat
 
 - name: Create certificate wuth certbot
