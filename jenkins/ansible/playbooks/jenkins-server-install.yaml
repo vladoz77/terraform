@@ -1,0 +1,10 @@
+- name: Config jenkins server
+  hosts: jenkins-server
+  become: true
+  
+  roles:
+    - common
+    - docker
+    - traefik
+    - nexus
+    - jenkins

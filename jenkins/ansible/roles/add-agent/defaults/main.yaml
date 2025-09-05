@@ -1,0 +1,5 @@
+jenkins_url: jenkins.{{ domain_name | default('home.local') }}
+jenkins_username: admin
+jenkins_password: admin
+jenkins_agent_state: enabled
+default_token_dir: "/tmp/jenkins-token.txt"

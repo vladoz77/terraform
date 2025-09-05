@@ -1,0 +1,50 @@
+- name: check if service file exist
+  ansible.builtin.stat:
+    path:  "/home/{{ ansible_user }}/{{ jenkins_container_name }}/docker-compose.yaml"
+  register: compose_files
+
+- block:
+  - name: check if runing {{ jenkins_container_name }} in docker
+    community.docker.docker_container_info:
+      name: "{{ jenkins_container_name }}"
+    register: container_status
+    ignore_errors: true
+    when: compose_files.stat.exists
+
+  - name: Debug - file not exist
+    ansible.builtin.debug:
+      msg: "Compose file for {{ jenkins_container_name }} does not exist, will install"
+    when: not compose_files.stat.exists
+
+  - name: Debug - container running
+    ansible.builtin.debug:
+      msg: "{{ jenkins_container_name }} exist and running"
+    when: >-
+      compose_files.stat.exists and
+      container_status.exists and
+      container_status.container.State.Running
+
+  - name: install {{ jenkins_container_name }} with docker
+    ansible.builtin.include_tasks:
+      "{{ jenkins_container_name }}-install.yaml"
+    when: >-
+      not compose_files.stat.exists or 
+      not container_status.exists or 
+      not container_status.container.State.Running
+
+  - name: get api-token 
+    ansible.builtin.include_tasks:
+      get-api-token.yaml
+    when: >-
+      not compose_files.stat.exists or 
+      not container_status.exists or 
+      not container_status.container.State.Running
+      
+  when: compose_state == "present"
+
+- name: unninstall {{ jenkins_container_name }} 
+  ansible.builtin.include_tasks:
+    "{{ jenkins_container_name }}-unninstall.yaml"
+  when: 
+    - compose_state == "absent"
+    - compose_files.stat.exists

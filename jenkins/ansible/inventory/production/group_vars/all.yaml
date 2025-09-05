@@ -1,0 +1,4 @@
+domain_name: "yc.home-local.site"
+jenkins_username: admin
+jenkins_password: admin
+default_token_dir: "/tmp/jenkins-token.txt"

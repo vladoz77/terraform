@@ -1,0 +1,67 @@
+unclassified:
+  location:
+    url: https://{{ jenkins_url }}
+    
+  
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+  numExecutors: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+      - id: "{{ jenkins_username}}"
+        password: "{{ jenkins_password }}"
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "USER:Overall/Administer:{{ jenkins_username}}"  
+        - "GROUP:Overall/Read:authenticated"
+  nodes:
+    {% if groups['jenkins-agent'] is defined and groups['jenkins-agent'] | length > 0 -%}
+    {% for agent_host in groups['jenkins-agent'] -%}
+    - permanent:
+        name: "agent-{{ agent_host }}"  
+        labelString: "linux docker build"
+        remoteFS: "/home/ubuntu/jenkins-agent"
+        numExecutors: 2
+        nodeDescription: "JNLP agent connected via WebSocket from {{ agent_host }}"
+        launcher:
+          inbound:
+            webSocket: true
+        mode: NORMAL
+    {% endfor %}
+    {% endif %}
+
+
+# Tool Configuration
+tool:
+  git:
+    installations:
+      - name: "Default"
+        home: "/usr/bin/git"
+
+  {% if maven_enable | default(false) -%}
+  maven:
+    installations:
+      - name: "maven3"
+        properties:
+        - installSource:
+            installers:
+            - maven:
+                id: "3.9.9"
+  {%- endif %}
+
+  {% if java_enable | default(false) -%}
+  jdk:
+    installations:
+      - name: "jdk17"
+        properties:
+        - installSource:
+            installers:
+            - adoptOpenJdkInstaller:
+                id: "jdk-17+35"
+  {%- endif %}
+
+
+  
