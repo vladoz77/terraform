@@ -1,0 +1,26 @@
+- name: Copy SSH private key from jenkins-agent to jenkins using fetch
+  hosts: localhost
+  become: false
+  vars:
+    username: "{{ hostvars[groups['jenkins'][0]]['ansible_user'] | default('ubuntu') }}"
+  tasks:
+  - name: Fetch SSH private key from jenkins-agent
+    ansible.builtin.fetch:
+      src: "{{ ssh_dir }}/{{ agent_ssh_key }}"
+      dest: "{{ agent_ssh_tmp_key }}"
+      flat: yes
+    delegate_to: "{{ groups['jenkins-agent'][0] }}"
+
+  - name: Copy fetched SSH private key to jenkins
+    ansible.builtin.copy:
+      src: "{{ agent_ssh_tmp_key }}"
+      dest: "{{ ssh_dir }}/{{ agent_ssh_key }}"
+      # owner: "{{ username }}"
+      # group: "{{ username }}"
+      mode: '0600'
+    delegate_to: "{{ groups['jenkins'][0] }}"
+
+  - name: Clean up temporary file
+    ansible.builtin.file:
+      path: "/tmp/fetched_key"
+      state: absent

@@ -1,0 +1,18 @@
+FROM {{ jenkins_images }}:{{ jenkins_image_version }}
+
+# Install Jenkins plugins
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+# Копируем Groovy-скрипты в папку init.groovy.d
+COPY *.groovy /usr/share/jenkins/ref/init.groovy.d/
+
+# Disable the setup wizard as we will set up Jenkins as code
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Dcom.sun.net.ssl.checkRevocation=false"
+
+# Copy the Configuration as Code (CasC) YAML file into the image
+COPY jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
+# COPY nginx.jks /opt/nginx.jks
+
+# Tell the Jenkins Configuration as Code plugin where to find the YAML file
+ENV CASC_JENKINS_CONFIG="/var/jenkins_home/casc_configs/jenkins.yaml"

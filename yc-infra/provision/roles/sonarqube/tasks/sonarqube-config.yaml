@@ -1,0 +1,146 @@
+- name: Wait for SonarQube to become available
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/system/status"
+    method: GET
+    status_code: 200
+    body_format: json
+  register: sonar_status
+  until: sonar_status.status == 200 and sonar_status.json.status == "UP"
+  retries: 60
+  delay: 10
+  ignore_errors: yes
+
+- name: Check if admin password already changed
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/authentication/validate"
+    method: GET
+    user: admin
+    password: "{{ vault_secrets.sonarqube_new_admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  register: auth_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Change default admin password
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/users/change_password"
+    method: POST
+    user: admin
+    password: "{{ vault_secrets.sonarqube_default_admin_password }}"
+    force_basic_auth: yes
+    body_format: form-urlencoded
+    status_code:
+    - 204 # Успех (для SonarQube API)
+    - 400 # Неверный запрос
+    - 401 # Неавторизован
+    body:
+      login: admin
+      previousPassword: "{{ vault_secrets.sonarqube_default_admin_password }}"
+      password: "{{ vault_secrets.sonarqube_new_admin_password }}"
+  when: auth_check.json.valid == false
+
+- name: check if {{ sonarqube_user }} user already exist
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/users/search"
+    method: GET
+    url_username: admin
+    url_password: "{{ vault_secrets.sonarqube_new_admin_password }}"
+    status_code: 200
+    body_format: json
+    return_content: yes
+    force_basic_auth: yes
+    body:
+      login: "{{ sonarqube_user }}"
+  register: users_status
+  ignore_errors: yes
+
+- name: Create {{ sonarqube_user }} via Sonarqube REST API
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/users/create"
+    method: POST
+    user: admin
+    password: "{{ vault_secrets.sonarqube_new_admin_password }}"
+    force_basic_auth: yes
+    body_format: form-urlencoded
+    body:
+      login: "{{ sonarqube_user }}"
+      name: "{{ sonarqube_user }}"
+      password: "{{ vault_secrets.sonarqube_password }}"
+    status_code:
+    - 200
+    - 400
+    return_content: yes
+  register: user_creation
+  when: sonarqube_user not in users_status.json.users | map(attribute='login') | list
+
+- name: add  user {{ sonarqube_user }} to group {{ sonarqube_user_group }}
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/user_groups/add_user"
+    method: POST
+    user: admin
+    password: "{{ vault_secrets.sonarqube_new_admin_password }}"
+    body_format: form-urlencoded
+    body:
+      login: "{{ sonarqube_user }}"
+      name: "{{ sonarqube_user_group }}"
+    status_code:
+    - 204 # Успешный ответ для этого API
+    - 400 # Неверный запрос
+    - 401 # Ошибка аутентификации
+    - 403 # Нет прав
+    - 409 # Конфликт (уже имеет права)
+    force_basic_auth: yes
+
+- name: check if token already exist
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/user_tokens/search"
+    method: GET
+    url_username: "{{ sonarqube_user }}"
+    url_password: "{{ vault_secrets.sonarqube_password }}"
+    status_code: 200
+    body_format: json
+    return_content: yes
+    force_basic_auth: yes
+    body:
+      login: "{{ sonarqube_user }}"
+  register: token_status
+
+- block:
+  - name: create user token
+    ansible.builtin.uri:
+      url: "{{ sonarqube_url }}/api/user_tokens/generate"
+      method: POST
+      user: "{{ sonarqube_user }}"
+      password: "{{ vault_secrets.sonarqube_password }}"
+      force_basic_auth: yes
+      body:
+        name: "{{ sonarqube_token_name }}"
+      status_code:
+      - 200
+      - 400
+      validate_certs: no
+      body_format: form-urlencoded
+      return_content: yes
+    register: token_response
+
+  - name: Save token to file on agent
+    ansible.builtin.copy:
+      content: "{{ token_response.json.token }}"
+      dest: "/tmp/sonar_token.txt"
+      mode: 600
+  when: sonarqube_token_name not in token_status.json.userTokens | map(attribute='name') | list
+
+- name: Create webhook
+  ansible.builtin.uri:
+    url: "{{ sonarqube_url }}/api/webhooks/create"
+    method: POST
+    user: "{{ sonarqube_user }}"
+    password: "{{ vault_secrets.sonarqube_password }}"
+    force_basic_auth: yes
+    body_format: form-urlencoded
+    body:
+      name: "{{ sonarqube_jenkins_webhook_name }}"
+      url: "{{ sonaqube_jenkins_webhook_url }}"
+    status_code:
+    - 200

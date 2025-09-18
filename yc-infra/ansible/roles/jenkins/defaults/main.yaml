@@ -1,0 +1,46 @@
+compose_state: "present" # Or absent if you want remove jenkins
+# Container settings
+jenkins_container_name: jenkins
+jenkins_web_port: "8080"
+jenkins_url: "{{ jenkins_container_name }}.{{ domain_name | default('home.local')}}"
+jenkins_images: jenkins/jenkins
+jenkins_image_version: lts-jdk21
+
+# Jenkins config
+jenkins_username: admin
+jenkins_password: admin
+default_token_dir: "/tmp/jenkins-token.txt"
+
+# Jenkins plugins
+jenkins_plugin_list:
+- ant:latest
+- antisamy-markup-formatter:latest
+- build-timeout:latest
+- cloudbees-folder:latest
+- configuration-as-code:latest
+- credentials-binding:latest
+- email-ext:latest
+- git:latest
+- github-branch-source:latest
+- gradle:latest
+- ldap:latest
+- mailer:latest
+- matrix-auth:latest
+- pam-auth:latest
+- pipeline-github-lib:latest
+- pipeline-stage-view:latest
+- ssh-slaves:latest
+- timestamper:latest
+- workflow-aggregator:latest
+- ws-cleanup:latest
+- adoptopenjdk:1.7
+- sonar:latest
+- role-strategy:latest
+- maven-plugin:latest
+- docker-plugin:latest
+- docker-workflow:latest
+- hashicorp-vault-plugin:latest
+
+# Jenkins-tools
+maven_enable: true
+java_enable: true

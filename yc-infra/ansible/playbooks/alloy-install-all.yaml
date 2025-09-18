@@ -1,0 +1,5 @@
+- name: Install grafana alloy
+  hosts: all
+  become: true
+  roles:
+    - grafana-alloy

@@ -1,0 +1,35 @@
+- name: copy ssh
+  ansible.builtin.import_playbook: copy-ssh.yaml
+  
+- name: install jenkins node
+  hosts: jenkins
+  become: true
+  pre_tasks:
+  - name: add hostname
+    ansible.builtin.hostname:
+      name: "{{ hostname }}"
+
+  tasks:
+  - name: install docker
+    ansible.builtin.include_role:
+      name: docker
+
+  - name: install sonarqube
+    ansible.builtin.include_role:
+      name: sonarqube
+    when: sonarqube == true
+
+  - name: install nexus
+    ansible.builtin.include_role:
+      name: nexus
+    when: nexus == true
+
+  - name: install jenkins
+    ansible.builtin.include_role:
+      name: jenkins
+    when: jenkins == true
+
+  - name: install nginx
+    ansible.builtin.include_role:
+      name: nginx
+    when: nginx == true

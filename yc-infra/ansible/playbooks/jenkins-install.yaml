@@ -1,0 +1,6 @@
+- name: Config jenkins server
+  hosts: jenkins-server
+  become: true
+  
+  roles:
+  - jenkins

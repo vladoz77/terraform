@@ -1,0 +1,16 @@
+container_name: sonarqube
+sonarqube_docker_dir: "/home/{{ username }}/{{ container_name }}"
+sonarqube_url: http://localhost:9090
+
+sonarqube_user: "{{ container_name }}"
+
+sonarqube_user_group: sonar-administrators
+sonarqube_token_name: token
+sonarqube_jenkins_webhook_name: jenkins-webhook
+sonaqube_jenkins_webhook_url: https://{{ jenkins_url_address }}/sonarqube-webhook
+
+####
+# This variables in vault.yaml
+# sonarqube_default_admin_password: 
+# sonarqube_admin_password: 
+# sonarqube_password: 

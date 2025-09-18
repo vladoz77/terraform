@@ -1,0 +1,55 @@
+hostname: "jenkins-server"
+docker_network_name: "traefik"
+
+packages:
+- jq
+- openjdk-17-jre
+
+# traefik config
+traefik_container_name: traefik
+traefik_image: "traefik"
+traefik_version: "v3.5"
+acme_email: "vladoz77@yandex.ru"
+
+# nexus config
+nexus_image: sonatype/nexus3
+nexus_image_version: "3.82.1"
+registry_name: reg
+nexus_username: jenkins
+nexus_password: "!QAZ2wsx"
+
+# jenkins config
+jenkins_images: jenkins/jenkins
+jenkins_image_version: lts-jdk21
+jenkins_plugin_list:
+- ant:latest
+- antisamy-markup-formatter:latest
+- build-timeout:latest
+- cloudbees-folder:latest
+- configuration-as-code:latest
+- credentials-binding:latest
+- email-ext:latest
+- git:latest
+- github-branch-source:latest
+- gradle:latest
+- ldap:latest
+- mailer:latest
+- matrix-auth:latest
+- pam-auth:latest
+- pipeline-github-lib:latest
+- pipeline-stage-view:latest
+- ssh-slaves:latest
+- timestamper:latest
+- workflow-aggregator:latest
+- ws-cleanup:latest
+- adoptopenjdk:1.7
+- sonar:latest
+- role-strategy:latest
+- maven-plugin:latest
+- docker-plugin:latest
+- docker-workflow:latest
+- hashicorp-vault-plugin:latest
+
+# Jenkins-tools
+maven_enable: true
+java_enable: true

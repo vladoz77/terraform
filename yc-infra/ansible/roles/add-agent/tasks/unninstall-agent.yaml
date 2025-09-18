@@ -1,0 +1,25 @@
+- name: stop and delete jenkins-agent service
+  ansible.builtin.systemd:
+    name: "{{ jenkins_agent_service_name }}"
+    state: stopped
+    enabled: no
+    daemon_reload: true
+
+- name: remove service file
+  ansible.builtin.file:
+    path: "{{ service_dir }}/{{ jenkins_agent_service_name }}"
+    state: absent
+
+- name: remove agent.jar
+  ansible.builtin.file:
+    path: /usr/local/bin/agent.jar
+    state: absent
+
+- name: remove worker dir
+  ansible.builtin.file:
+    path: "{{ agent_work_dir }}"
+    state: absent
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes

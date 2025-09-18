@@ -1,0 +1,15 @@
+- name: Check if trivy is installed
+  command: dpkg-query -W trivy
+  register: trivy_deb
+  failed_when: trivy_deb.rc > 1
+  changed_when: trivy_deb.rc == 1
+
+- ansible.builtin.debug:
+    msg: trivy is already install
+  when: trivy_deb.rc == 0
+
+- name: install trivy
+  ansible.builtin.include_tasks: trivy-install.yaml
+  when: trivy_deb.rc == 1
+      
+      

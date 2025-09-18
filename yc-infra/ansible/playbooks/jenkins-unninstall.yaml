@@ -1,0 +1,7 @@
+- name: Config jenkins server
+  hosts: jenkins-server
+  become: true
+  vars:
+    compose_state: absent
+  roles:
+    - jenkins

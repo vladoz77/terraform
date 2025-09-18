@@ -1,0 +1,15 @@
+hostname: jenkins-agent
+soft:
+- curl
+- nmap
+- ca-certificates
+- gnupg
+- lsb-release
+- rsync
+- python3-docker
+- git
+- openjdk-17-jdk
+- openjdk-17-jre
+- unzip
+
+trivy: true

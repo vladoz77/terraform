@@ -1,0 +1,13 @@
+- name: download trivi
+  ansible.builtin.uri:
+    url: "{{ trivi_url }}"
+    dest: /tmp/trivy.deb
+
+- name: install trivi from deb
+  ansible.builtin.apt:
+    deb: /tmp/trivy.deb
+
+- name: delete file
+  ansible.builtin.file:
+    path: /tmp/trivy.deb
+    state: absent

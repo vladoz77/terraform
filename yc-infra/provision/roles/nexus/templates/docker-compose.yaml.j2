@@ -1,0 +1,19 @@
+services:
+  nexus:
+    image: sonatype/nexus3
+    container_name: {{ container_name }}
+    volumes:
+      - nexus-data-volume:/nexus-data
+    restart: unless-stopped
+    ports:
+      - 8081:8081 # Web port
+      - 8082:8082 # Docker repo port
+    networks:
+      - {{ docker_network_name }}
+
+volumes:
+  nexus-data-volume:
+
+networks:
+  {{ docker_network_name }}:
+    external: true

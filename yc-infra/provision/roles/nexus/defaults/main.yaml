@@ -1,0 +1,13 @@
+nexus_url: http://localhost:8081
+default_pass_path: /nexus-data/admin.password
+admin_user: admin
+
+# Url endpoint
+get_role: service/rest/v1/security/roles
+create_role: service/rest/v1/security/roles
+status_check: service/rest/v1/status
+change_password: service/rest/v1/security/users/admin/change-password
+get_user: service/rest/v1/security/users
+create_user: service/rest/v1/security/users
+get_repo: service/rest/v1/repositories/docker/hosted
+create_repo_hosted: service/rest/v1/repositories/docker/hosted

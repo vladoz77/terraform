@@ -1,0 +1,7 @@
+jenkins_docker_dir: "/home/{{ ansible_user }}/{{ jenkins_container_name }}"
+jenkins_install_file:
+- docker-compose.yaml
+- jenkins.yaml
+- Dockerfile
+- plugins.txt
+- nexus.groovy

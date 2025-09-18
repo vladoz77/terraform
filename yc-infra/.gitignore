@@ -1,0 +1,6 @@
+.terraform
+.vscode
+*.lock.hcl
+*.tfvars
+provision/inventory.ini
+provision/certificates

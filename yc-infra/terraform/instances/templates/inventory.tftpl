@@ -1,0 +1,12 @@
+[jenkins-server]
+%{ for ip in jenkins-server ~}
+${ip} username=${username}
+%{ endfor ~}
+[jenkins-agent]
+%{ for ip in jenkins-agent ~}
+${ip} username=${username}
+%{ endfor ~}
+[monitoring-server]
+%{ for ip in monitoring ~}
+${ip} username=${username}
+%{ endfor ~}

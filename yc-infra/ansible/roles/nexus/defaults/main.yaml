@@ -1,0 +1,18 @@
+# Container config
+nexus_container_name: nexus
+nexus_image: sonatype/nexus3
+nexus_image_version: "3.82.1"
+nexus_domain_name: "{{ nexus_container_name }}.{{ domain_name | default('home.local')}}"
+nexus_web_port: "8081"
+
+# Nexus user config
+new_admin_password: Qwerty123
+nexus_username: jenkins
+nexus_password: "!QAZ2wsx"
+role_id: docker-role
+
+# Repo config
+repo_name: docker-hosted
+repo_port: "8082"
+registry_name: default('repo_name')
+registry_domain_name: "{{ registry_name }}.{{ domain_name | default('home.local')}}"
