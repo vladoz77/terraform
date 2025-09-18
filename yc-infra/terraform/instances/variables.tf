@@ -40,13 +40,13 @@ variable "platform_id" {
 variable "yc_dns_records" {
   description = "dns records for yc"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "monitoring_dns_records" {
   description = "dns records for monitoring"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "environment" {
@@ -85,10 +85,10 @@ variable "jenkins" {
     disk_size     = 20
     tags          = []
     environment   = {}
-    boot_disk ={
-        type = "network-hdd"
-        size = 20
-        image_id = "fd81hgrcv6lsnkremf32"
+    boot_disk = {
+      type     = "network-hdd"
+      size     = 20
+      image_id = "fd81hgrcv6lsnkremf32"
     }
   }
 }
@@ -118,10 +118,10 @@ variable "jenkins-agent" {
     disk_size     = 20
     tags          = []
     environment   = {}
-    boot_disk ={
-        type = "network-hdd"
-        size = 20
-        image_id = "fd81hgrcv6lsnkremf32"
+    boot_disk = {
+      type     = "network-hdd"
+      size     = 20
+      image_id = "fd81hgrcv6lsnkremf32"
     }
   }
 }
@@ -150,10 +150,10 @@ variable "monitoring" {
     memory        = 2
     tags          = []
     environment   = {}
-    boot_disk ={
-        type = "network-hdd"
-        size = 20
-        image_id = "fd81hgrcv6lsnkremf32"
+    boot_disk = {
+      type     = "network-hdd"
+      size     = 20
+      image_id = "fd81hgrcv6lsnkremf32"
     }
   }
 }
