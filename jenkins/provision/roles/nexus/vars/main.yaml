@@ -1,6 +1,0 @@
-container_name: nexus
-nexus_docker_dir: "/home/{{ username }}/{{ container_name }}"
-# new_admin_password: Qwerty123
-nexus_username: jenkins
-# nexus_password: "!QAZ2wsx"
-role_id: docker-role

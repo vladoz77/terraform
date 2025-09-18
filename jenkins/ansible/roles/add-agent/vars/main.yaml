@@ -1,4 +1,0 @@
-agent_work_dir: /home/{{ ansible_user }}/jenkins-agent
-jenkins_agent_download_url: "https://{{ jenkins_url }}/jnlpJars/agent.jar" 
-service_dir: /etc/systemd/system/
-jenkins_agent_service_name: jenkins-agent.service

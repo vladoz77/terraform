@@ -1,7 +1,0 @@
-- name: Config agents
-  hosts: jenkins-agent
-  become: true
-  vars:
-    jenkins_agent_state: disabled
-  roles:
-    - add-agent
