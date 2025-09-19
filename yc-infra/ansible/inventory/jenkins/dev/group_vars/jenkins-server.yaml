@@ -1,22 +1,19 @@
-compose_state: "present" # Or absent if you want remove jenkins
-# Container settings
-jenkins_container_name: jenkins
-jenkins_web_port: "8080"
-jenkins_url: "{{ jenkins_container_name }}.{{ domain_name | default('home.local')}}"
+hostname: "jenkins-server"
+docker_network_name: "traefik"
+
+packages:
+- jq
+- openjdk-17-jre
+
+# traefik config
+traefik_container_name: traefik
+traefik_image: "traefik"
+traefik_version: "v3.5"
+acme_email: "vladoz77@yandex.ru"
+
+# jenkins config
 jenkins_images: jenkins/jenkins
 jenkins_image_version: lts-jdk21
-
-# Jenkins config
-jenkins_username: admin
-jenkins_password: admin
-default_token_dir: "/tmp/jenkins-token.txt"
-
-# Nexus integration
-nexus_enabled: false
-nexus_username: ""
-nexus_password: ""
-
-# Jenkins plugins
 jenkins_plugin_list:
 - ant:latest
 - antisamy-markup-formatter:latest

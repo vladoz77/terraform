@@ -1,0 +1,4 @@
+[monitoring-server]
+%{ for ip in monitoring ~}
+${ip} username=${username}
+%{ endfor ~}

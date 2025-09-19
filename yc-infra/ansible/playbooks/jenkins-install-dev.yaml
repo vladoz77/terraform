@@ -1,0 +1,18 @@
+- name: Config jenkins server
+  hosts: jenkins-server
+  become: true
+  roles:
+    - common
+    - docker
+    - traefik
+    - jenkins
+
+- name: Config agent 
+  hosts: jenkins-agent
+  become: true
+  vars:
+    jenkins_agent_state: enabled
+  roles:
+    - common
+    - docker
+    - add-agent

@@ -1,0 +1,7 @@
+- name: Config monitoring server
+  hosts: monitoring-server
+  become: true
+  roles:
+    - common
+    - docker
+    - grafana-alloy

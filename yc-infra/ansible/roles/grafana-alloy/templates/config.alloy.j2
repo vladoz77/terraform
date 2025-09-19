@@ -1,13 +1,13 @@
 // Define where to send logs for storage
 prometheus.remote_write "prometheus" {
   endpoint {
-    url = "https://prometheus.mon.home-local.site/api/v1/write"
+    url = "https://{{ prometeus_url }}/api/v1/write"
   }
 }
 
 loki.write "loki" {
   endpoint {
-    url = "http://loki.mon.home-local.site/loki/api/v1/push"
+    url = "http://{{ loki_url }} /loki/api/v1/push"
     batch_size = "1MiB"
     batch_wait = "2s"
   }

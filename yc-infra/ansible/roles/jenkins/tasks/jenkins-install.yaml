@@ -5,13 +5,23 @@
     owner: "{{ ansible_user }}"
     state: directory
 
-- name: Copy templates to {{ jenkins_docker_dir }}
+# tasks/main.yaml (часть с копированием)
+- name: Copy base templates to {{ jenkins_docker_dir }}
   ansible.builtin.template:
     src: "templates/{{ item }}.j2"
     dest: "{{ jenkins_docker_dir }}/{{ item }}"
     group: "{{ ansible_user }}"
     owner: "{{ ansible_user }}"
-  loop: "{{ jenkins_install_file }}"
+  loop: "{{ jenkins_base_files }}"
+
+- name: Copy Nexus integration templates
+  ansible.builtin.template:
+    src: "templates/{{ item }}.j2"
+    dest: "{{ jenkins_docker_dir }}/{{ item }}"
+    group: "{{ ansible_user }}"
+    owner: "{{ ansible_user }}"
+  loop: "{{ jenkins_nexus_files }}"
+  when: nexus_enabled | bool
 
 - name: start docker-compose
   community.docker.docker_compose_v2:

@@ -1,3 +1,0 @@
-- ansible.builtin.import_playbook: jenkins-agent.yaml
-- ansible.builtin.import_playbook: jenkins.yaml
-  

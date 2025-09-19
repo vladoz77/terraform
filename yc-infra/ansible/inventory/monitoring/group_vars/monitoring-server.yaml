@@ -1,0 +1,13 @@
+# Common instance config
+hostname: monitoring
+packages:
+- jq
+- unzip
+
+# Grafana alloy config
+alloy_enable_docker: true
+alloy_enable_grafana: true
+alloy_groups:
+- adm
+- systemd-journal
+- docker

@@ -8,3 +8,5 @@ alloy_groups:
   - docker
 alloy_enable_docker: false
 alloy_enable_grafana: false
+prometeus_url: prometheus.home-local.site
+loki_url: loki.home-local.site
