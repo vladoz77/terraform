@@ -21,7 +21,7 @@ resource "lxd_volume" "data-volume" {
   content_type = "block"
 
   config = {
-    size = each.value.volume.size
+    size = "10GB"
   }
 
 }
