@@ -75,3 +75,15 @@ resource "yandex_compute_instance" "instance" {
 
   depends_on = [yandex_compute_disk.additional_disks]
 }
+
+resource "yandex_dns_recordset" "instance_dns" {
+  for_each = var.create_dns_record ? var.dns_records : {}
+
+  zone_id = var.dns_zone_id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     =each.value.ttl
+  data    = [yandex_compute_instance.instance.network_interface[0].nat_ip_address]
+
+  depends_on = [yandex_compute_instance.instance]
+}

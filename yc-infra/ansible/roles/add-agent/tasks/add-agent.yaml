@@ -17,6 +17,7 @@
     ansible.builtin.uri:
       url: "{{ jenkins_agent_download_url }}"
       dest: /usr/local/bin
+      validate_certs: no
 
   - name: copy service template
     ansible.builtin.template:

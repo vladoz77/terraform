@@ -5,6 +5,8 @@ packages:
 - unzip
 
 # Grafana alloy config
+prometeus_url: prometheus.home-local.site
+loki_url: loki.home-local.site
 alloy_enable_docker: true
 alloy_enable_grafana: true
 alloy_groups:

@@ -14,3 +14,7 @@ output "network_cidr" {
 output "zone_id" {
   value = yandex_dns_zone.zone.id
 }
+
+output "zone_name" {
+  value = yandex_dns_zone.zone.zone
+}

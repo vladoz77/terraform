@@ -1,17 +1,36 @@
 - name: Config jenkins server
   hosts: jenkins-server
   become: true
+  vars:
+    vault_url: http://localhost:8200
+    role_id: "{{ lookup('env', 'VAULT_ROLE_ID' ) }}"
+    secret_id: "{{ lookup('env', 'VAULT_SECRET_ID' ) }}"
+    aws_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/aws auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    aws_access_key: "{{ aws_secret.aws_access_key }}"
+    aws_secret_key: "{{ aws_secret.aws_secret_key }}"
+    nexus_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/nexus auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    nexus_username: "{{ nexus_secret.nexus_username }}"
+    nexus_password: "{{ nexus_secret.nexus_password }}"
+    jenkins_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/jenkins auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    jenkins_username: "{{ jenkins_secret.jenkins_username}}"
+    jenkins_password: "{{ jenkins_secret.jenkins_password}}"
+    s3_bucket_name: acme-bucket
+    traefik_enable_dashboard: true
+    traefik_dashboard_url: "traefik.home-local.site"
+    nexus_enabled: true
   roles:
     - common
     - docker
     - traefik
     - jenkins
+    - sync_acme_to_s3
 
 - name: Config agent 
   hosts: jenkins-agent
   become: true
   vars:
     jenkins_agent_state: enabled
+    jenkins_url: jenkins.home-local.site
   roles:
     - common
     - docker

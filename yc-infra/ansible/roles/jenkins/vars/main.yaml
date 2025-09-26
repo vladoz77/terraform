@@ -4,7 +4,6 @@ jenkins_base_files:
 - jenkins.yaml
 - Dockerfile
 - plugins.txt
-- nexus.groovy
 
 jenkins_nexus_files:
 - nexus.groovy

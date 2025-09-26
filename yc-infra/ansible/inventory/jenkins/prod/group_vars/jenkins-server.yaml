@@ -55,6 +55,8 @@ maven_enable: true
 java_enable: true
 
 # Grafana alloy config
+prometeus_url: prometheus.home-local.site
+loki_url: loki.home-local.site
 alloy_enable_docker: true
 alloy_enable_grafana: false
 alloy_groups:

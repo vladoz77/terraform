@@ -1,17 +1,20 @@
 variable "platform_id" {
   type = string
   description = "yandex instance platform id"
+  default = "standard-v1"
 }
 
 variable "zone" {
   type = string
   description = "yandex zone"
+  
 }
 
 variable "name" {
   type = string
   description = "vm name"
   nullable = true
+  default = "yc-instance"
 }
 
 variable "core_fraction" {
@@ -27,7 +30,7 @@ variable "cores" {
 
 variable "memory" {
   type = number
-  default = 1
+  default = 2
   description = "memory for vm"
 }
 
@@ -42,6 +45,7 @@ variable "tags" {
   type = list(string)
   description = "tags for vm"
   nullable = true
+  default = [ ]
 }
 
 variable "network_interfaces" {
@@ -83,13 +87,12 @@ variable "additional_disks" {
 variable "labels" {
   type = map(string)
   nullable = true
+  default = {}
 }
 
 variable "env_vars" {
   type = map(string)
-  default = {
-    DB = "db.test.local"
-  }
+  default = {}
   description = "Env vars to inject to instance"
   nullable = true
 }
@@ -106,4 +109,26 @@ variable "cloud_init" {
   default     = null
   sensitive   = false
   nullable = true
+}
+
+variable "create_dns_record" {
+  type        = bool
+  description = "Create DNS record for instance"
+  default     = false
+}
+
+variable "dns_zone_id" {
+  type        = string
+  description = "DNS zone ID for record creation"
+  default     = ""
+}
+
+variable "dns_records" {
+  type = map(object({
+    name = string
+    ttl = number
+    type = string
+  }))
+  default = {}
+  description = "dns record config"
 }

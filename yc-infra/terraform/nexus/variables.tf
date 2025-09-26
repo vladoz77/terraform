@@ -32,9 +32,8 @@ variable "platform_id" {
   type        = string
 }
 
-
-variable "monitoring" {
-  description = "monitoring vm config"
+variable "nexus" {
+  description = "nexus vm config"
   type = object({
     count         = number
     instance_name = string
@@ -56,7 +55,7 @@ variable "monitoring" {
   })
   default = {
     count         = 1
-    instance_name = "monitoring-server"
+    instance_name = "jenkins-server"
     cpu           = 1
     core_fraction = 20
     memory        = 2

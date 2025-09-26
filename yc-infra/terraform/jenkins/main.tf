@@ -59,19 +59,13 @@ module "jenkins" {
 
   count = var.jenkins.count
 
-  name             = "${var.jenkins.instance_name}-${var.environment}-${count.index + 1}"
-  zone             = var.zone
-  platform_id      = var.platform_id
-  cores            = var.jenkins.cpu
-  memory           = var.jenkins.memory
-  core_fraction    = var.jenkins.core_fraction
-  ssh              = "${var.username}:${var.ssh_key}"
-  tags             = var.jenkins.tags
-  boot_disk        = var.jenkins.boot_disk
-  labels           = {}
-  additional_disks = []
-  env_vars         = var.jenkins.environment
-  cloud_init       = ""
+  name        = "${var.jenkins.instance_name}-${var.environment}-${count.index + 1}"
+  zone        = var.zone
+  platform_id = var.platform_id
+  cores       = var.jenkins.cpu
+  memory      = var.jenkins.memory
+  ssh         = "${var.username}:${var.ssh_key}"
+  boot_disk   = var.jenkins.boot_disk
   network_interfaces = [
     {
       subnet_id      = data.terraform_remote_state.network.outputs.subnet_id
@@ -79,6 +73,9 @@ module "jenkins" {
       security_group = []
     }
   ]
+  create_dns_record = true
+  dns_records       = var.jenkins.dns_records
+  dns_zone_id       = data.terraform_remote_state.network.outputs.zone_id
 }
 
 module "jenkins-agent" {
@@ -86,19 +83,13 @@ module "jenkins-agent" {
 
   count = var.jenkins-agent.count
 
-  name             = "${var.jenkins-agent.instance_name}-${var.environment}-${count.index + 1}"
-  zone             = var.zone
-  platform_id      = var.platform_id
-  cores            = var.jenkins-agent.cpu
-  memory           = var.jenkins-agent.memory
-  core_fraction    = var.jenkins-agent.core_fraction
-  ssh              = "${var.username}:${var.ssh_key}"
-  tags             = var.jenkins-agent.tags
-  boot_disk        = var.jenkins-agent.boot_disk
-  labels           = {}
-  additional_disks = []
-  env_vars         = var.jenkins-agent.environment
-  cloud_init       = ""
+  name        = "${var.jenkins-agent.instance_name}-${var.environment}-${count.index + 1}"
+  zone        = var.zone
+  platform_id = var.platform_id
+  cores       = var.jenkins-agent.cpu
+  memory      = var.jenkins-agent.memory
+  ssh         = "${var.username}:${var.ssh_key}"
+  boot_disk   = var.jenkins-agent.boot_disk
   network_interfaces = [
     {
       subnet_id      = data.terraform_remote_state.network.outputs.subnet_id
@@ -107,20 +98,6 @@ module "jenkins-agent" {
     }
   ]
 }
-
-
-resource "yandex_dns_recordset" "yc_records" {
-  count = length(module.jenkins) > 0  ? 1 : 0
-
-  zone_id = data.terraform_remote_state.network.outputs.zone_id
-  name    = var.jenkins_dns_records
-  type    = "A"
-  ttl     = 300
-  data    = module.jenkins[0].public_ips
-
-  depends_on = [module.jenkins]
-}
-
 
 # Ресурс для генерации динамического inventory-файла Ansible
 resource "local_file" "inventory" {

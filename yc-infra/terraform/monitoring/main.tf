@@ -14,7 +14,7 @@ terraform {
     }
     bucket = "vladis-terraform-state"
     region = "ru-central1"
-    key    = "instance-monitoring.tfstate"
+    key    = "instances/monitoring.tfstate"
 
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -80,14 +80,8 @@ module "monitoring" {
   platform_id      = var.platform_id
   cores            = var.monitoring.cpu
   memory           = var.monitoring.memory
-  core_fraction    = var.monitoring.core_fraction
   ssh              = "${var.username}:${var.ssh_key}"
-  tags             = var.monitoring.tags
   boot_disk        = var.monitoring.boot_disk
-  labels           = {}
-  additional_disks = []
-  env_vars         = var.monitoring.environment
-  cloud_init       = ""
   network_interfaces = [
     {
       subnet_id      = data.terraform_remote_state.network.outputs.subnet_id
@@ -95,20 +89,11 @@ module "monitoring" {
       security_group = []
     }
   ]
+ create_dns_record = true
+ dns_zone_id       = data.terraform_remote_state.network.outputs.zone_id
+ dns_records       = var.monitoring.dns_records
 }
 
-
-resource "yandex_dns_recordset" "monitoring_records" {
-  count = length(module.monitoring) > 0 ? 1 : 0
-
-  zone_id = data.terraform_remote_state.network.outputs.zone_id
-  name    = var.monitoring_dns_records
-  type    = "A"
-  ttl     = 300
-  data    = module.monitoring[0].public_ips
-
-  depends_on = [module.monitoring]
-}
 
 # Ресурс для генерации динамического inventory-файла Ansible
 resource "local_file" "inventory" {

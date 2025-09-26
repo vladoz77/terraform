@@ -2,7 +2,7 @@ compose_state: "present" # Or absent if you want remove jenkins
 # Container settings
 jenkins_container_name: jenkins
 jenkins_web_port: "8080"
-jenkins_url: "{{ jenkins_container_name }}.{{ domain_name | default('home.local')}}"
+jenkins_url: "{{ jenkins_container_name }}.home.local"
 jenkins_images: jenkins/jenkins
 jenkins_image_version: lts-jdk21
 

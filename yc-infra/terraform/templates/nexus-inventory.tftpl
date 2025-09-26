@@ -1,0 +1,4 @@
+[nexus-server]
+%{ for ip in nexus ~}
+${ip} username=${username}
+%{ endfor ~}

@@ -5,11 +5,11 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-Group=ubuntu
 WorkingDirectory={{ agent_work_dir }}
 ExecStart=/usr/bin/java -jar /usr/local/bin/agent.jar \
   -url https://{{ jenkins_url }} \
   -webSocket \
+  -noCertificateCheck \
   -secret {{ agent_secret}} \
   -name agent-{{ inventory_hostname }} \
   -workDir {{ agent_work_dir }}

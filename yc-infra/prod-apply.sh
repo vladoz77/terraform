@@ -19,7 +19,7 @@ terraform plan
 terraform apply  -auto-approve 
 
 # Ansible provision
-# sleep 30
+sleep 60
 cd ../../ansible/
-ansible-playbook -i inventory/monitoring/inventory.ini  playbooks/jenkins-install-prod.yaml -u ubuntu 
+ansible-playbook -i inventory/monitoring/inventory.ini  playbooks/monitoring-install.yaml -u ubuntu 
 ansible-playbook -i inventory/jenkins/prod/inventory.ini  playbooks/jenkins-install-prod.yaml -u ubuntu 

@@ -1,0 +1,19 @@
+hostname: "nexus-server"
+docker_network_name: "traefik"
+
+packages:
+- jq
+- python3-pip
+- unzip
+
+# traefik config
+traefik_docker_dir: /home/{{ ansible_user }}/traefik
+traefik_container_name: traefik
+traefik_image: "traefik"
+traefik_version: "v3.5"
+acme_email: "vladoz77@yandex.ru"
+
+# nexus config
+nexus_dashboard_url: nexus.home-local.site
+registry_url: reg.home-local.site
+docker_proxy_url: docker-proxy.home-local.site

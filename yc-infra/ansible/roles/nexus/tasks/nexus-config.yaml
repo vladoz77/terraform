@@ -9,7 +9,7 @@
   delay: 10
   ignore_errors: yes
 
-- name: Check users list with new password
+- name: Check if admin password is already changed
   ansible.builtin.uri:
     url: "{{ nexus_url }}/service/rest/v1/security/users"
     method: GET
@@ -25,31 +25,56 @@
   register: nexus_users_check
   ignore_errors: true
 
-- name: Change default admin password
+- name: Password has already changed
+  ansible.builtin.debug:
+    msg: "nexus admin password has already changed"
+  when: nexus_users_check.status == 200
+  
+- name: Change default admin password (if needed)
   block:
-  - name: Get old password in {{ nexus_container_name }}
-    community.docker.docker_container_exec:
-      container: "{{ nexus_container_name }}"
-      command: /bin/bash -c "cat /nexus-data/admin.password"
-    register: default_pass
+    - name: Get old password from {{ nexus_container_name }}
+      community.docker.docker_container_exec:
+        container: "{{ nexus_container_name }}"
+        command: /bin/bash -c "cat /nexus-data/admin.password"
+      register: default_pass
+      # when: password_file_check.stdout == "exists"
 
-  - name: set old password
-    ansible.builtin.set_fact:
-      default_password: "{{ default_pass.stdout }}"
+    - name: Set old password fact
+      ansible.builtin.set_fact:
+        default_password: "{{ default_pass.stdout }}"
+      # when: password_file_check.stdout == "exists"
 
-  - name: Change old password
-    ansible.builtin.uri:
-      method: PUT
-      url: "{{ nexus_url }}/{{ change_password }}"
-      url_username: "{{ admin_user }}"
-      url_password: "{{ default_password }}"
-      force_basic_auth: yes
-      headers:
-        Content-Type: "text/plain"
-      body: "{{ new_admin_password }}"
-      status_code: 204
+    - name: Change old password using default password
+      ansible.builtin.uri:
+        method: PUT
+        url: "{{ nexus_url }}/{{ change_password }}"
+        url_username: "{{ admin_user }}"
+        url_password: "{{ default_password }}"
+        force_basic_auth: yes
+        headers:
+          Content-Type: "text/plain"
+        body: "{{ new_admin_password }}"
+        status_code: 204
+      # when: password_file_check.stdout == "exists"
 
   when: nexus_users_check.status != 200
+
+- name: Verify admin authentication
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/service/rest/v1/security/users"
+    method: GET
+    user: "{{ admin_user }}"
+    password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    status_code: 200
+    validate_certs: no
+  register: auth_verify
+  ignore_errors: true
+
+- name: Fail if authentication failed
+  ansible.builtin.fail:
+    msg: "Failed to authenticate to Nexus with provided credentials"
+  when: auth_verify.status != 200
   
 - name: check if role {{ role_id }} exist
   ansible.builtin.uri:
@@ -184,4 +209,78 @@
       - 403
   when: repo_result.status == 404
     
+- name: Check if docker proxy repo {{ docker_proxy_name }} exists
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/{{ get_proxy_repo }}/{{ docker_proxy_name }}"
+    method: GET
+    url_username: "{{ admin_user }}"
+    url_password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    status_code:
+      - 200
+      - 404
+  register: docker_proxy_result
 
+- ansible.builtin.debug:
+    msg: "Docker proxy repo {{ docker_proxy_name }} already exists in Nexus"
+  when: docker_proxy_result.status == 200
+
+- name: Create Docker proxy repository
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/service/rest/v1/repositories/docker/proxy"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      name: "{{ docker_proxy_name }}"
+      online: true
+      storage:
+        blobStoreName: "default"
+        strictContentTypeValidation: true
+      cleanup:
+        policyNames: []
+      component:
+        proprietaryComponents: true
+      docker:
+        v1Enabled: true
+        forceBasicAuth: false
+        httpPort: "{{ docker_proxy_port }}"
+      proxy:
+        remoteUrl: "https://{{ docker_proxy_remote_url }}"
+        contentMaxAge: 1440
+        metadataMaxAge: 1440
+      negativeCache:
+        enabled: true
+        timeToLive: 1440
+      httpClient:
+        blocked: false
+        autoBlock: true
+        connection:
+          useTrustStore: false
+      authentication: {}
+      dockerProxy: 
+        indexType: HUB
+    status_code:
+      - 201
+      - 401
+      - 403
+  when: docker_proxy_result.status == 404
+
+- name: Get current active realms
+  ansible.builtin.uri:
+    url: "{{ nexus_url }}/service/rest/v1/security/realms/active"
+    method: GET
+    url_username: "{{ admin_user }}"
+    url_password: "{{ new_admin_password }}"
+    force_basic_auth: yes
+    headers:
+      Accept: "application/json"
+    validate_certs: no
+  register: current_realms
+
+- ansible.builtin.debug:
+    var: current_realms

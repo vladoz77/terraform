@@ -5,17 +5,23 @@ services:
     labels:
     # --- Веб-интерфейс Nexus ---
       - "traefik.enable=true"
-      - "traefik.http.routers.{{ nexus_container_name }}.rule=Host(`{{ nexus_domain_name }}`)"
+      - "traefik.http.routers.{{ nexus_container_name }}.rule=Host(`{{ nexus_dashboard_url }}`)"
       - "traefik.http.routers.{{ nexus_container_name }}.entrypoints=websecure"
       - "traefik.http.routers.{{ nexus_container_name }}.tls.certresolver=le"
       - "traefik.http.services.{{ nexus_container_name }}.loadbalancer.server.port={{ nexus_web_port}}"
       - "traefik.http.routers.{{ nexus_container_name }}.service={{ nexus_container_name }}" 
     # --- Docker Registry ---
-      - "traefik.http.routers.{{ registry_name }}.rule=Host(`{{ registry_domain_name }}`)"
+      - "traefik.http.routers.{{ registry_name }}.rule=Host(`{{ registry_url }}`)"
       - "traefik.http.routers.{{ registry_name }}.entrypoints=websecure"
       - "traefik.http.routers.{{ registry_name }}.tls.certresolver=le"
       - "traefik.http.services.{{ registry_name }}.loadbalancer.server.port={{ repo_port}}"
       - "traefik.http.routers.{{ registry_name }}.service={{ registry_name }}" 
+    # --- Docker Registry ---
+      - "traefik.http.routers.{{ docker_proxy_name }}.rule=Host(`{{ docker_proxy_url }}`)"
+      - "traefik.http.routers.{{ docker_proxy_name }}.entrypoints=websecure"
+      - "traefik.http.routers.{{ docker_proxy_name }}.tls.certresolver=le"
+      - "traefik.http.services.{{ docker_proxy_name }}.loadbalancer.server.port={{ docker_proxy_port}}"
+      - "traefik.http.routers.{{ docker_proxy_name }}.service={{ docker_proxy_name }}" 
     volumes:
       - nexus-data-volume:/nexus-data
     restart: unless-stopped
@@ -27,7 +33,6 @@ services:
       start_period: 120s
     ports:
       - {{ nexus_web_port}}:{{ nexus_web_port}} 
-      - {{ repo_port}} 
     networks:
       - {{ docker_network_name }}
 

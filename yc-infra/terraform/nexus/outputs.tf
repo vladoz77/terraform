@@ -1,24 +1,15 @@
-output "jenins_public_ip" {
-  value = module.jenkins[*].public_ips
+output "public_ip" {
+  value = module.nexus[*].public_ips
 }
 
-output "jenkins-agent_public_ip" {
-  value = module.jenkins-agent[*].public_ips
-}
 
 output "fqdn" {
   description = "Full FQDN of instances"
   value = flatten([
-    for instance in module.jenkins : [
+    for instance in module.nexus : [
       for name in instance.fqdn : [
         "${name}.${data.terraform_remote_state.network.outputs.zone_name}"
       ]
     ]
   ])
 }
-
-
-
-
-
-

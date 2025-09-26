@@ -4,14 +4,18 @@ docker_network_name: "traefik"
 packages:
 - jq
 - openjdk-17-jre
+- python3-pip
+- unzip
 
 # traefik config
+traefik_docker_dir: /home/{{ ansible_user }}/traefik
 traefik_container_name: traefik
 traefik_image: "traefik"
 traefik_version: "v3.5"
 acme_email: "vladoz77@yandex.ru"
 
 # jenkins config
+jenkins_url: jenkins.home-local.site
 jenkins_images: jenkins/jenkins
 jenkins_image_version: lts-jdk21
 jenkins_plugin_list:
@@ -35,7 +39,7 @@ jenkins_plugin_list:
 - timestamper:latest
 - workflow-aggregator:latest
 - ws-cleanup:latest
-- adoptopenjdk:1.7
+- adoptopenjdk:latest
 - sonar:latest
 - role-strategy:latest
 - maven-plugin:latest

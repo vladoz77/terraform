@@ -1,155 +1,228 @@
-# 🛠 Ansible Role: `traefik`
+# Ansible Role: Traefik Reverse Proxy
 
-Устанавливает и настраивает **Traefik v3.5** как современный reverse-proxy и edge router для Docker-среды.  
-Роль обеспечивает автоматическое получение SSL-сертификатов через Let's Encrypt, защищённый доступ к дашборду и корректную работу в production-окружении.
+Устанавливает и настраивает Traefik как reverse proxy с автоматическим SSL сертификатами от Let's Encrypt и интеграцией с Yandex Cloud S3 для резервного копирования сертификатов.
 
-> ✅ Идеально подходит для Jenkins, Nexus и других сервисов, разворачиваемых через Docker.
+## 📋 Requirements
 
----
+### Target System
+- Ubuntu/Debian
+- Docker и Docker Compose
+- Python 3.x
 
-## 🔍 Описание
-
-Эта роль:
-- Автоматически освобождает порты `80` и `443`, останавливая конфликтующие контейнеры
-- Создаёт и управляет Docker-сетью
-- Разворачивает Traefik через `docker-compose`
-- Включает дашборд с защитой через Basic Auth
-- Настраивает получение сертификатов Let's Encrypt
-- Полностью идемпотентна и готова к использованию в CI/CD
-
----
-
-## 🧩 Структура роли
-
-```
-roles/traefik/
-├── defaults/
-│   └── main.yaml          # переменные по умолчанию
-├── meta/
-│   └── main.yaml          # зависимости
-├── tasks/
-│   ├── install.yaml       # установка и настройка
-│   └── main.yaml          # проверка и запуск
-└── templates/
-    └── docker-compose-traefik.yaml.j2  # шаблон compose
-```
-
----
-
-## ⚙️ Переменные по умолчанию
-
-Файл: `defaults/main.yaml`
-
-```yaml
-# Docker config
-docker_network_name: "bridge"                             # Сеть для Traefik
-traefik_container_name: "traefik"                         # Имя контейнера
-traefik_image: "traefik"                                  # Образ
-traefik_version: "v3.5"                                   # Версия
-traefik_docker_dir: "/home/{{ ansible_user }}/{{ traefik_container_name }}"  # Путь к compose
-traefik_letsencrypt_path: "{{ traefik_docker_dir }}/letsencrypt"             # Хранение сертификатов
-
-# Dashboard config
-traefik_enable_dashboard: true                            # Включить дашборд
-traefik_dashboard_url: "{{ traefik_container_name }}.{{ domain_name }}"  # URL дашборда
-traefik_dashboard_user: "admin"                           # Логин
-traefik_dashboard_password_hash: "$$apr1$$CmiVRFjs$$bPQcSgQ.2HcTzM.HVTvAl1"  # Пароль: admin
-
-# ACME / Let's Encrypt
-domain_name: "yc.home-local.site"                         # Базовый домен
-acme_email: "vladoz77@yandex.ru"                          # Email для Let's Encrypt
-```
-
----
-
-## 🔐 Рекомендации по безопасности
-
-| Что | Рекомендация |
-|-----|--------------|
-| Пароль в открытом виде | Сгенерируй свой: `htpasswd -nBC 10 admin` |
-| `bridge` сеть | Замени на `traefik-network` (см. ниже) |
-| `acme_email` | Вынеси в `group_vars` или Ansible Vault |
-| `insecure: true` | Убери после настройки, если не нужен API |
-
----
-
-## 🚀 Использование
-
-### В плейбуке
-
-```yaml
-- hosts: jenkins-server
-  become: yes
-  roles:
-    - role: traefik
-      traefik_container_name: "traefik"
-      domain_name: "yc.home-local.site"
-```
-
-### С переопределением переменных
-
-```yaml
-- name: Deploy Traefik
-  ansible.builtin.include_role:
-    name: traefik
-  vars:
-    traefik_container_name: "traefik-prod"
-    acme_email: "admin@company.com"
-    traefik_enable_dashboard: false
-```
-
----
-
-## 🔄 Как работает роль
-
-1. **Проверяет**, запущен ли контейнер `traefik`
-2. **Останавливает и удаляет** любые контейнеры, занимающие порты `80` и `443`
-3. **Создаёт сеть**, если не существует
-4. **Создаёт директорию** и копирует `docker-compose.yaml`
-5. **Запускает Traefik** через `docker compose up`
-
-> ✅ Гарантирует чистый запуск даже при смене имени или конфигурации.
-
----
-
-## 🛠 Зависимости
-
-- Установленный Docker (через роль `docker`)
-- Коллекция: `community.docker`
-
+### Ansible Collections
 ```bash
+ansible-galaxy collection install amazon.aws
 ansible-galaxy collection install community.docker
 ```
 
-Роль зависит от `docker`:
+## ⚙️ Role Variables
 
+### Основные настройки
 ```yaml
-# meta/main.yaml
-dependencies:
-  - role: docker
+# Docker конфигурация
+docker_network_name: "bridge"
+traefik_container_name: "traefik"
+traefik_image: "traefik"
+traefik_version: "v3.5"
+traefik_docker_dir: "/home/{{ ansible_user }}/traefik"
+
+# Let's Encrypt
+acme_email: "your-email@example.com"
 ```
 
----
+### Dashboard (опционально)
+```yaml
+traefik_enable_dashboard: false
+traefik_dashboard_url: "traefik.home-local.site"  # Полный URL dashboard
+traefik_dashboard_user: "admin"
+traefik_dashboard_password_hash: "$$apr1$$..."  # Сгенерированный хеш
+```
 
-## 🌍 Доступные URL
+### Yandex Cloud S3 интеграция
+```yaml
+yandex_region: "ru-central1"
+yandex_storage_endpoint: "https://storage.yandexcloud.net/"
+s3_bucket_name: "acme-bucket"
+s3_key: "traefik/acme.json"
+aws_access_key: "YCAJ..."  # Задать в vault!
+aws_secret_key: "YCPM..."  # Задать в vault!
+```
 
-| URL | Описание |
-|-----|--------|
-| `https://traefik.yc.home-local.site` | Дашборд Traefik (если включён) |
-| `http://<ваш_хост>` | Автоматическое перенаправление на HTTPS |
-| `https://<ваш_сервис>.yc.home-local.site` | Сервисы, подключённые к той же сети и с лейблами Traefik |
+## 🚀 Usage
 
----
+### Basic Installation
+```yaml
+- hosts: servers
+  roles:
+    - role: traefik
+      vars:
+        acme_email: "your-email@example.com"
+```
 
-## ✅ Проверка после установки
+### With Dashboard and S3 Backup
+```yaml
+- hosts: servers
+  vars_files:
+    - vault.yml  # С AWS credentials
+  roles:
+    - role: traefik
+      vars:
+        acme_email: "admin@company.com"
+        traefik_enable_dashboard: true
+        traefik_dashboard_url: "traefik.company.com"
+        s3_bucket_name: "company-traefik-backup"
+```
 
+### For Multiple Domains
+```yaml
+- hosts: servers
+  roles:
+    - role: traefik
+      vars:
+        acme_email: "admin@company.com"
+        traefik_dashboard_url: "traefik.internal.company.com"  # Отдельный домен для dashboard
+```
+
+## 🔧 Features
+
+### ✅ Автоматическое управление SSL
+- Let's Encrypt сертификаты через HTTP challenge
+- Автоматическое продление сертификатов
+- HTTPS редирект с HTTP
+
+### ✅ Интеграция с Docker
+- Автоматическое обнаружение контейнеров
+- Docker network поддержка
+- Ярлыки для автоматической конфигурации
+
+### ✅ Yandex Cloud S3 Backup
+- **Резервное копирование** сертификатов в S3
+- **Восстановление** при пересоздании инстанса
+- Избежание лимитов Let's Encrypt
+
+### ✅ Dashboard (опционально)
+- Web-интерфейс мониторинга
+- Базовая аутентификация
+- HTTPS доступ
+- **Гибкая настройка домена** через `traefik_dashboard_url`
+
+## 📁 Project Structure
+```
+traefik/
+├── defaults/main.yml     # Переменные по умолчанию
+├── tasks/
+│   ├── main.yml          # Основные задачи
+│   └── install.yml       # Установка и настройка
+├── templates/
+│   └── docker-compose-traefik.yaml.j2  # Docker Compose шаблон
+└── meta/main.yml         # Мета-информация роли
+```
+
+## 🔒 Security Notes
+
+### Хранение credentials
 ```bash
-# Проверь, что контейнер запущен
-docker ps --filter name=traefik
+# Создать encrypted vault
+ansible-vault create group_vars/all.yml
 
-# Проверь, что порты открыты
-ss -tulnp | grep ':80\|:443'
-
-# Проверь логи
-docker logs traefik
+# Содержимое:
+aws_access_key: "YCAJ..."
+aws_secret_key: "YCPM..."
 ```
+
+### Безопасность Dashboard
+- По умолчанию dashboard отключен (`traefik_enable_dashboard: false`)
+- Используйте отдельный домен для dashboard
+- Сложные пароли и базовая аутентификация
+
+## 🎯 Key Improvements
+
+### Гибкая настройка доменов
+- **Dashboard домен** задается отдельно через `traefik_dashboard_url`
+- **Домены приложений** настраиваются в их собственных docker-compose файлах
+- Каждый сервис может иметь свой уникальный домен
+
+### Упрощенная конфигурация
+- Убрана глобальная переменная `domain_name`
+- Более четкое разделение ответственности
+- Легче управлять множеством доменов
+
+## 🔄 Workflow
+
+1. **Проверка существования** Traefik контейнера
+2. **Остановка конфликтующих** сервисов на портах 80/443
+3. **Восстановление сертификатов** из S3 (если доступно)
+4. **Развертывание** Traefik через Docker Compose
+5. **Автоматическая настройка** SSL сертификатов
+
+## 📝 Example Scenarios
+
+### Single Server Setup
+```yaml
+- hosts: single-server
+  roles:
+    - role: traefik
+      vars:
+        acme_email: "admin@company.com"
+        traefik_enable_dashboard: true
+        traefik_dashboard_url: "traefik.company.com"
+```
+
+### Multi-Service Environment
+```yaml
+- hosts: proxy-servers
+  roles:
+    - role: traefik
+      vars:
+        acme_email: "devops@company.com"
+        # Dashboard на отдельном домене
+        traefik_enable_dashboard: true
+        traefik_dashboard_url: "monitor.internal.company.com"
+```
+
+## 🐛 Troubleshooting
+
+### Проверка статуса
+```bash
+docker logs traefik
+docker exec traefik traefik certs list
+```
+
+### Проверка Dashboard
+```bash
+curl -u admin:password https://traefik.home-local.site/api/health
+```
+
+### Ручное резервное копирование
+```bash
+aws s3 cp /home/ubuntu/traefik/letsencrypt/acme.json \
+  s3://acme-bucket/traefik/acme.json \
+  --endpoint-url https://storage.yandexcloud.net
+```
+
+## 🔍 Monitoring
+
+### Логи Traefik
+```bash
+docker logs -f traefik
+```
+
+### Статус сертификатов
+```bash
+docker exec traefik traefik certs list
+```
+
+### Health check Dashboard
+```bash
+curl -f https://traefik.your-domain.com/api/health
+```
+
+## ✅ Benefits
+
+- **Гибкость**: Отдельная настройка домена для dashboard
+- **Простота**: Четкое разделение конфигурации
+- **Надежность**: Автоматическое резервное копирование сертификатов
+- **Безопасность**: HTTPS по умолчанию, изолированный dashboard
+- **Масштабируемость**: Поддержка множества доменов и сервисов
+
+---

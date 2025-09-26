@@ -1,3 +1,9 @@
+# Install common packages for role
+packages:
+  - python3-pip
+python_library:
+  - boto3
+  - botocore
 # docker config
 docker_network_name: "bridge"
 traefik_container_name: traefik
@@ -5,11 +11,17 @@ traefik_image: "traefik"
 traefik_version: "v3.5"
 traefik_docker_dir: "/home/{{ ansible_user }}/{{ traefik_container_name }}"
 # Dashboard config
-traefik_enable_dashboard: true
-traefik_dashboard_url: "{{ traefik_container_name }}.{{ domain_name | default('home.local')}}"
+traefik_enable_dashboard: false
+traefik_dashboard_url: "traefik.home.local"
 traefik_dashboard_user: "admin"
 traefik_dashboard_password_hash: "$$apr1$$CmiVRFjs$$bPQcSgQ.2HcTzM.HVTvAl1"  # admin:admin
 # Acme config
-domain_name: "yc.home-local.site"
 acme_email: "vladoz77@yandex.ru"
 traefik_letsencrypt_path: "{{ traefik_docker_dir }}/letsencrypt"
+# config bucket
+yandex_region: ru-central1
+yandex_storage_endpoint: https://storage.yandexcloud.net/
+s3_bucket_name: acme-bucket
+s3_key: "{{ ansible_hostname }}/acme.json"
+aws_access_key: 
+aws_secret_key: 

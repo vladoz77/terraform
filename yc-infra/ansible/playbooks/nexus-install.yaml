@@ -1,0 +1,23 @@
+- name: Config nexus server
+  hosts: nexus-server
+  become: true
+  vars:
+    vault_url: http://localhost:8200
+    role_id: "{{ lookup('env', 'VAULT_ROLE_ID' ) }}"
+    secret_id: "{{ lookup('env', 'VAULT_SECRET_ID' ) }}"
+    nexus_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/nexus auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    aws_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/aws auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    aws_access_key: "{{ aws_secret.aws_access_key }}"
+    aws_secret_key: "{{ aws_secret.aws_secret_key }}"
+    s3_bucket_name: acme-bucket
+    nexus_username: "{{ nexus_secret.nexus_username }}"
+    nexus_password: "{{ nexus_secret.nexus_password }}"
+  roles:
+    - common
+    - docker
+    - traefik
+    - nexus
+    - sync_acme_to_s3
+
+
+  

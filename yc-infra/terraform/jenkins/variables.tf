@@ -37,13 +37,6 @@ variable "platform_id" {
   type        = string
 }
 
-variable "jenkins_dns_records" {
-  description = "dns records for yc"
-  type        = string
-  default     = ""
-}
-
-
 variable "environment" {
   description = "Environment name (dev, stage, prod)"
   type        = string
@@ -70,6 +63,11 @@ variable "jenkins" {
     })
     tags        = optional(list(string))
     environment = optional(map(string))
+    dns_records = map(object({
+      name = string
+      ttl  = number
+      type = string
+    }))
   })
   default = {
     count         = 1
@@ -84,6 +82,7 @@ variable "jenkins" {
       size     = 20
       image_id = "fd81hgrcv6lsnkremf32"
     }
+    dns_records = {}
   }
 }
 

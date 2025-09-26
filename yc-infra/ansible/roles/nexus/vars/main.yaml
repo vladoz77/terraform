@@ -12,3 +12,5 @@ get_user: service/rest/v1/security/users
 create_user: service/rest/v1/security/users
 get_repo: service/rest/v1/repositories/docker/hosted
 create_repo_hosted: service/rest/v1/repositories/docker/hosted
+get_proxy_repo: service/rest/v1/repositories/docker/proxy
+create_proxy_repo: service/rest/v1/repositories/docker/proxy
