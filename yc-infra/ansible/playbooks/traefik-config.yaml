@@ -5,8 +5,6 @@
     jenkins_url: jenkins.home-local.site
     acme_email: vladozz23@gmail.com
     traefik_docker_dir: /home/{{ ansible_user }}/traefik
-    aws_access_key: YCAJE16crOUskS3f06CNsStKC
-    aws_secret_key: YCOKxw5lywvZkgCxoaWEXQXmaLxIrziv77R2bY0B
     s3_bucket_name: acme-bucket
   roles:
     - common
