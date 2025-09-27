@@ -2,11 +2,15 @@
   hosts: jenkins-server
   become: true
   vars:
+    vault_url: http://localhost:8200
+    role_id: "{{ lookup('env', 'VAULT_ROLE_ID' ) }}"
+    secret_id: "{{ lookup('env', 'VAULT_SECRET_ID' ) }}"
+    aws_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/aws auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    aws_access_key: "{{ aws_secret.aws_access_key }}"
+    aws_secret_key: "{{ aws_secret.aws_secret_key }}"
     jenkins_url: jenkins.home-local.site
     acme_email: vladozz23@gmail.com
     traefik_docker_dir: /home/{{ ansible_user }}/traefik
-    aws_access_key: YCAJE16crOUskS3f06CNsStKC
-    aws_secret_key: YCOKxw5lywvZkgCxoaWEXQXmaLxIrziv77R2bY0B
     s3_bucket_name: acme-bucket
   roles:
     - common
