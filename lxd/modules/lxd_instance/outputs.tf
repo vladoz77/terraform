@@ -1,8 +1,23 @@
-output "vm_name" {
+# outputs.tf
+output "instance_name" {
   value = lxd_instance.instance.name
-  description = "Virtual machine name"
 }
 
-output "vm_ipv4_address" {
-  value = lxd_instance.instance.ipv4_address
+output "ipv4_address" {
+  value = var.instance.ipv4_address
 }
+
+output "profile_name" {
+  value = lxd_profile.vm.name
+}
+
+# Добавьте дополнительные полезные outputs
+output "volumes" {
+  value = { for k, v in lxd_volume.volume : k => {
+    name = v.name
+    size = v.config.size
+    pool = v.pool
+  }}
+}
+
+

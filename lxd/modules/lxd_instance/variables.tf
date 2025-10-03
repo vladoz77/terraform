@@ -1,37 +1,28 @@
 variable "network_name" {
-  description = "Network name for instance"
   type = string
 }
 
-variable "attached_volume" {
-  description = "Map of existing volumes to attach to the instance"
-  type = map(object({
-    pool = string
-    name = string
-    path = optional(string)
-  }))
-  default = {}
+variable "storage_pool" {
+  type = string
 }
 
 variable "instance" {
-  description = "Instance config"
   type = object({
-    profile = optional(string)
-    name    = string
-    cpu = number
-    memory = string
-    ipv4_address = optional(string)
-    root_name = string
-    image = string
-    description = optional(string)
-    cloud_init = optional(string, null)
+    name         = string
+    image        = string
+    type         = string
+    ipv4_address = string
+    cpu          = number
+    memory       = string
+    cloud_init   = string
+    root_pool    = string
+    root_pool_size = string
   })
-  validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.instance.name))
-    error_message = "Имя инстанса должно содержать только латинские буквы, цифры и дефисы."
-  }
-  validation {
-    condition     = var.instance.cpu > 0
-    error_message = "Количество CPU должно быть больше 0."
-  }
+}
+
+variable "volumes" {
+  type = map(object({
+    size = string
+  }))
+  default = {}
 }

@@ -1,29 +1,57 @@
+resource "lxd_profile" "vm" {
+  name = "vm-${var.instance.name}"
+
+  device {
+    name = "root"
+    type = "disk"
+    properties = {
+      path = "/"
+      pool = var.instance.root_pool
+      size = var.instance.root_pool_size
+    }
+  }
+}
+
+resource "lxd_volume" "volume" {
+  for_each = var.volumes
+  
+  name         = "${var.instance.name}-${each.key}"  
+  pool         = var.storage_pool
+  content_type = "block"
+  
+  config = {
+    size = each.value.size
+  }
+}
+
+# Создаем instance
 resource "lxd_instance" "instance" {
-  profiles = [var.instance.profile]
-  image    = var.instance.image
-  name     = var.instance.name
-  type     = "virtual-machine"
+  name = var.instance.name
+  image = var.instance.image
+  type = var.instance.type
+  profiles = [lxd_profile.vm.name]
+  ephemeral = false
 
   limits = {
-    cpu = var.instance.cpu
+    cpu    = var.instance.cpu
     memory = var.instance.memory
   }
 
-  # Динамическое добавление дисков
+  # Динамическое добавление дополнительных дисков
   dynamic "device" {
-    for_each = var.attached_volume
+    for_each = var.volumes
+    
     content {
       name = device.key
       type = "disk"
-
       properties = {
-        pool   = device.value.pool
-        source = device.value.name
+        source = lxd_volume.volume[device.key].name
+        pool   = var.storage_pool
       }
     }
   }
 
-  # Сетевые интерфейсы
+  # Сетевой интерфейс
   device {
     name = "eth0"
     type = "nic"
@@ -36,4 +64,6 @@ resource "lxd_instance" "instance" {
   config = {
     "user.user-data" = var.instance.cloud_init
   }
+
+  depends_on = [lxd_volume.volume]
 }
