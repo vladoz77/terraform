@@ -1,0 +1,13 @@
+- name: master config
+  hosts: master
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: common-config
+    - role: ha-master-config
+      when: ha_enabled 
+    - role: master-config
+      when: inventory_hostname == groups['master'][0]
+    - role: join-master
+      when: ha_enabled 

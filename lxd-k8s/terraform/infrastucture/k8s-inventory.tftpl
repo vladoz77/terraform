@@ -1,0 +1,9 @@
+[master]
+%{ for name, ip in masters ~}
+k8s-${name} ansible_host=${ip}
+%{ endfor ~}
+
+[worker]
+%{ for name, ip in workers ~}
+k8s-${name} ansible_host=${ip}
+%{ endfor ~}

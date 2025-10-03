@@ -1,0 +1,64 @@
+resource "helm_release" "ingress-nginx" {
+  name = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart = "ingress-nginx"
+  version = "4.12.2"
+  namespace = "ingress-nginx"
+  create_namespace = true
+
+  values = [
+    <<-EOT
+namespaceOverride: ingress-nginx
+controller:
+  allowSnippetAnnotations: true
+  replicaCount: 2
+  ingressClassResource:
+    name: nginx
+    enabled: true
+    default: true
+    controllerValue: "k8s.io/ingress-nginx"
+
+  config:
+    annotations-risk-level: "Critical"
+    strict-validate-path-type: "false"
+    use-forwarded-headers: "true"
+    enable-real-ip: "true"
+    custom-http-errors: >-
+      403,404,500,501,502,503
+    log-format-escape-json: "true"
+    log-format-upstream: '{"source": "nginx", "time": $msec, "resp_body_size": $body_bytes_sent, "request_host": "$http_host", "request_address": "$remote_addr", "request_length": $request_length, "request_method": "$request_method", "uri": "$request_uri", "status": $status,  "user_agent": "$http_user_agent", "resp_time": $request_time, "upstream_addr": "$upstream_addr"}'
+
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: "app.kubernetes.io/name"
+            operator: In
+            values:
+            - ingress-nginx
+        topologyKey: "kubernetes.io/hostname"
+
+  minAvailable: 1
+
+  service:
+    enabled: true
+    type: LoadBalancer
+
+  admissionWebhooks:
+    enabled: false
+
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+
+revisionHistoryLimit: 2
+    EOT
+  ]
+
+  depends_on = [ helm_release.cert-manager ]
+
+}
