@@ -9,8 +9,6 @@
     aws_access_key: "{{ aws_secret.aws_access_key }}"
     aws_secret_key: "{{ aws_secret.aws_secret_key }}"
     jenkins_url: jenkins.home-local.site
-    acme_email: vladozz23@gmail.com
-    traefik_docker_dir: /home/{{ ansible_user }}/traefik
     s3_bucket_name: acme-bucket
   roles:
     - common
