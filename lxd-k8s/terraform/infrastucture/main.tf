@@ -35,7 +35,7 @@ module "instance" {
     root_pool_size = "30GB"
     root_pool      = lxd_storage_pool.root.name
     name           = "k8s-${each.key}"
-    image          = "57ac3dd8f816"
+    image          = "fedora42"
     type           = "virtual-machine"
     ipv4_address   = each.value.ipv4_address
     cpu            = each.value.cpu
