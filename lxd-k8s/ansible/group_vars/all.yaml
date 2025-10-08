@@ -22,6 +22,7 @@ packages:
 - nfs4-acl-tools
 - tcpdump
 - unzip
+- cryptsetup
 
 # Kubernetes versions
 kubernetesVersion: '1.33'
