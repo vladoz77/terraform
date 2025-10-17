@@ -13,7 +13,7 @@
 
 - name: Download containerd.service systemd unit
   ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/containerd/containerd/v{{ containerd_version }}/containerd.service"
+    url: "{{ containerd_service_url }}"
     dest: /etc/systemd/system/containerd.service
     mode: '0644'
 

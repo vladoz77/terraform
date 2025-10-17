@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice choices: ['apply', 'destroy'], description: 'Terraform action', name: 'action'
+        choice choices: ['apply', 'destroy'], description: 'Terraform action', name: 'terraform'
     }
 
     stages {
@@ -12,45 +12,66 @@ pipeline {
             }
         }
 
-        stage('Terraform Init & Plan') {
-            steps {
-                dir('lxd-k8s/terraform/infrastucture'){
-                    sh """
-                    terraform init
-                    """
-                }
-            }
-        }
-
         stage('Terraform Apply or Destroy') {
             steps {
                 script {
                     dir('lxd-k8s/terraform/infrastucture') {
-                        if (params.action == 'apply') {
-                            sh 'terraform apply -auto-approve'
-                        } else if (params.action == 'destroy') {
-                            sh 'terraform destroy -auto-approve'
+                        if (params.terraform == 'apply') {
+                            sh"""
+                            terraform init
+                            terraform apply -auto-approve
+                            """
+                        } else if (params.terraform == 'destroy'){
+                            sh"""
+                            terraform init
+                            terraform destroy -auto-approve
+                            """
                         }
                     }
                 }
             }
         }
 
-        stage('install ansible dependences'){
+        stage('Configure Kubernetes with Ansible') {
+            when {
+                expression {params.terraform == 'apply'}
+            }
             steps {
-                dir('lxd-k8s/ansible'){
-                    sh 'ansible-galaxy collection install -r requirements.yaml'
+                script {
+                    echo "Installing ansible dependences..."
+                    dir('lxd-k8s/ansible'){
+                        sh 'ansible-galaxy collection install -r requirements.yaml'
+                    }
+                    echo "Instaling k8s..."
+                    ansiblePlaybook credentialsId: 'vlad-ssh-key',
+                        disableHostKeyChecking: true, 
+                        installation: 'ansible', 
+                        inventory: 'lxd-k8s/ansible/inventory.ini', 
+                        playbook: 'lxd-k8s/ansible/install-k8s.yaml'
                 }
             }
         }
 
-        stage('install-k8s'){
+        stage('Install or destroy base k8s applications'){
+            when {
+                expression { params.terraform == 'apply' }
+            }
             steps {
-                ansiblePlaybook credentialsId: 'vlad-ssh-key',
-                                disableHostKeyChecking: true, 
-                                installation: 'ansible', 
-                                inventory: 'lxd-k8s/ansible/inventory.ini', 
-                                playbook: 'lxd-k8s/ansible/install-k8s.yaml'
+                script{
+                    dir('lxd-k8s/terraform/k8s-applications'){
+                        if (params.terraform == 'apply') {
+                            sh"""
+                            terraform init
+                            terraform apply -auto-approve
+                            """
+                        } else if (params.terraform == 'destroy'){
+                            sh"""
+                            terraform init
+                            terraform destroy -auto-approve
+                            """
+                        }
+                    }
+                }
             }
         }
     }
