@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice choices: ['apply', 'destroy'], description: 'Terraform action', name: 'action'
+    }
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/vladoz77/terraform.git'
+            }
+        }
+
+        stage('Terraform Init & Plan') {
+            steps {
+                dir('lxd-k8s/terraform/infrastucture'){
+                    sh """
+                    terraform init
+                    """
+                }
+            }
+        }
+
+        stage('Terraform Apply or Destroy') {
+            steps {
+                script {
+                    dir('lxd-k8s/terraform/infrastucture') {
+                        if (params.action == 'apply') {
+                            sh 'terraform apply -auto-approve'
+                        } else if (params.action == 'destroy') {
+                            sh 'terraform destroy -auto-approve'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('install ansible dependences'){
+            steps {
+                dir('lxd-k8s/ansible'){
+                    sh 'ansible-galaxy collection install -r requirements.yaml'
+                }
+            }
+        }
+
+        stage('install-k8s'){
+            steps {
+                ansiblePlaybook credentialsId: 'vlad-ssh-key',
+                                disableHostKeyChecking: true, 
+                                installation: 'ansible', 
+                                inventory: 'lxd-k8s/ansible/inventory.ini', 
+                                playbook: 'lxd-k8s/ansible/install-k8s.yaml'
+            }
+        }
+    }
+}
