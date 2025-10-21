@@ -1,21 +1,58 @@
 def terraform(terraform_dir) {
     dir(terraform_dir) {
-        if (params.terraform_action == 'apply') {
-            sh"""
-            terraform init
-            terraform apply -auto-approve
-            """
-        } else if (params.terraform_action == 'destroy'){
-            sh"""
-            terraform init
-            terraform destroy -auto-approve
-            """
+        try {
+            if (params.terraform_action == 'apply') {
+                sh"""
+                terraform init \
+                    -backend-config="access_key=${AWS_ACCESS}" \
+                    -backend-config="secret_key=${AWS_SECRET}"
+                terraform apply -auto-approve
+                """
+            } else if (params.terraform_action == 'destroy'){
+                sh"""
+                terraform init \
+                    -backend-config="access_key=${AWS_ACCESS}" \
+                    -backend-config="secret_key=${AWS_SECRET}"
+                terraform destroy -auto-approve
+                """
+            }
+        } catch (Exception e) {
+            echo "❌ Terraform failed in directory: ${terraform_dir}"
+            echo "Error: ${e.message}"
+            throw e 
+        }
+        
+    }
+}
+
+def ansible(ansible_dir, inventory, playbook, credentials) {
+    dir ("${ansible_dir}") {
+        try {
+            echo "Installing ansible dependences..."
+            sh 'ansible-galaxy collection install -r requirements.yaml'
+            echo "Instaling k8s..."
+            ansiblePlaybook 
+                credentialsId: "${credentials}",
+                disableHostKeyChecking: true, 
+                installation: 'ansible', 
+                inventory: "${inventory}", 
+                playbook: "${playbook}",
+                colorized: true
+        } catch (Exception e) {
+            echo "❌ ansible failed in directory: ${ansible_dir}"
+            echo "Error: ${e.message}"
+            throw e 
         }
     }
 }
 
 pipeline {
     agent any
+    environment {
+        AWS_ACCESS = credentials('aws_access_key_id')
+        AWS_SECRET = credentials('aws_secret_access_key')
+    }
+
 
     parameters {
         choice choices: ['apply', 'destroy'], description: 'Terraform action', name: 'terraform_action'
@@ -25,6 +62,24 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 git branch: 'main', url: 'https://github.com/vladoz77/terraform.git'
+            }
+        }
+
+        stage('config terraform') {
+            steps {
+                sh '''
+                    echo "Creating ~/.terraformrc for Yandex Cloud mirror"
+                    cat > ~/.terraformrc <<EOF
+                    provider_installation {
+                        network_mirror {
+                            url = "https://terraform-mirror.yandexcloud.net/"
+                            include = ["registry.terraform.io/*/*"]
+                        }
+                        direct {
+                            exclude = ["registry.terraform.io/*/*"]
+                        }
+                    }
+                '''
             }
         }
 
@@ -42,16 +97,7 @@ pipeline {
             }
             steps {
                 script {
-                    echo "Installing ansible dependences..."
-                    dir('lxd-k8s/ansible'){
-                        sh 'ansible-galaxy collection install -r requirements.yaml'
-                    }
-                    echo "Instaling k8s..."
-                    ansiblePlaybook credentialsId: 'vlad-ssh-key',
-                        disableHostKeyChecking: true, 
-                        installation: 'ansible', 
-                        inventory: 'lxd-k8s/ansible/inventory.ini', 
-                        playbook: 'lxd-k8s/ansible/install-k8s.yaml'
+                    ansible('lxd-k8s/ansible', 'inventory.ini', 'install-k8s.yaml', 'vlad-ssh-key' )
                 }
             }
         }
