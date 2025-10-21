@@ -27,6 +27,7 @@ terraform {
 
 provider "lxd" {
   remote {
+    name = "lxd-server-1"
     address  = "https://172.16.10.1:8443"
   }
 }

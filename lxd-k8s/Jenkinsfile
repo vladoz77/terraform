@@ -31,8 +31,7 @@ def ansible(ansible_dir, inventory, playbook, credentials) {
             echo "Installing ansible dependences..."
             sh 'ansible-galaxy collection install -r requirements.yaml'
             echo "Instaling k8s..."
-            ansiblePlaybook 
-                credentialsId: "${credentials}",
+            ansiblePlaybook credentialsId: "${credentials}",
                 disableHostKeyChecking: true, 
                 installation: 'ansible', 
                 inventory: "${inventory}", 
@@ -51,6 +50,9 @@ pipeline {
     environment {
         AWS_ACCESS = credentials('aws_access_key_id')
         AWS_SECRET = credentials('aws_secret_access_key')
+    }
+    tools {
+        terraform "terraform_1.13.4"
     }
 
 
