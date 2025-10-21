@@ -26,6 +26,7 @@ terraform {
 }
 
 provider "lxd" {
+  generate_client_certificates = true
   accept_remote_certificate = true
   remote {
     name = "lxd-server-1"
