@@ -1,15 +1,15 @@
 
-resource "lxd_storage_pool" "root" {
-  name   = "root-1"
+resource "lxd_storage_pool" "root-k8s" {
+  name   = "root-k8s"
   driver = "dir"
-  source = "/mnt/lxd-pools/root-1"
+  source = "/mnt/lxd-pools/root-k8s"
 }
 
 # Create pool app-data
-resource "lxd_storage_pool" "app-data" {
-  name   = "app-data"
+resource "lxd_storage_pool" "data-k8s" {
+  name   = "pool-k8s"
   driver = "dir"
-  source = "/mnt/lxd-pools/pool-1"
+  source = "/mnt/lxd-pools/pool-k8s"
 }
 
 # Create network
@@ -29,11 +29,11 @@ module "instance" {
   source = "../modules/lxd_instance"
 
   network_name = module.network.network_name
-  storage_pool = lxd_storage_pool.app-data.name
+  storage_pool = lxd_storage_pool.data-k8s.name
 
   instance = {
     root_pool_size = "30GB"
-    root_pool      = lxd_storage_pool.root.name
+    root_pool      = lxd_storage_pool.root-k8s.name
     name           = "k8s-${each.key}"
     image          = "fedora42"
     type           = "virtual-machine"
