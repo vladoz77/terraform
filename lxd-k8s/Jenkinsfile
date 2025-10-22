@@ -58,7 +58,6 @@ pipeline {
     }
     tools {
         terraform "terraform_1.13.4"
-        ansible 'ansible-latest'
     }
 
 

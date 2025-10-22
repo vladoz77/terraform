@@ -96,7 +96,7 @@
   register: kubeconfig_content
   failed_when: kubeconfig_content.content is not defined
 
-- name: create local `.kube` directory
+- name: create local `.kube` directory on jenkins-agent
   ansible.builtin.file:
     path: "{{ local_kubeconfig_dir }}"
     state: directory
@@ -104,7 +104,7 @@
     group: "{{ username }}"
   delegate_to: localhost
 
-- name: Create local kubeconfig
+- name: Create local kubeconfig on jenkins-agent
   ansible.builtin.copy:
     content: "{{ kubeconfig_content.content | b64decode }}"
     dest: "{{ local_kubeconfig_dir }}/config"
