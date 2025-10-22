@@ -6,7 +6,7 @@ resource "helm_release" "ingress-nginx" {
   namespace        = "ingress-nginx"
   create_namespace = true
 
-  values = file("${path.module}/files/ingress-nginx.yaml")
+  values = [file("${path.module}/files/ingress-nginx.yaml")]
 
   depends_on = [helm_release.cert-manager]
 
