@@ -26,21 +26,26 @@ def terraform(terraform_dir) {
 }
 
 def ansible(ansible_dir, inventory, playbook, credentials) {
-    dir ("${ansible_dir}") {
-        try {
-            echo "Installing ansible dependences..."
-            sh 'ansible-galaxy collection install -r requirements.yaml'
-            echo "Instaling k8s..."
-            ansiblePlaybook credentialsId: "${credentials}",
-                disableHostKeyChecking: true, 
-                installation: 'ansible', 
-                inventory: "${inventory}", 
-                playbook: "${playbook}",
-                colorized: true
-        } catch (Exception e) {
-            echo "❌ ansible failed in directory: ${ansible_dir}"
-            echo "Error: ${e.message}"
-            throw e 
+    dir("${ansible_dir}") {
+        withCredentials([sshUserPrivateKey(credentialsId: credentials, keyFileVariable: 'ANSIBLE_KEY')]) {
+            try {
+                echo "Installing ansible dependencies..."
+                sh 'ansible-galaxy collection install -r requirements.yaml'
+
+                echo "Installing k8s..."
+                sh """
+                    ansible-playbook \\
+                        -i ${inventory} \\
+                        --private-key "\$ANSIBLE_KEY" \\
+                        --user vlad \\
+                        --ssh-extra-args "-o StrictHostKeyChecking=no" \\
+                        ${playbook}
+                """
+            } catch (Exception e) {
+                echo "❌ ansible failed in directory: ${ansible_dir}"
+                echo "Error: ${e.message}"
+                throw e
+            }
         }
     }
 }
@@ -53,6 +58,7 @@ pipeline {
     }
     tools {
         terraform "terraform_1.13.4"
+        ansible 'ansible-latest'
     }
 
 
@@ -95,11 +101,11 @@ pipeline {
 
         stage('Configure Kubernetes with Ansible') {
             when {
-                expression {params.terraform_action == 'apply'}
+                expression { params.terraform_action == 'apply' }
             }
             steps {
                 script {
-                    ansible('lxd-k8s/ansible', 'inventory.ini', 'install-k8s.yaml', 'vlad-ssh-key' )
+                    ansible('lxd-k8s/ansible', 'inventory.ini', 'install-k8s.yaml', 'vlad-ssh-key')
                 }
             }
         }
