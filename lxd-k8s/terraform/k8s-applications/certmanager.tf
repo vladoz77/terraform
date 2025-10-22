@@ -1,9 +1,9 @@
 resource "helm_release" "cert-manager" {
-  name = "cert-manager"
-  chart = "cert-manager"
+  name       = "cert-manager"
+  chart      = "cert-manager"
   repository = "https://charts.jetstack.io/"
-  namespace = "cert-manager"
-  version = "1.18.2"
+  namespace  = "cert-manager"
+  version    = "1.18.2"
 
   create_namespace = true
 
@@ -17,8 +17,8 @@ resource "helm_release" "cert-manager" {
 }
 
 resource "kubectl_manifest" "clusterissuer" {
-  depends_on = [ helm_release.cert-manager ]
-  yaml_body = <<YAML
+  depends_on = [helm_release.cert-manager]
+  yaml_body  = <<YAML
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -29,8 +29,8 @@ spec:
 }
 
 resource "kubectl_manifest" "certificate" {
-  depends_on = [ helm_release.cert-manager ]
-  yaml_body = <<YAML
+  depends_on = [helm_release.cert-manager]
+  yaml_body  = <<YAML
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -61,8 +61,8 @@ spec:
 }
 
 resource "kubectl_manifest" "caissuer" {
-  depends_on = [ helm_release.cert-manager ]
-  yaml_body = <<YAML
+  depends_on = [helm_release.cert-manager]
+  yaml_body  = <<YAML
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:

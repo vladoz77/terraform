@@ -3,14 +3,14 @@ resource "helm_release" "metallb" {
   repository = "https://metallb.github.io/metallb"
   chart      = "metallb"
   version    = "0.13.12"
-  namespace = "metallb-system"
-  
+  namespace  = "metallb-system"
+
   create_namespace = true
 }
 
 resource "kubectl_manifest" "ippool" {
-  depends_on = [ helm_release.metallb ]
-  yaml_body = <<YAML
+  depends_on = [helm_release.metallb]
+  yaml_body  = <<YAML
     apiVersion: metallb.io/v1beta1
     kind: IPAddressPool
     metadata:
@@ -23,8 +23,8 @@ resource "kubectl_manifest" "ippool" {
 }
 
 resource "kubectl_manifest" "l2advertisements" {
-  depends_on = [ helm_release.metallb ]
-  yaml_body = <<YAML
+  depends_on = [helm_release.metallb]
+  yaml_body  = <<YAML
     apiVersion: metallb.io/v1beta1
     kind: L2Advertisement
     metadata:
