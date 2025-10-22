@@ -1,3 +1,30 @@
-- ansible.builtin.import_playbook: master-playbook.yaml
-- ansible.builtin.import_playbook: worker-playbook.yaml
-  
+---
+- name: Common configuration for all nodes
+  hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - common-config
+
+- name: Configure master nodes
+  hosts: master
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: common-config
+    - role: ha-master-config
+      when: ha_enabled 
+    - role: master-config
+      when: inventory_hostname == groups['master'][0]
+    - role: join-master
+      when: ha_enabled 
+
+- name: Configure worker nodes
+  hosts: worker
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - join-worker
