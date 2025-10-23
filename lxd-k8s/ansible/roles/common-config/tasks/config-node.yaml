@@ -11,10 +11,11 @@
     state: present
 
 - name: install packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
     update_cache: true
+    disable_gpg_check: yes # for test only !!!
   notify:
   - start iscsid
   - restart kubelet
