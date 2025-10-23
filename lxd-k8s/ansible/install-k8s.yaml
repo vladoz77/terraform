@@ -1,4 +1,12 @@
 ---
+- name: Wait for cloud-init to finish on all nodes
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for cloud-init completion
+      command: cloud-init status --wait --long
+      become: yes
+
 - name: Common configuration for all nodes
   hosts: all
   become: true
