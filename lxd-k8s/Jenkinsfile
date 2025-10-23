@@ -38,7 +38,7 @@ def ansible(ansible_dir, inventory, playbook, credentials) {
                         -i ${inventory} \\
                         --private-key "\$ANSIBLE_KEY" \\
                         --user vlad \\
-                        --ssh-extra-args "-o StrictHostKeyChecking=no" \\
+                        --ssh-extra-args "-o StrictHostKeyChecking=no -o ProxyJump=vlad@10.84.62.52" \\
                         ${playbook}
                 """
             } catch (Exception e) {
@@ -103,8 +103,10 @@ pipeline {
                 expression { params.terraform_action == 'apply' }
             }
             steps {
-                script {
-                    ansible('lxd-k8s/ansible', 'inventory.ini', 'install-k8s.yaml', 'vlad-ssh-key')
+                withEnv(['PATH+ANSIBLE=/home/vlad/.local/bin']) {
+                    script {
+                        ansible('lxd-k8s/ansible', 'inventory.ini', 'install-k8s.yaml', 'vlad-ssh-key')
+                    }
                 }
             }
         }

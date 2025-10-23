@@ -108,4 +108,5 @@
     content: "{{ kubeconfig_content.content | b64decode }}"
     dest: "{{ local_kubeconfig_dir }}/config"
   delegate_to: localhost
+  become: false
   when: kubeconfig_content.content is defined
