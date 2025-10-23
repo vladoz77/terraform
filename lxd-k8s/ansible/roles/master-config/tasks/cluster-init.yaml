@@ -100,8 +100,6 @@
   ansible.builtin.file:
     path: "{{ local_kubeconfig_dir }}"
     state: directory
-    owner: "{{ username }}"
-    group: "{{ username }}"
   delegate_to: localhost
 
 - name: Create local kubeconfig on jenkins-agent
