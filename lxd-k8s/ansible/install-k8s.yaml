@@ -2,6 +2,8 @@
 - name: Wait for cloud-init to finish on all nodes
   hosts: all
   gather_facts: false
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Wait for cloud-init completion
       command: cloud-init status --wait --long
