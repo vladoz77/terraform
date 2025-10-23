@@ -101,6 +101,7 @@
     path: "{{ local_kubeconfig_dir }}"
     state: directory
   delegate_to: localhost
+  become: false
 
 - name: Create local kubeconfig on jenkins-agent
   ansible.builtin.copy:
