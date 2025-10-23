@@ -11,6 +11,7 @@ users:
   sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
   ssh_authorized_keys:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFCfzYdpSnN/bWqvKr8dU+O7NNl+3ilS81EpnDXcn/HM vlad@fedora.home.local
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPy/LhC6HQAguTiMF1z+2NhJzZgfn8hOxLGsAXbsrjm5 vlad@RU62S-KOVALEV2
 chpasswd:
   list: |
     vlad:$6$rii/kmJsGG3MfHhs$RrZQGTFXkKoTfqErjTwBD52.GGkg6k58Ka6QWnJWu1mx4paMfD7l5LqN34hfKqeD7P6VGNX6xZJlkGhXxk9ok1
