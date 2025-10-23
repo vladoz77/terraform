@@ -3,6 +3,7 @@ package_update: true
 packages:
 - parted
 - xfsprogs
+- python3-libdnf5
 
 users:
 - name: vlad
