@@ -38,7 +38,7 @@ def ansible(ansible_dir, inventory, playbook, credentials) {
                         -i ${inventory} \\
                         --private-key "\$ANSIBLE_KEY" \\
                         --user vlad \\
-                        --ssh-extra-args "-o StrictHostKeyChecking=no -o ProxyJump=vlad@10.84.62.52" \\
+                        --ssh-extra-args "-o StrictHostKeyChecking=no \\
                         ${playbook}
                 """
             } catch (Exception e) {

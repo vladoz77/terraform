@@ -86,15 +86,12 @@ resource "null_resource" "wait_for_ssh" {
       while [ $timeout -gt 0 ]; do
         # Сначала проверяем доступность порта
         if nc -z -w5 ${var.instance.ipv4_address} 22 2>/dev/null; then
-          # Затем пробуем SSH соединение (без actual login)
-          if ssh -o StrictHostKeyChecking=no -o BatchMode=yes \
-             -o ConnectTimeout=5 ${var.instance.ipv4_address} exit 2>/dev/null; then
-            echo "SSH на ${var.instance.name} доступен"
-            exit 0
-          fi
+          echo "SSH порт на ${var.instance.name} доступен"
+          exit 0
         fi
         echo -n "."
         sleep 5
+        timeout=$((timeout - 5))
       done
       echo "Timeout ожидания SSH на ${var.instance.name} (${var.instance.ipv4_address})" >&2
       exit 1
