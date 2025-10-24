@@ -67,3 +67,37 @@ resource "lxd_instance" "instance" {
 
   depends_on = [lxd_volume.volume]
 }
+
+# Wait until instance becomes available via SSH
+resource "null_resource" "wait_for_ssh" {
+  depends_on = [lxd_instance.instance]
+
+  # Триггер для пересоздания при изменении IP или имени
+  triggers = {
+    instance_ip   = var.instance.ipv4_address
+    instance_name = var.instance.name
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command = <<-EOT
+      echo "Waiting for SSH on ${var.instance.name} (${var.instance.ipv4_address})..."
+      timeout=${var.wait_timeout}
+      while [ $timeout -gt 0 ]; do
+        # Сначала проверяем доступность порта
+        if nc -z -w5 ${var.instance.ipv4_address} 22 2>/dev/null; then
+          # Затем пробуем SSH соединение (без actual login)
+          if ssh -o StrictHostKeyChecking=no -o BatchMode=yes \
+             -o ConnectTimeout=5 ${var.instance.ipv4_address} exit 2>/dev/null; then
+            echo "SSH на ${var.instance.name} доступен"
+            exit 0
+          fi
+        fi
+        echo -n "."
+        sleep 5
+      done
+      echo "Timeout ожидания SSH на ${var.instance.name} (${var.instance.ipv4_address})" >&2
+      exit 1
+    EOT
+  }
+}

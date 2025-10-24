@@ -26,3 +26,9 @@ variable "volumes" {
   }))
   default = {}
 }
+
+variable "wait_timeout" {
+  description = "Timeout in seconds to wait for instance to become available via SSH"
+  type        = number
+  default     = 300
+}
