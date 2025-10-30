@@ -1,9 +1,16 @@
+variable "lxd_profile_name" {
+  default = "instance_profile"
+  type = string
+}
+
 variable "network_name" {
   type = string
 }
 
-variable "storage_pool" {
+variable "default_storage_pool" {
   type = string
+  default = ""
+  description = "Storage pool by defaults"
 }
 
 variable "instance" {
@@ -15,14 +22,15 @@ variable "instance" {
     cpu          = number
     memory       = string
     cloud_init   = string
-    root_pool    = string
-    root_pool_size = string
+    root_pool_name    = string
+    root_disk_size = string
   })
 }
 
 variable "volumes" {
   type = map(object({
     size = string
+    pool = string
   }))
   default = {}
 }

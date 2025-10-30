@@ -1,15 +1,14 @@
-
-resource "lxd_storage_pool" "root-k8s" {
-  name   = "root-k8s"
-  driver = "dir"
-  source = "/mnt/lxd-pools/root-k8s"
+resource "lxd_profile" "vm" {
+  name = var.lxd_profile_name
 }
 
-# Create pool app-data
-resource "lxd_storage_pool" "data-k8s" {
-  name   = "pool-k8s"
-  driver = "dir"
-  source = "/mnt/lxd-pools/pool-k8s"
+
+resource "lxd_storage_pool" "pools" {
+  for_each = var.pools
+
+  name   = each.key
+  driver = each.value.pool_driver
+  source = each.value.pool_source
 }
 
 # Create network
@@ -24,23 +23,24 @@ module "network" {
 
 # Create instance
 module "instance" {
-  for_each = local.instances
+  for_each = var.instances
 
   source = "../modules/lxd_instance"
 
   network_name = module.network.network_name
-  storage_pool = lxd_storage_pool.data-k8s.name
+  lxd_profile_name = lxd_profile.vm.name
+  default_storage_pool = ""
 
   instance = {
-    root_pool_size = "30GB"
-    root_pool      = lxd_storage_pool.root-k8s.name
+    root_disk_size = each.value.root_disk_size
+    root_pool_name = lxd_storage_pool.pools["root-k8s"].name
     name           = "k8s-${each.key}"
-    image          = "fedora42"
-    type           = "virtual-machine"
+    image          = each.value.image
+    type           = each.value.type
     ipv4_address   = each.value.ipv4_address
     cpu            = each.value.cpu
     memory         = each.value.memory
-    cloud_init     = file("${path.module}/cloud-init.yaml")
+    cloud_init     =  file("${path.module}/cloud-init.yaml")
   }
 
   volumes = each.value.volumes
@@ -50,12 +50,12 @@ resource "local_file" "inventory" {
   content = templatefile("${path.module}/k8s-inventory.tftpl",
     {
       masters = {
-        for key, value in local.instances :
+        for key, value in var.instances :
         key => module.instance[key].ipv4_address
         if startswith(key, "master")
       }
       workers = {
-        for key, value in local.instances :
+        for key, value in var.instances :
         key => module.instance[key].ipv4_address
         if startswith(key, "worker")
       }

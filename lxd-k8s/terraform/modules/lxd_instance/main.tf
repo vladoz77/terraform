@@ -1,22 +1,8 @@
-resource "lxd_profile" "vm" {
-  name = "vm-${var.instance.name}"
-
-  device {
-    name = "root"
-    type = "disk"
-    properties = {
-      path = "/"
-      pool = var.instance.root_pool
-      size = var.instance.root_pool_size
-    }
-  }
-}
-
 resource "lxd_volume" "volume" {
   for_each = var.volumes
   
   name         = "${var.instance.name}-${each.key}"  
-  pool         = var.storage_pool
+  pool         = each.value.pool != "" ? each.value.pool : var.default_storage_pool
   content_type = "block"
   
   config = {
@@ -29,12 +15,23 @@ resource "lxd_instance" "instance" {
   name = var.instance.name
   image = var.instance.image
   type = var.instance.type
-  profiles = [lxd_profile.vm.name]
+  profiles = [var.lxd_profile_name]
   ephemeral = false
 
   limits = {
     cpu    = var.instance.cpu
     memory = var.instance.memory
+  }
+
+  # Root диск
+  device {
+    name = "root"
+    type = "disk"
+    properties = {
+      path = "/"
+      pool = var.instance.root_pool_name
+      size = var.instance.root_disk_size
+    }
   }
 
   # Динамическое добавление дополнительных дисков
@@ -46,7 +43,7 @@ resource "lxd_instance" "instance" {
       type = "disk"
       properties = {
         source = lxd_volume.volume[device.key].name
-        pool   = var.storage_pool
+        pool   = device.value.pool != "" ? device.value.pool : var.default_storage_pool
       }
     }
   }

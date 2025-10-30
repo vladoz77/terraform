@@ -16,7 +16,7 @@ terraform {
     }
     bucket = "vladis-terraform-state"
     region = "ru-central1"
-    key    = "lxd/k8s-infrastucture.tfstate" 
+    key    = "lxd/k8s-infrastucture.tfstate"
 
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -27,11 +27,11 @@ terraform {
 
 provider "lxd" {
   generate_client_certificates = true
-  accept_remote_certificate = true
+  accept_remote_certificate    = true
   remote {
-    name = "lxd-server-1"
+    name     = "lxd-server-1"
     address  = "https://10.84.62.52:8443"
     password = "password"
-    default = true
+    default  = true
   }
 }
