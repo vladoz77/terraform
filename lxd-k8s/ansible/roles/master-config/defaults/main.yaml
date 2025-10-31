@@ -32,6 +32,8 @@ container_log_max_file: 3
 # Calico 
 calico_version: v3.29.2
 network_plugin: calico
+# Choose calico calico encapsulation NONE, IPIP, VXLAN
+calico_encapsulation_type: NONE
 
 # Enable nodelocaldns (true or false)
 nodelocaldns: false

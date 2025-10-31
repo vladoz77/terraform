@@ -13,7 +13,15 @@ spec:
     - name: ipv4-ippool
       blockSize: 26
       cidr: "{{ podSubnet }}"
+      {% if calico_encapsulation_type == "VXLAN" %}
       encapsulation: VXLANCrossSubnet
+      {%  endif %}
+      {% if calico_encapsulation_type == "IPIP" %}
+      encapsulation: IPIP
+      {%  endif %}
+      {% if calico_encapsulation_type == "NONE" %}
+      encapsulation: None
+      {%  endif %}
       natOutgoing: Enabled
       nodeSelector: all()
 
@@ -36,3 +44,17 @@ kind: APIServer
 metadata:
   name: default
 spec: {}
+
+---
+# Configures the Calico Goldmane flow aggregator.
+apiVersion: operator.tigera.io/v1
+kind: Goldmane
+metadata:
+  name: default
+
+---
+# Configures the Calico Whisker observability UI.
+apiVersion: operator.tigera.io/v1
+kind: Whisker
+metadata:
+  name: default

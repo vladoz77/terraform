@@ -29,6 +29,7 @@ interface_name: enp5s0
 local_kubeconfig_dir: /home/vlad/.kube
 # Calico version
 calico_version: v3.30.4
+calico_encapsulation_type: NONE
 
 # Username
 username: vlad
