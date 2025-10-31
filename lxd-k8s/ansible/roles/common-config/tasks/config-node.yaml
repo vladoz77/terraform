@@ -1,4 +1,4 @@
-- name: add repo for k8s
+- name: Add repo for k8s
   ansible.builtin.yum_repository:
     name: kubernetes
     description: soft for k8s
@@ -10,12 +10,12 @@
     gpgcheck: true
     state: present
 
-- name: install packages
+- name: Install packages
   ansible.builtin.dnf:
     name: "{{ packages }}"
     state: present
     update_cache: true
-    disable_gpg_check: yes # for test only !!!
+    disable_gpg_check: true # for test only !!!
   notify:
   - start iscsid
   - restart kubelet
@@ -25,7 +25,7 @@
     name: "{{ pip_modules }}"
     state: present
 
-- name: start handler force
+- name: Start handler force
   meta: flush_handlers
 
 # - name: disable firewall
@@ -38,20 +38,20 @@
 #   ansible.posix.selinux:
 #     state: disabled
 
-- name: load module
+- name: Load module
   community.general.modprobe:
     name: "{{ item }}"
     state: present
   loop: "{{ modules }}"
 
-- name: make module persistent
+- name: Make module persistent
   ansible.builtin.lineinfile:
     path: /etc/modules-load.d/modules.conf
     line: "{{ item }}"
-    create: yes
+    create: true
   loop: "{{ modules }}"
 
-- name: set "{{ item.key }}" to "{{ item.value}}"
+- name: Set "{{ item.key }}" to "{{ item.value}}"
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -59,16 +59,18 @@
     reload: true
   loop: "{{ sysctl_params }}"
 
-- name: disable swap
-  ansible.builtin.shell: swapoff -a
+- name: Dsable swap
+  ansible.builtin.command: swapoff -a
+  register: my_output
+  changed_when: my_output.rc != 0
 
-- name: remove swaw from fstab
+- name: Remove swaw from fstab
   ansible.builtin.lineinfile:
     dest: /etc/fstab
     regexp: swap
     state: absent
 
-- name: bashrc edit
+- name: Bashrc edit
   ansible.builtin.blockinfile:
     dest: /home/{{ username }}/.bashrc
     block: |

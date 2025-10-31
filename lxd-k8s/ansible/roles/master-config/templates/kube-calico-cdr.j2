@@ -8,26 +8,25 @@ spec:
   typhaMetricsPort: 9093
   # Configures Calico networking.
   calicoNetwork:
-    bgp: Disabled
+    {% if ebpf_enabled -%}
+    linuxDataplane: BPF
+    {% endif -%}
     ipPools:
     - name: ipv4-ippool
       blockSize: 26
       cidr: "{{ podSubnet }}"
-      {% if calico_encapsulation_type == "VXLAN" %}
+      {% if calico_encapsulation_type == "VXLAN" -%}
       encapsulation: VXLANCrossSubnet
-      {%  endif %}
-      {% if calico_encapsulation_type == "IPIP" %}
+      {% elif calico_encapsulation_type == "IPIP" -%}
       encapsulation: IPIP
-      {%  endif %}
-      {% if calico_encapsulation_type == "NONE" %}
+      {% elif calico_encapsulation_type == "NONE" -%}
       encapsulation: None
-      {%  endif %}
+      {% endif -%}
       natOutgoing: Enabled
       nodeSelector: all()
 
 ---
 # This section enable prometheus metrics in Felix.
-# For more information, see: https://docs.tigera.io/calico/latest/reference/felix/configuration
 apiVersion: crd.projectcalico.org/v1
 kind: FelixConfiguration
 metadata:
@@ -35,6 +34,11 @@ metadata:
 spec:
   prometheusMetricsEnabled: true
   prometheusMetricsPort: 9091
+  {% if ebpf_enabled -%}
+  bpfConnectTimeLoadBalancing: "Disabled"
+  bpfKubeProxyIptablesCleanupEnabled: false
+  bpfExternalServiceMode: "DSR"
+  {% endif %}
 
 ---
 # This section configures the Calico API server.
