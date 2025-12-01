@@ -21,6 +21,8 @@ packages:
 - tcpdump
 - unzip
 - cryptsetup
+- tar
+- python3-packaging
 
 # Kubernetes versions
 kubernetesVersion: '1.33'

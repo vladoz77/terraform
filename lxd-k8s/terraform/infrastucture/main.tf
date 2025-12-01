@@ -35,7 +35,7 @@ module "instance" {
     root_disk_size = each.value.root_disk_size
     root_pool_name = lxd_storage_pool.pools["root-k8s"].name
     name           = "k8s-${each.key}"
-    image          = each.value.image
+    image          = var.lxd_image_os
     type           = each.value.type
     ipv4_address   = each.value.ipv4_address
     cpu            = each.value.cpu
@@ -49,16 +49,8 @@ module "instance" {
 resource "local_file" "inventory" {
   content = templatefile("${path.module}/k8s-inventory.tftpl",
     {
-      masters = {
-        for key, value in var.instances :
-        key => module.instance[key].ipv4_address
-        if startswith(key, "master")
-      }
-      workers = {
-        for key, value in var.instances :
-        key => module.instance[key].ipv4_address
-        if startswith(key, "worker")
-      }
+      masters = local.masters_ip
+      workers = local.workers_ip
     }
   )
   filename   = "../../ansible/inventory.ini"

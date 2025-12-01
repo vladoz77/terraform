@@ -3,6 +3,11 @@ variable "lxd_profile_name" {
   type = string
 }
 
+variable "lxd_image_os" {
+  default = ""
+  type = string
+}
+
 variable "pools" {
   type = map(object({
     pool_source = string
@@ -12,7 +17,6 @@ variable "pools" {
 
 variable "instances" {
   type = map(object({
-    image          = string
     type           = string
     ipv4_address   = string
     cpu            = number

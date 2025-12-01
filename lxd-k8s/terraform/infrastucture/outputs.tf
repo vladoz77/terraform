@@ -13,3 +13,8 @@ output "storage_pools" {
     source = pool.source
   } }
 }
+
+output "instance_names" {
+  description = "All instance names"
+  value       = keys(var.instances)
+}

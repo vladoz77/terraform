@@ -30,7 +30,7 @@ provider "lxd" {
   accept_remote_certificate    = true
   remote {
     name     = "lxd-server-1"
-    address  = "https://10.84.62.52:8443"
+    address  = "https://localhost:8443"
     password = "password"
     default  = true
   }

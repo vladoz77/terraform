@@ -38,6 +38,7 @@ packages:
 - nfs4-acl-tools
 - tcpdump
 - unzip
+- tar
 
 #Req pip module
 pip_modules:

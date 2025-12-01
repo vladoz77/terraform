@@ -1,4 +1,6 @@
 lxd_profile_name = "k8s-profile"
+lxd_image_os = "169ba237b258"
+
 
 pools = {
   "root-k8s" = {
@@ -13,7 +15,6 @@ pools = {
 
 instances = {
   master-01 = {
-    image        = "fedora42"
     type         = "virtual-machine"
     root_disk_size = "20GB"
     ipv4_address = "192.168.200.2"
@@ -27,12 +28,11 @@ instances = {
     }
   }
   worker-01 = {
-    image        = "fedora42"
     type         = "virtual-machine"
     root_disk_size = "30GB"
     ipv4_address = "192.168.200.3"
     cpu          = "2"
-    memory       = "3GB"
+    memory       = "4GB"
     volumes = {
       data = {
         size = "30GB"
@@ -41,7 +41,6 @@ instances = {
     }
   }
   worker-02 = {
-    image        = "fedora42"
     type         = "virtual-machine"
     root_disk_size = "30GB"
     ipv4_address = "192.168.200.4"
