@@ -5,7 +5,7 @@ python_library:
   - boto3
   - botocore
 # docker config
-docker_network_name: "bridge"
+docker_network_name: "traefik"
 traefik_container_name: traefik
 traefik_image: "traefik"
 traefik_version: "v3.5"

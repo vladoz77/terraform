@@ -11,7 +11,7 @@ terraform {
 
 # Настройка провайдера Vault для работы с секретами
 provider "vault" {
-  address          = "http://127.0.0.1:8200" # Адрес сервера Vault
+  address          = var.vault_address  # Адрес сервера Vault
   skip_child_token = true
 
   auth_login {

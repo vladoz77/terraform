@@ -180,7 +180,7 @@ ansible-galaxy collection install community.hashi_vault
 
 ```bash
 export VAULT_ROLE_ID=95b272fa-e628-a4f2-74b1-2c9713bab027
-export VAULT_SECRET_ID=e3f2e2ad-9036-406d-5da2-234947d40c8f
+export VAULT_SECRET_ID=868698df-e57b-1808-6b85-ea1eef866f83
 ```
 
 > 💡 **Альтернатива**: Используйте `.env`-файл с `source .env` или передавайте через CI/CD (GitHub Actions, GitLab CI и т.д.).

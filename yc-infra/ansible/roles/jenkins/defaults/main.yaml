@@ -38,7 +38,8 @@ jenkins_plugin_list:
 - timestamper:latest
 - workflow-aggregator:latest
 - ws-cleanup:latest
-- adoptopenjdk:1.7
+- adoptopenjdk:latest
+- blueocean:latest
 - sonar:latest
 - role-strategy:latest
 - maven-plugin:latest

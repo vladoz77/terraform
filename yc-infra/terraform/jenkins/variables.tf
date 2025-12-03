@@ -1,13 +1,21 @@
+variable "vault_address" {
+  description = "address vault server"
+  type = string
+  default = "http://localhost:8200"
+}
+
 # Vault Role ID для аутентификации в Hashicorp Vault
 variable "role_id" {
   description = "vault role"
   type        = string
+  sensitive = true
 }
 
 # Vault Secret ID для аутентификации в Hashicorp Vault
 variable "secret_id" {
   description = "vault secret-id"
   type        = string
+  sensitive = true
 }
 
 # Зона доступности Yandex Cloud

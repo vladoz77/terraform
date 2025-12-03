@@ -9,7 +9,7 @@ terraform {
 }
 
 provider "vault" {
-  address          = "http://127.0.0.1:8200" # Адрес сервера Vault
+  address          = "http://10.84.101.123:8200" # Адрес сервера Vault
   skip_child_token = true
 
   auth_login {
