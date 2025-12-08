@@ -53,6 +53,6 @@ resource "local_file" "inventory" {
       workers = local.workers_ip
     }
   )
-  filename   = "../../ansible/inventory.ini"
+  filename   = "../../ansible/inventories/${var.environment}/inventory.ini"
   depends_on = [module.instance]
 }

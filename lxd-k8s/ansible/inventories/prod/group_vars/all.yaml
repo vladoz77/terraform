@@ -1,0 +1,62 @@
+packages:
+- wget
+- iproute-tc
+- vim
+- git
+- bash-completion
+- nfs-utils
+- kubectl.x86_64
+- kubelet.x86_64
+- kubeadm.x86_64
+- ipvsadm
+- python3-pip
+- sysstat
+- jq
+- net-tools
+- tree
+- traceroute
+- iscsi-initiator-utils
+- nfs-utils
+- nfs4-acl-tools
+- tcpdump
+- unzip
+- cryptsetup
+- tar
+- python3-packaging
+
+# Kubernetes versions
+kubernetesVersion: '1.33'
+kubernetesSubversion: '2'
+interface_name: enp5s0
+local_kubeconfig_dir: /home/vlad/.kube
+# Calico version
+calico_version: v3.31.0
+calico_encapsulation_type: NONE
+
+# Username
+username: vlad
+password: '8231'
+
+# Enabeled HA kubernetes master (true or false)
+ha_enabled: true
+vip_address: 192.168.200.250
+vip_port: 8443
+
+# Ebpf mode
+ebpf_enabled: false
+
+# network config
+podSubnet: 10.100.0.0/16
+serviceSubnet: 10.200.0.0/16
+
+# Select kube-proxy mode, enable ipvs or iptable (True or false)
+kubeproxy_mode_ipvs: true
+
+# Enable nodelocaldns (true or false)
+nodelocaldns: false
+nodelocaldns_address: 169.254.20.10
+
+# Config container runntime
+dockerhubMirror: true
+dockerhubMirrorURLs:
+- "https://mirror.gcr.io/v2"

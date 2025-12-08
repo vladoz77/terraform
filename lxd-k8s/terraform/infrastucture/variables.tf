@@ -1,3 +1,8 @@
+variable "environment" {
+  type = string
+  description = "Type of environment"
+}
+
 variable "lxd_profile_name" {
   default = "instance"
   type = string
