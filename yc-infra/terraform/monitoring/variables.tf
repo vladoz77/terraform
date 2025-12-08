@@ -1,11 +1,19 @@
 variable "role_id" {
   description = "vault role"
   type        = string
+  sensitive   = true
 }
 
 variable "secret_id" {
   description = "vault secret-id"
   type        = string
+  sensitive = true
+}
+
+variable "vault_address" {
+  description = "vault address"
+  type        = string
+  sensitive   = true
 }
 
 variable "zone" {

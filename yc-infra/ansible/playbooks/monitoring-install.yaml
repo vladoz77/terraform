@@ -2,10 +2,10 @@
   hosts: monitoring-server
   become: true
   vars:
-    vault_url: http://10.84.101.123:8200
+    vault_url: http://10.84.101.149:8200
     role_id: "{{ lookup('env', 'VAULT_ROLE_ID' ) }}"
     secret_id: "{{ lookup('env', 'VAULT_SECRET_ID' ) }}"
-    aws_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/aws auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }}') }}"
+    aws_secret: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=ansible/aws auth_method=approle role_id={{ role_id }} secret_id={{ secret_id }} url={{ vault_url }}' ) }}"
     aws_access_key: "{{ aws_secret.aws_access_key }}"
     aws_secret_key: "{{ aws_secret.aws_secret_key }}"
     s3_bucket_name: acme-bucket
