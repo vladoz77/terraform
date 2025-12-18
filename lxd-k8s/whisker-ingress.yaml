@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: "ca-issuer"
+  name: whisker-ingress
+  namespace: calico-system
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: whisker.dev.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: whisker
+            port:
+              number: 8081
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - whisker.dev.local
+    secretName: whisker-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: whisker-ingress
+  namespace: calico-system
+spec:
+  ingress:
+  - ports:
+    - port: 8081
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: whisker
+  policyTypes:
+  - Ingress

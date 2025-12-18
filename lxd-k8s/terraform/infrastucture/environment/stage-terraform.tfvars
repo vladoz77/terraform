@@ -1,6 +1,7 @@
 lxd_profile_name = "k8s-profile"
-lxd_image_os = "383a656dbf50"
-environment = "prod"
+lxd_image_os = "ce09e2d5a15b"
+environment = "stage"
+
 
 pools = {
   "root-k8s" = {
@@ -10,7 +11,7 @@ pools = {
   "data-k8s" = {
     pool_driver = "dir"
     pool_source = "/data/k8s-data"
-  } 
+  }
 }
 
 instances = {
@@ -19,32 +20,15 @@ instances = {
     root_disk_size = "20GB"
     ipv4_address = "192.168.200.2"
     cpu          = "4"
-    memory       = "2GB"
-    volumes = {
-    }
-  }
-  master-02 = {
-    type         = "virtual-machine"
-    root_disk_size = "20GB"
-    ipv4_address = "192.168.200.3"
-    cpu          = "4"
-    memory       = "2GB"
-    volumes = {}
-  }
-  master-03 = {
-    type         = "virtual-machine"
-    root_disk_size = "20GB"
-    ipv4_address = "192.168.200.4"
-    cpu          = "4"
-    memory       = "2GB"
+    memory       = "4GB"
     volumes = {}
   }
   worker-01 = {
     type         = "virtual-machine"
     root_disk_size = "30GB"
-    ipv4_address = "192.168.200.5"
+    ipv4_address = "192.168.200.3"
     cpu          = "2"
-    memory       = "2GB"
+    memory       = "4GB"
     volumes = {
       data = {
         size = "30GB"
@@ -55,14 +39,27 @@ instances = {
   worker-02 = {
     type         = "virtual-machine"
     root_disk_size = "30GB"
-    ipv4_address = "192.168.200.6"
+    ipv4_address = "192.168.200.4"
     cpu          = "2"
-    memory       = "2GB"
+    memory       = "4GB"
     volumes = {
       data = {
         size = "30GB"
         pool = "data-k8s"
       }
     }
-  }  
+  }
+  worker-03 = {
+    type         = "virtual-machine"
+    root_disk_size = "30GB"
+    ipv4_address = "192.168.200.5"
+    cpu          = "2"
+    memory       = "4GB"
+    volumes = {
+      data = {
+        size = "30GB"
+        pool = "data-k8s"
+      }
+    }
+  }
 }

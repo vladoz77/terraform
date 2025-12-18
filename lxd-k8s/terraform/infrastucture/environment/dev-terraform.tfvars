@@ -1,5 +1,5 @@
 lxd_profile_name = "k8s-profile"
-lxd_image_os = "3bc8c786e7de"
+lxd_image_os = "95d7dd7c6554"
 environment = "dev"
 
 
@@ -34,6 +34,32 @@ instances = {
     ipv4_address = "192.168.200.3"
     cpu          = "2"
     memory       = "4GB"
+    volumes = {
+      data = {
+        size = "30GB"
+        pool = "data-k8s"
+      }
+    }
+  }
+  worker-02 = {
+    type         = "virtual-machine"
+    root_disk_size = "30GB"
+    ipv4_address = "192.168.200.4"
+    cpu          = "2"
+    memory       = "3GB"
+    volumes = {
+      data = {
+        size = "30GB"
+        pool = "data-k8s"
+      }
+    }
+  }
+  worker-03 = {
+    type         = "virtual-machine"
+    root_disk_size = "30GB"
+    ipv4_address = "192.168.200.5"
+    cpu          = "2"
+    memory       = "3GB"
     volumes = {
       data = {
         size = "30GB"

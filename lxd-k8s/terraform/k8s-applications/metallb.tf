@@ -6,6 +6,7 @@ resource "helm_release" "metallb" {
   namespace  = "metallb-system"
 
   create_namespace = true
+  force_update     = true
 }
 
 resource "kubectl_manifest" "ippool" {

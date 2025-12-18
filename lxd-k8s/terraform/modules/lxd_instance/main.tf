@@ -65,6 +65,7 @@ resource "lxd_instance" "instance" {
   depends_on = [lxd_volume.volume]
 }
 
+
 # Wait until instance becomes available via SSH
 resource "null_resource" "wait_for_ssh" {
   depends_on = [lxd_instance.instance]

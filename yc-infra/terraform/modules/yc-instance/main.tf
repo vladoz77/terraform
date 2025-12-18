@@ -19,8 +19,6 @@ resource "yandex_compute_disk" "additional_disks" {
 
 # Instance config
 resource "yandex_compute_instance" "instance" {
-  # count = var.count_vm
-
   name                      = var.name
   labels                    = var.labels
   allow_stopping_for_update = true
@@ -32,8 +30,6 @@ resource "yandex_compute_instance" "instance" {
     cores               = var.cores
     memory              = var.memory
   }
-
-  
 
   boot_disk {
     initialize_params {
@@ -60,8 +56,6 @@ resource "yandex_compute_instance" "instance" {
       security_group_ids  = network_interface.value.security_group
     }
   }
-
-
 
   metadata = {
     ssh-keys = var.ssh
