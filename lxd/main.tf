@@ -1,15 +1,13 @@
-
 resource "lxd_storage_pool" "root" {
   name   = "root-1"
   driver = "dir"
   source = "/mnt/lxd-pools/root-1"
 }
 
-# Create pool app-data
-resource "lxd_storage_pool" "app-data" {
-  name   = "app-data"
+resource "lxd_storage_pool" "data" {
+  name   = "data-1"
   driver = "dir"
-  source = "/mnt/lxd-pools/pool-1"
+  source = "/mnt/lxd-pools/pool-2"
 }
 
 # Create network
@@ -17,31 +15,37 @@ module "network" {
   source = "./modules/lxd_network"
 
   network = {
-    network_name = "lxdbr0"
-    ipv4_address = "192.168.200.1/24"
+    network_name = var.network.name
+    ipv4_address = var.network.ipv4_address
   }
 }
 
 # Create instance
 module "instance" {
-  for_each = local.instances
-
   source = "./modules/lxd_instance"
 
   network_name = module.network.network_name
-  storage_pool = lxd_storage_pool.app-data.name
 
   instance = {
-    root_pool_size = "20GB"
-    root_pool      = lxd_storage_pool.root.name
-    name           = "ubuntu-${each.key}"
-    image          = "ubuntu:22.04"
-    type           = "virtual-machine"
-    ipv4_address   = each.value.ipv4_address
-    cpu            = each.value.cpu
-    memory         = each.value.memory
+    root_disk_size = var.instance.root_disk_size
+    root_pool_name = lxd_storage_pool.root.name
+    name           = var.instance.name
+    image          = var.instance.image
+    type           = var.instance.type
+    ipv4_address   = var.instance.ipv4_address
+    cpu            = var.instance.cpu
+    memory         = var.instance.memory
     cloud_init     = file("${path.module}/cloud-init.yaml")
   }
 
-  volumes = each.value.volumes
+  additional_volumes = {
+    data1 = {
+      size = "10GB"
+      pool = lxd_storage_pool.data.name
+    }
+    data2 = {
+      size = "15GB"
+      pool = lxd_storage_pool.data.name
+    }
+  }
 }
