@@ -6,7 +6,7 @@ network = {
 }
 
 instance = {
-  name           = "my-lxd-instance"
+  name           = "lxd-github-agent"
   image          = "32a5c526db8f"
   type           = "virtual-machine"
   ipv4_address   = "192.168.2.100"

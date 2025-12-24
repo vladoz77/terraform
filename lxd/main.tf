@@ -1,13 +1,8 @@
+# Configure the LXD storage pools
 resource "lxd_storage_pool" "root" {
   name   = "root-1"
   driver = "dir"
   source = "/mnt/lxd-pools/root-1"
-}
-
-resource "lxd_storage_pool" "data" {
-  name   = "data-1"
-  driver = "dir"
-  source = "/mnt/lxd-pools/pool-2"
 }
 
 # Create network
@@ -38,14 +33,5 @@ module "instance" {
     cloud_init     = file("${path.module}/cloud-init.yaml")
   }
 
-  additional_volumes = {
-    data1 = {
-      size = "10GB"
-      pool = lxd_storage_pool.data.name
-    }
-    data2 = {
-      size = "15GB"
-      pool = lxd_storage_pool.data.name
-    }
-  }
+  additional_volumes = {}
 }
