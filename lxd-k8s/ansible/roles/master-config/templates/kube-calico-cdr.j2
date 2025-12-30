@@ -8,6 +8,11 @@ spec:
   typhaMetricsPort: 9093
   # Configures Calico networking.
   calicoNetwork:
+    {% if calico_encapsulation_type == "NONE" -%}
+    bgp: Enabled
+    {% else -%}
+    bgp: Disabled
+    {% endif -%}
     {% if ebpf_enabled -%}
     linuxDataplane: BPF
     {% endif -%}
