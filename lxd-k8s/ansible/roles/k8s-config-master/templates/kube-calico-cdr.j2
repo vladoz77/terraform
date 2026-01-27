@@ -54,16 +54,20 @@ metadata:
   name: default
 spec: {}
 
+{% if goldman_enabled -%}
 ---
 # Configures the Calico Goldmane flow aggregator.
 apiVersion: operator.tigera.io/v1
 kind: Goldmane
 metadata:
   name: default
+{% endif %}
 
+{% if whisker_enabled %}
 ---
 # Configures the Calico Whisker observability UI.
 apiVersion: operator.tigera.io/v1
 kind: Whisker
 metadata:
   name: default
+{% endif %}

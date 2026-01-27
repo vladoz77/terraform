@@ -74,6 +74,17 @@
         - port: 9093
           targetPort: 9093
 
+- name: Enable Calico Gateway API
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ base_kube_conf_dir }}"
+    definition:
+      apiVersion: operator.tigera.io/v1
+      kind: GatewayAPI
+      metadata:
+        name: default
+  when: calico_gateway_api_enabled
+
 - name: Create `.kube` directory
   ansible.builtin.file:
     path: "{{ home_kube_dir }}"

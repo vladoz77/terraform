@@ -34,6 +34,9 @@ calico_version: v3.29.2
 network_plugin: calico
 # Choose calico calico encapsulation NONE, IPIP, VXLAN
 calico_encapsulation_type: NONE
+calico_gateway_api_enabled: false
+goldman_enabled: false
+whisker_enabled: false
 
 # Enable nodelocaldns (true or false)
 nodelocaldns: false

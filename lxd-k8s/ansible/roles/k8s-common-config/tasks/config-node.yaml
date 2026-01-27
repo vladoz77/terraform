@@ -1,3 +1,7 @@
+- name: Set timezone
+  community.general.timezone:
+    name: Europe/Moscow
+
 - name: Add repo for k8s
   ansible.builtin.yum_repository:
     name: kubernetes

@@ -3,7 +3,7 @@ resource "helm_release" "cert-manager" {
   chart      = "cert-manager"
   repository = "https://charts.jetstack.io/"
   namespace  = "cert-manager"
-  version    = "1.18.2"
+  version    = "1.19.2"
   force_update     = true
 
   create_namespace = true
@@ -13,6 +13,8 @@ resource "helm_release" "cert-manager" {
     crds:
       enabled: true
       keep: false
+    config:
+      enableGatewayAPI: true
     EOT
   ]
 }
