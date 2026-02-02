@@ -10,7 +10,7 @@ pools = {
   }
   "data-k8s" = {
     pool_driver = "dir"
-    pool_source = "/data/k8s-data"
+    pool_source = "/mnt/lxd-pools/data-k8s"
   }
 }
 

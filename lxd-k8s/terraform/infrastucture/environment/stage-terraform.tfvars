@@ -1,5 +1,5 @@
 lxd_profile_name = "k8s-profile"
-lxd_image_os = "ce09e2d5a15b"
+lxd_image_os = "fedora43"
 environment = "stage"
 
 
@@ -10,7 +10,7 @@ pools = {
   }
   "data-k8s" = {
     pool_driver = "dir"
-    pool_source = "/data/k8s-data"
+    pool_source = "/mnt/lxd-pools/data-k8s"
   }
 }
 
