@@ -11,25 +11,27 @@ resource "helm_release" "metallb" {
 
 resource "kubectl_manifest" "ippool" {
   depends_on = [helm_release.metallb]
-  yaml_body  = <<YAML
-    apiVersion: metallb.io/v1beta1
-    kind: IPAddressPool
-    metadata:
-      name: first-pool
-      namespace: metallb-system
-    spec:
-      addresses:
-      - 192.168.200.250-192.168.200.255
-  YAML
+  yaml_body = yamlencode({
+    apiVersion = "metallb.io/v1beta1"
+    kind       = "IPAddressPool"
+    metadata = {
+      name      = "first-pool"
+      namespace = "metallb-system"
+    }
+    spec = {
+      addresses = var.metallb_ippool
+    }
+  })
 }
 
 resource "kubectl_manifest" "l2advertisements" {
   depends_on = [helm_release.metallb]
-  yaml_body  = <<YAML
-    apiVersion: metallb.io/v1beta1
-    kind: L2Advertisement
-    metadata:
-      name: first-pool
-      namespace: metallb-system
-  YAML
+  yaml_body = yamlencode({
+    apiVersion = "metallb.io/v1beta1"
+    kind       = "L2Advertisement"
+    metadata = {
+      name      = "first-pool"
+      namespace = "metallb-system"
+    }
+  })
 }

@@ -17,7 +17,7 @@ terraform {
     }
     bucket = "vladis-terraform-state"
     region = "ru-central1"
-    key    = "lxd/k8s-applications.tfstate" 
+    key    = "lxd/k8s-applications.tfstate"
 
     skip_region_validation      = true
     skip_credentials_validation = true
@@ -35,6 +35,10 @@ provider "helm" {
 }
 
 provider "kubectl" {
+  config_path = var.kube_config_path
+}
+
+provider "kubernetes" {
   config_path = var.kube_config_path
 }
 

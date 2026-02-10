@@ -58,6 +58,6 @@ nodelocaldns: false
 nodelocaldns_address: 169.254.20.10
 
 # Config container runntime
-dockerhubMirror: true
+dockerhubMirror: false
 dockerhubMirrorURLs:
 - "https://mirror.gcr.io/v2"

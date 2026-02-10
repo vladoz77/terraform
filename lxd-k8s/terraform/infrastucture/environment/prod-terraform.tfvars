@@ -19,7 +19,7 @@ instances = {
     root_disk_size = "20GB"
     ipv4_address = "192.168.200.2"
     cpu          = "2"
-    memory       = "4GB"
+    memory       = "3GB"
     volumes = {
     }
   }
@@ -28,7 +28,7 @@ instances = {
     root_disk_size = "20GB"
     ipv4_address = "192.168.200.3"
     cpu          = "2"
-    memory       = "4GB"
+    memory       = "3GB"
     volumes = {}
   }
   master-03 = {
@@ -36,7 +36,15 @@ instances = {
     root_disk_size = "20GB"
     ipv4_address = "192.168.200.4"
     cpu          = "2"
-    memory       = "4GB"
+    memory       = "3GB"
+    volumes = {}
+  }
+  worker-01 = {
+    type         = "virtual-machine"
+    root_disk_size = "20GB"
+    ipv4_address = "192.168.200.5"
+    cpu          = "2"
+    memory       = "3GB"
     volumes = {}
   }
 }
