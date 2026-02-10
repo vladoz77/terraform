@@ -6,11 +6,11 @@ environment = "dev"
 pools = {
   "root-k8s" = {
     pool_driver = "dir"
-    pool_source = "/mnt/lxd-pools/root-k8s"
+    pool_source = "/lxd-pools/root-k8s"
   }
   "data-k8s" = {
     pool_driver = "dir"
-    pool_source = "/mnt/lxd-pools/data-k8s"
+    pool_source = "/lxd-pools/data-k8s"
   }
 }
 

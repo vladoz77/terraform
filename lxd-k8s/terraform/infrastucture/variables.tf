@@ -14,6 +14,7 @@ variable "lxd_image_os" {
 }
 
 variable "pools" {
+  description = "Map of storage pools to create"
   type = map(object({
     pool_source = string
     pool_driver = string
@@ -21,6 +22,7 @@ variable "pools" {
 }
 
 variable "instances" {
+  description = "Map of instances to create"
   type = map(object({
     type           = string
     ipv4_address   = string
@@ -32,4 +34,5 @@ variable "instances" {
       pool = string
     }))
   }))
+  default = {}
 }

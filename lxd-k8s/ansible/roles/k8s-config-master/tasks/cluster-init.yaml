@@ -1,3 +1,4 @@
+# tasks/cluster-init.yaml
 - name: Copy template kubeadm
   ansible.builtin.template:
     src: "kubeadm-config.j2"
@@ -26,6 +27,7 @@
     dest: "{{ home_kube_dir }}/config"
     state: link
     owner: "{{ username }}"
+
 
 - name: Read kubeconfig content
   ansible.builtin.slurp:

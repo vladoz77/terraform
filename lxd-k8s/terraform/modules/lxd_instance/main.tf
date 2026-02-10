@@ -1,3 +1,18 @@
+# main.tf
+
+# Configure Terraform and required providers
+terraform {
+  required_version = ">= 1.0"
+
+  required_providers {
+    lxd = {
+      source  = "terraform-lxd/lxd"
+      version = ">= 2.5.0"
+    }
+  }
+}
+
+# Create LXD volumes
 resource "lxd_volume" "volume" {
   for_each = var.volumes
   
@@ -10,7 +25,7 @@ resource "lxd_volume" "volume" {
   }
 }
 
-# Создаем instance
+# Create LXD instance
 resource "lxd_instance" "instance" {
   name = var.instance.name
   image = var.instance.image
@@ -23,7 +38,7 @@ resource "lxd_instance" "instance" {
     memory = var.instance.memory
   }
 
-  # Root диск
+  # Add root disk
   device {
     name = "root"
     type = "disk"
@@ -34,7 +49,7 @@ resource "lxd_instance" "instance" {
     }
   }
 
-  # Динамическое добавление дополнительных дисков
+  # Add additional volumes
   dynamic "device" {
     for_each = var.volumes
     
@@ -48,7 +63,7 @@ resource "lxd_instance" "instance" {
     }
   }
 
-  # Сетевой интерфейс
+  # Configure network interface
   device {
     name = "eth0"
     type = "nic"
@@ -70,12 +85,13 @@ resource "lxd_instance" "instance" {
 resource "null_resource" "wait_for_ssh" {
   depends_on = [lxd_instance.instance]
 
-  # Триггер для пересоздания при изменении IP или имени
+  # Re-run the provisioner if instance IP or name changes
   triggers = {
     instance_ip   = var.instance.ipv4_address
     instance_name = var.instance.name
   }
 
+  # Provisioner to wait for SSH availability
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
     command = <<-EOT

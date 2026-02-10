@@ -1,3 +1,4 @@
+# vars/main.yaml
 # Calico 
 calico_crds: https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests/operator-crds.yaml
 tigera_operator: https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests/tigera-operator.yaml

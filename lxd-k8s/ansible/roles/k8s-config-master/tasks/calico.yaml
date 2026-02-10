@@ -1,3 +1,4 @@
+# tasks/calico.yaml
 - name: Install calico crds
   kubernetes.core.k8s:
     src: "{{ calico_crds }}"
@@ -85,16 +86,4 @@
         name: default
   when: calico_gateway_api_enabled
 
-- name: Create `.kube` directory
-  ansible.builtin.file:
-    path: "{{ home_kube_dir }}"
-    state: directory
-    owner: "{{ username }}"
-    group: "{{ username }}"
 
-- name: Create link to configuration
-  ansible.builtin.file:
-    src: "{{ base_kube_conf_dir }}"
-    dest: "{{ home_kube_dir }}/config"
-    state: link
-    owner: "{{ username }}"

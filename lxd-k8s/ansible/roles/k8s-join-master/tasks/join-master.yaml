@@ -1,28 +1,21 @@
+# tasks/join-master.yaml
 - name: Check if kubeadm has already run
   ansible.builtin.stat:
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
 
 - ansible.builtin.debug:
-    msg: "{{ inventory_hostname  }} is already master"
+    msg: "{{ inventory_hostname }} is already master"
   when: kubeadm_ca.stat.exists
 
-# - name: add  master node
-#   ansible.builtin.shell: 
-#     "{{ hostvars[groups['master'][0]].master_token }} \
-#     --control-plane \
-#     --certificate-key {{ hostvars[groups['master'][0]].certificate }} \
-#     --apiserver-advertise-address {{ansible_facts.eth1.ipv4.address}}"
-#   when: not kubeadm_ca.stat.exists
-
-- name: Add another master node {{ inventory_hostname }}
+- name: Add another master node to the cluster
   block:
-  - name: copy template kubeadm-join
+  - name: copy template kubeadm-join to another master node
     ansible.builtin.template:
       src: kubeadm-join-master.yaml.j2
       dest: "/tmp/kubeadm-join-master.yaml"
 
-  - name: join master {{ inventory_hostname }}
+  - name: join another master node
     ansible.builtin.shell: kubeadm join --config /tmp/kubeadm-join-master.yaml
   when: not kubeadm_ca.stat.exists
 

@@ -1,8 +1,51 @@
+terraform {
+  required_version = ">= 1.9.0"
+  required_providers {
+    lxd = {
+      source  = "terraform-lxd/lxd"
+      version = ">= 2.5.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = ">= 2.6.2"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.2.4"
+    }
+  }
+  backend "s3" {
+    endpoints = {
+      s3 = "https://storage.yandexcloud.net"
+    }
+    bucket = "vladis-terraform-state"
+    region = "ru-central1"
+    key    = "lxd/k8s-infrastucture.tfstate"
+
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+  }
+}
+
+provider "lxd" {
+  generate_client_certificates = true
+  accept_remote_certificate    = true
+  remote {
+    name     = "lxd-server-1"
+    address  = "https://localhost:8443"
+    password = "supersecret"
+    default  = true
+  }
+}
+
+# Create LXD profile
 resource "lxd_profile" "vm" {
   name = var.lxd_profile_name
 }
 
-
+# Create storage pools
 resource "lxd_storage_pool" "pools" {
   for_each = var.pools
 
@@ -46,6 +89,7 @@ module "instance" {
   volumes = each.value.volumes
 }
 
+# Generate Ansible inventory file
 resource "local_file" "inventory" {
   content = templatefile("${path.module}/k8s-inventory.tftpl",
     {

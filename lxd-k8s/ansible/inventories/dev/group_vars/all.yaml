@@ -42,8 +42,6 @@ password: '8231'
 
 # Enabeled HA kubernetes master (true or false)
 ha_enabled: false
-vip_address: 192.168.200.250
-vip_port: 8443
 
 # Ebpf mode
 ebpf_enabled: false

@@ -25,13 +25,16 @@ packages:
 - python3-packaging
 
 # Kubernetes versions
-kubernetesVersion: '1.33'
-kubernetesSubversion: '2'
+kubernetesVersion: '1.35'
+kubernetesSubversion: '0'
 interface_name: enp5s0
 local_kubeconfig_dir: /home/vlad/.kube
 # Calico version
-calico_version: v3.31.0
+calico_version: v3.31.3
 calico_encapsulation_type: NONE
+calico_gateway_api_enabled: true
+goldman_enabled: false
+whisker_enabled: false
 
 # Username
 username: vlad
@@ -43,7 +46,7 @@ vip_address: 192.168.200.250
 vip_port: 8443
 
 # Ebpf mode
-ebpf_enabled: false
+ebpf_enabled: true
 
 # network config
 podSubnet: 10.100.0.0/16

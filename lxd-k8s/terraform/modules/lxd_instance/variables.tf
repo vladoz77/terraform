@@ -1,3 +1,4 @@
+# variables.tf
 variable "lxd_profile_name" {
   default = "instance_profile"
   type = string

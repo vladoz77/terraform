@@ -6,10 +6,8 @@
   ansible.builtin.yum_repository:
     name: kubernetes
     description: soft for k8s
-    baseurl:
-    - "{{ kubernetes_repo }}"
-    gpgkey:
-    - "{{ kubernetes_gpg_key }}"
+    baseurl: "{{ kubernetes_repo }}"
+    gpgkey: "{{ kubernetes_gpg_key }}"
     enabled: true
     gpgcheck: true
     state: present
@@ -19,7 +17,6 @@
     name: "{{ packages }}"
     state: present
     update_cache: true
-    disable_gpg_check: true # for test only !!!
   notify:
   - start iscsid
   - restart kubelet
@@ -55,13 +52,15 @@
     create: true
   loop: "{{ modules }}"
 
-- name: Set "{{ item.key }}" to "{{ item.value}}"
+- name: Set sysctl params
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value}}"
     reload: true
   loop: "{{ sysctl_params }}"
+  loop_control:
+    label: "{{ item.key }}={{ item.value }}"
 
 - name: Dsable swap
   ansible.builtin.command: swapoff -a
