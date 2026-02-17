@@ -7,21 +7,33 @@ variable "kube_config_path" {
 variable "metallb_ippool" {
   description = "ip address pool for metallb"
   type        = list(string)
-  default     = ["192.168.200.250-192.168.200.255"]
+  default     = ["192.168.200.200-192.168.200.255"]
 }
 
 variable "ca_subject" {
   description = "subject field for ca certificate"
   type = object({
-    organizations       = list(string)
-    organizationalUnits = list(string)
-    localities          = list(string)
-    countries           = list(string)
+    organizations        = list(string)
+    organizational_units = list(string)
+    localities           = list(string)
+    countries            = list(string)
   })
   default = {
-    countries           = ["RU"]
-    organizationalUnits = ["Home lab"]
-    localities          = ["Ryazan"]
-    organizations       = ["Vlad's homelab"]
+    countries            = ["RU"]
+    organizational_units = ["Home lab"]
+    localities           = ["Ryazan"]
+    organizations        = ["Vlad's homelab"]
+  }
+}
+
+variable "ca_issuer" {
+  description = "ca issuer config"
+  type = object({
+    name        = string
+    secret_name = string
+  })
+  default = {
+    name        = "ca-issuer"
+    secret_name = "ca-secret"
   }
 }

@@ -32,7 +32,6 @@ local_kubeconfig_dir: /home/vlad/.kube
 # Calico version
 calico_version: v3.31.3
 calico_encapsulation_type: NONE
-calico_gateway_api_enabled: true
 goldman_enabled: false
 whisker_enabled: false
 

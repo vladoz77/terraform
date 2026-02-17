@@ -5,7 +5,8 @@ resource "helm_release" "cert-manager" {
   namespace    = "cert-manager"
   version      = "1.19.2"
   force_update = true
-
+  atomic = true
+  cleanup_on_fail = true
   create_namespace = true
 
   values = [yamlencode({
@@ -17,6 +18,7 @@ resource "helm_release" "cert-manager" {
       enableGatewayAPI = true
     }
   })]
+  depends_on = [ helm_release.envoy_gateway_controller ]
 }
 
 resource "kubectl_manifest" "clusterissuer" {
