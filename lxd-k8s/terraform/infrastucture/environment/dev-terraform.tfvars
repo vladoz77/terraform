@@ -1,5 +1,5 @@
 lxd_profile_name = "k8s-profile"
-lxd_image_os = "fedora43"
+lxd_image_os = "fedora"
 environment = "dev"
 
 

@@ -73,7 +73,7 @@ module "instance" {
   network_name = module.network.network_name
   lxd_profile_name = lxd_profile.vm.name
   default_storage_pool = ""
-
+  volumes = each.value.volumes
   instance = {
     root_disk_size = each.value.root_disk_size
     root_pool_name = lxd_storage_pool.pools["root-k8s"].name
@@ -85,8 +85,6 @@ module "instance" {
     memory         = each.value.memory
     cloud_init     =  file("${path.module}/cloud-init.yaml")
   }
-
-  volumes = each.value.volumes
 }
 
 # Generate Ansible inventory file
