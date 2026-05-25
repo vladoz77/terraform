@@ -1,37 +1,42 @@
 resource "helm_release" "metallb" {
-  name       = "metallb"
+  name       = var.name
   repository = "https://metallb.github.io/metallb"
   chart      = "metallb"
-  version    = "0.13.12"
-  namespace  = "metallb-system"
+  version    = var.chart_version
+  namespace  = var.namespace
 
-  create_namespace = true
+  create_namespace = var.create_namespace
   force_update     = true
 }
 
 resource "kubectl_manifest" "ippool" {
   depends_on = [helm_release.metallb]
+  for_each = var.ippools
   yaml_body = yamlencode({
     apiVersion = "metallb.io/v1beta1"
     kind       = "IPAddressPool"
     metadata = {
-      name      = "first-pool"
-      namespace = "metallb-system"
+      name      = each.key
+      namespace = var.namespace
     }
     spec = {
-      addresses = var.metallb_ippool
+      addresses = each.value
     }
   })
 }
 
 resource "kubectl_manifest" "l2advertisements" {
-  depends_on = [helm_release.metallb]
+  for_each = var.ippools
+  depends_on = [kubectl_manifest.ippool]
   yaml_body = yamlencode({
     apiVersion = "metallb.io/v1beta1"
     kind       = "L2Advertisement"
     metadata = {
-      name      = "first-pool"
-      namespace = "metallb-system"
+      name      = each.key
+      namespace = var.namespace
+    }
+    spec = {
+      ipAddressPools = [each.key]
     }
   })
 }

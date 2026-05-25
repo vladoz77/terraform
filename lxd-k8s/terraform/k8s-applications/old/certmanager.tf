@@ -1,9 +1,9 @@
 resource "helm_release" "cert-manager" {
   name         = "cert-manager"
   chart        = "cert-manager"
-  repository   = "https://charts.jetstack.io/"
+  repository   = "oci://quay.io/jetstack/charts"
   namespace    = "cert-manager"
-  version      = "1.19.2"
+  version      = "1.20.2"
   force_update = true
   atomic = true
   cleanup_on_fail = true

@@ -4,11 +4,6 @@ variable "kube_config_path" {
   type        = string
 }
 
-variable "metallb_ippool" {
-  description = "ip address pool for metallb"
-  type        = list(string)
-  default     = ["192.168.200.200-192.168.200.255"]
-}
 
 variable "ca_subject" {
   description = "subject field for ca certificate"
