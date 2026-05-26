@@ -1,3 +1,4 @@
+# variables.tf
 variable "namespace" {
   description = "envoy gateway helm chart name"
   type        = string
@@ -32,7 +33,6 @@ variable "gateway_controller" {
 
 variable "gateway" {
   type = map(object({
-    class_name     = string
     namespace      = string
     cluster_issuer = optional(string, null)
     address_pool   = optional(string, null)

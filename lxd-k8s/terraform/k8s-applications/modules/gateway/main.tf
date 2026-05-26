@@ -1,3 +1,4 @@
+# main.tf
 terraform {
   required_version = ">= 1.9.0"
   required_providers {
@@ -29,7 +30,7 @@ locals {
     for gw_key, gw_val in var.gateway : "${gw_val.address_pool}-proxy" => {
       address_pool = gw_val.address_pool
       namespace    = gw_val.namespace
-    }
+    } if gw_val.address_pool != null
   }
 }
 
@@ -97,7 +98,7 @@ resource "kubectl_manifest" "gateway" {
           name  = "${each.value.address_pool}-proxy"
         }
       }
-      listeners = jsondecode(jsonencode([
+      listeners = [
         for l in each.value.listeners : {
           name      = l.name
           port      = l.port
@@ -116,7 +117,7 @@ resource "kubectl_manifest" "gateway" {
             }]
           } : null
         }
-      ]))
+      ]
     }
   })
 }
