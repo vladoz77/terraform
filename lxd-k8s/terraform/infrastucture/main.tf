@@ -3,7 +3,7 @@ terraform {
   required_providers {
     lxd = {
       source  = "terraform-lxd/lxd"
-      version = ">= 2.5.0"
+      version = ">= 3.0.1"
     }
     local = {
       source  = "hashicorp/local"
@@ -30,14 +30,17 @@ terraform {
 }
 
 provider "lxd" {
-  generate_client_certificates = true
-  accept_remote_certificate    = true
   remote {
-    name     = "lxd-server-1"
-    address  = "https://localhost:8443"
-    password = "supersecret"
-    default  = true
+    name    = "lxd-server-rocky"
+    address = "https://rocky:8443"
+
+    client_certificate_file = "/home/vlad/snap/lxd/common/config/client.crt"
+    client_key_file          = "/home/vlad/snap/lxd/common/config/client.key"
+
+    server_certificate_fingerprint = "07b430fbac6fd65a15de13f19d0376e31f2c4ba3b1ea844d61997c13d138aa4b"
   }
+
+  default_remote = "lxd-server-rocky"
 }
 
 # Create LXD profile
@@ -51,17 +54,25 @@ resource "lxd_storage_pool" "pools" {
 
   name   = each.key
   driver = each.value.pool_driver
-  source = each.value.pool_source
+
+  config = {
+    source = each.value.pool_source
+  }
 }
 
 # Create network
 module "network" {
   source = "../modules/lxd_network"
-
+  
   network = {
-    network_name = "lxdbr0"
-    ipv4_address = "192.168.200.1/24"
+    name = "lxdbr0"
+    ipv4_address = "172.10.10.1/24"
+    nat = true
+    dhcp = true
+    dns_domain = "home.local"
+    dns_search = "home.local"
   }
+  
 }
 
 # Create instance
@@ -72,19 +83,18 @@ module "instance" {
 
   network_name = module.network.network_name
   lxd_profile_name = lxd_profile.vm.name
-  default_storage_pool = ""
   volumes = each.value.volumes
   instance = {
-    root_disk_size = each.value.root_disk_size
-    root_pool_name = lxd_storage_pool.pools["root-k8s"].name
-    name           = "k8s-${each.key}"
-    image          = var.lxd_image_os
-    type           = each.value.type
-    ipv4_address   = each.value.ipv4_address
-    cpu            = each.value.cpu
-    memory         = each.value.memory
-    cloud_init     =  file("${path.module}/cloud-init.yaml")
+    root_disk_size    = each.value.root_disk_size
+    root_disk_source  = lxd_storage_pool.pools["root-k8s"].name
+    name              = "k8s-${each.key}"
+    image             = var.lxd_image_os
+    ipv4_address      = each.value.ipv4_address
+    cpu               = each.value.cpu
+    memory            = each.value.memory
+    cloud_init        = file("${path.module}/cloud-init.yaml")
   }
+  depends_on = [ module.network ]
 }
 
 # Generate Ansible inventory file

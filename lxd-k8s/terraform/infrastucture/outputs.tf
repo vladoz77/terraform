@@ -10,7 +10,7 @@ output "storage_pools" {
   value = { for key, pool in lxd_storage_pool.pools : key => {
     name   = pool.name
     driver = pool.driver
-    source = pool.source
+    source = pool.config.source
   } }
 }
 

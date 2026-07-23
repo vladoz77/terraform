@@ -24,13 +24,12 @@ variable "pools" {
 variable "instances" {
   description = "Map of instances to create"
   type = map(object({
-    type           = string
     ipv4_address   = string
     cpu            = number
     memory         = string
     root_disk_size = string
     volumes = map(object({
-      size = string
+      size   = string
       pool = string
     }))
   }))
