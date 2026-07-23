@@ -35,7 +35,7 @@ provider "lxd" {
     address = "https://rocky:8443"
 
     client_certificate_file = "/home/vlad/snap/lxd/common/config/client.crt"
-    client_key_file          = "/home/vlad/snap/lxd/common/config/client.key"
+    client_key_file         = "/home/vlad/snap/lxd/common/config/client.key"
 
     server_certificate_fingerprint = "07b430fbac6fd65a15de13f19d0376e31f2c4ba3b1ea844d61997c13d138aa4b"
   }
@@ -63,16 +63,16 @@ resource "lxd_storage_pool" "pools" {
 # Create network
 module "network" {
   source = "../modules/lxd_network"
-  
+
   network = {
-    name = "lxdbr0"
-    ipv4_address = "172.10.10.1/24"
-    nat = true
-    dhcp = true
-    dns_domain = "home.local"
-    dns_search = "home.local"
+    name         = var.network.name
+    ipv4_address = var.network.ipv4_address
+    ipv6_address = var.network.ipv6_address
+    nat          = var.network.nat
+    dhcp         = var.network.dhcp
+    dns_domain   = var.network.dns_domain
+    dns_search   = var.network.dns_search
   }
-  
 }
 
 # Create instance
@@ -81,20 +81,20 @@ module "instance" {
 
   source = "../modules/lxd_instance"
 
-  network_name = module.network.network_name
+  network_name     = module.network.network_name
   lxd_profile_name = lxd_profile.vm.name
-  volumes = each.value.volumes
+  volumes          = each.value.volumes
   instance = {
-    root_disk_size    = each.value.root_disk_size
-    root_disk_source  = lxd_storage_pool.pools["root-k8s"].name
-    name              = "k8s-${each.key}"
-    image             = var.lxd_image_os
-    ipv4_address      = each.value.ipv4_address
-    cpu               = each.value.cpu
-    memory            = each.value.memory
-    cloud_init        = file("${path.module}/cloud-init.yaml")
+    root_disk_size   = each.value.root_disk_size
+    root_disk_source = lxd_storage_pool.pools["root-k8s"].name
+    name             = "k8s-${each.key}"
+    image            = var.lxd_image_os
+    ipv4_address     = each.value.ipv4_address
+    cpu              = each.value.cpu
+    memory           = each.value.memory
+    cloud_init       = file("${path.module}/cloud-init.yaml")
   }
-  depends_on = [ module.network ]
+  depends_on = [module.network]
 }
 
 # Generate Ansible inventory file

@@ -14,6 +14,16 @@ pools = {
   }
 }
 
+network = {
+  name = "lxdbr0"
+  ipv4_address = "172.10.10.1/24"
+  ipv6_address = "none"
+  nat = true
+  dhcp = true
+  dns_domain = "cluster.local"
+  dns_search = "cluster.local"
+}
+
 
 instances = {
   master-01 = {
