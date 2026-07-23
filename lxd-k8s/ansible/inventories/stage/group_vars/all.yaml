@@ -33,6 +33,9 @@ local_kubeconfig_dir: /home/vlad/.kube
 calico_version: v3.31.0
 calico_encapsulation_type: NONE
 
+# Proxy settings 
+proxy_settings: http://10.84.101.69:10808
+
 # Username
 username: vlad
 password: '8231'

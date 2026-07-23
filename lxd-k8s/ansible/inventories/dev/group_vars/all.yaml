@@ -1,34 +1,25 @@
 packages:
-- wget
-- iproute-tc
-- vim
-- git
-- bash-completion
 - nfs-utils
 - kubectl.x86_64
 - kubelet.x86_64
 - kubeadm.x86_64
 - ipvsadm
-- python3-pip
-- sysstat
-- jq
-- net-tools
-- tree
-- traceroute
 - iscsi-initiator-utils
 - nfs-utils
 - nfs4-acl-tools
-- tcpdump
-- unzip
 - cryptsetup
-- tar
-- python3-packaging
 
 # Kubernetes versions
 kubernetesVersion: '1.35'
 kubernetesSubversion: '0'
+containerd_version: '2.3.3'
 interface_name: enp5s0
 local_kubeconfig_dir: /home/vlad/.kube
+
+# Proxy settings 
+proxy_settings: http://10.84.101.69:10808
+
+
 # Calico version
 calico_version: v3.31.3
 calico_encapsulation_type: NONE

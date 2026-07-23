@@ -6,8 +6,9 @@
   ignore_errors: true
   failed_when: cluster_is_running.rc > 1
 
-- ansible.builtin.debug:
-   msg: Cluster is running
+- name: Cluster is running
+  ansible.builtin.debug:
+    msg: Cluster is running
   when: cluster_is_running.rc == 0
 
 - name: Init cluster

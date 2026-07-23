@@ -6,8 +6,9 @@ password: password
 kubernetesVersion: '1.33'
 kubernetesSubversion: '2'
 
+
 # Containerd url
-containerd_version: '2.1.4'
+containerd_version: '2.3.3'
 containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-amd64.tar.gz
 containerd_service_url: https://raw.githubusercontent.com/containerd/containerd/v{{ containerd_version }}/containerd.service
 runc_url: https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.amd64
@@ -15,7 +16,6 @@ runc_version: '1.3.2'
 
 packages:
 - wget
-- nano
 - curl
 - iproute-tc
 - vim
