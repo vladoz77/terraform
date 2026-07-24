@@ -1,6 +1,5 @@
 output "network_name" {
-  description = "Network name"
-  value = lxd_network.network.name
+  value = var.network.name
 }
 
 output "ipv4_cidr" {
