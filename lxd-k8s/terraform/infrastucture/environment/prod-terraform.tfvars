@@ -1,5 +1,5 @@
 lxd_profile_name = "k8s-profile"
-lxd_image_os = "fedora43"
+lxd_image_os = "rocky-9-cloud"
 environment = "prod"
 
 pools = {
@@ -27,7 +27,7 @@ instances = {
   master-01 = {
     type         = "virtual-machine"
     root_disk_size = "20GB"
-    ipv4_address = "192.168.200.2"
+    ipv4_address = "172.10.10.2"
     cpu          = 2
     memory       = "3GB"
     volumes = {
@@ -36,7 +36,7 @@ instances = {
   master-02 = {
     type         = "virtual-machine"
     root_disk_size = "20GB"
-    ipv4_address = "192.168.200.3"
+    ipv4_address = "172.10.10.3"
     cpu          = 2
     memory       = "3GB"
     volumes = {}
@@ -44,7 +44,7 @@ instances = {
   master-03 = {
     type         = "virtual-machine"
     root_disk_size = "20GB"
-    ipv4_address = "192.168.200.4"
+    ipv4_address = "172.10.10.4"
     cpu          = 2
     memory       = "3GB"
     volumes = {}
@@ -52,9 +52,40 @@ instances = {
   worker-01 = {
     type         = "virtual-machine"
     root_disk_size = "20GB"
-    ipv4_address = "192.168.200.5"
+    ipv4_address = "172.10.10.10"
     cpu          = 2
     memory       = "3GB"
-    volumes = {}
+    volumes = {
+      data = {
+        size   = "30GB"
+        pool = "data-k8s"
+      }
+    }
   }
+  worker-02 = {
+    type         = "virtual-machine"
+    root_disk_size = "30GB"
+    ipv4_address = "172.10.10.11"
+    cpu          = "2"
+    memory       = "4GB"
+    volumes = {
+      data = {
+        size   = "30GB"
+        pool = "data-k8s"
+      }
+    }
+  }
+  worker-03 = {
+    type         = "virtual-machine"
+    root_disk_size = "30GB"
+    ipv4_address = "172.10.10.12"
+    cpu          = "2"
+    memory       = "4GB"
+    volumes = {
+      data = {
+        size   = "30GB"
+        pool = "data-k8s"
+      }
+    }
+  }  
 }
