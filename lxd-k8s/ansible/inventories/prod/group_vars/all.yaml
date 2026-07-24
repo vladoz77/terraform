@@ -25,10 +25,14 @@ packages:
 - python3-packaging
 
 # Kubernetes versions
-kubernetesVersion: '1.35'
-kubernetesSubversion: '0'
-interface_name: enp5s0
+kubernetesVersion: '1.33'
+kubernetesSubversion: '2'
+interface_name: eth0
 local_kubeconfig_dir: /home/vlad/.kube
+
+# Proxy settings 
+proxy_settings: http://10.84.101.69:10808
+
 # Calico version
 calico_version: v3.31.3
 calico_encapsulation_type: NONE
@@ -42,11 +46,11 @@ password: '8231'
 
 # Enabeled HA kubernetes master (true or false)
 ha_enabled: true
-vip_address: 192.168.200.250
+vip_address: 172.10.10.100
 vip_port: 8443
 
 # Ebpf mode
-ebpf_enabled: true
+ebpf_enabled: false
 
 # network config
 podSubnet: 10.100.0.0/16
