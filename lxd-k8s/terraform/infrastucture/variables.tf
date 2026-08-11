@@ -3,6 +3,17 @@ variable "environment" {
   description = "Type of environment"
 }
 
+variable "lxd_server_address" {
+  type        = string
+  description = "LXD server address"
+  default     = "https://rocky.homelab.local:8443"
+}
+
+variable "lxd_server_cert_fingerprint" {
+  type        = string
+  description = "LXD server certificate fingerprint"
+}
+
 variable "lxd_profile_name" {
   default = "instance"
   type    = string

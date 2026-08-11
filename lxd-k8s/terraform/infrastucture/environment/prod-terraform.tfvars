@@ -1,6 +1,8 @@
 lxd_profile_name = "k8s-profile"
 lxd_image_os = "rocky-9-cloud"
 environment = "prod"
+lxd_server_cert_fingerprint = "ad87297baf75733c24eaaa23c349a9885a2814ee00121d19fbe127c5073515eb"
+lxd_server_address = "https://rocky.homelab.local:8443"
 
 pools = {
   "root-k8s" = {

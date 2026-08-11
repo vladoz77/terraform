@@ -32,15 +32,15 @@ terraform {
 provider "lxd" {
   remote {
     name    = "lxd-server-rocky"
-    address = "https://rocky:8443"
+    address = var.lxd_server_address
 
     client_certificate_file = "/home/vlad/snap/lxd/common/config/client.crt"
     client_key_file         = "/home/vlad/snap/lxd/common/config/client.key"
 
-    server_certificate_fingerprint = "07b430fbac6fd65a15de13f19d0376e31f2c4ba3b1ea844d61997c13d138aa4b"
+    server_certificate_fingerprint = var.lxd_server_cert_fingerprint
   }
 
-  default_remote = "lxd-server-rocky"
+  # default_remote = "lxd-server-rocky"
 }
 
 # Create LXD profile
