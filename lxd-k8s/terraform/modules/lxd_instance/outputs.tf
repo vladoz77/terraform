@@ -7,13 +7,10 @@ output "ipv4_address" {
   value = var.instance.ipv4_address
 }
 
-
 output "volumes" {
-  value = { for k, v in lxd_volume.volume : k => {
+  value = { for k, v in lxd_storage_volume.volumes : k => {
     name = v.name
-    size = v.config.size
     pool = v.pool
-  }}
+    size = v.config.size
+  } }
 }
-
-

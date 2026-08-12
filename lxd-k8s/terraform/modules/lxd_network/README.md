@@ -1,118 +1,121 @@
 # Terraform модуль lxd_network
 
-Модуль создаёт и настраивает сеть LXD (bridge) — подключаемую сеть для инстансов модуля `lxd_instance`.
+Модуль создаёт LXD network с конфигурацией IPv4/IPv6, DHCP, DNS и NAT. Он предназначен для использования в связке с модулем `lxd_instance`.
 
-## Назначение
+## Что делает модуль
 
-- Автоматизировать создание LXD bridge с подсетью IPv4 (и опционно IPv6)
-- Настроить DHCP, NAT, DNS и маршрутизацию внутри LXD
-- Предоставить понятный интерфейс для подключения инстансов из других модулей
+Модуль управляет ресурсом `lxd_network` и задаёт следующие параметры:
+- IPv4 адрес сети в формате CIDR;
+- IPv6 адрес сети (при необходимости);
+- включение/выключение NAT;
+- включение DHCP;
+- диапазон адресов DHCP;
+- параметры DNS domain и DNS search.
 
-## Возможности
+## Входные переменные
 
-- Создание LXD сети (bridge) с указанием подсети IPv4
-- Включение/выключение NAT для выхода в интернет
-- Настройка DHCP диапазона и статических адресов (через LXD или внешние настройки)
-- Опциональная конфигурация IPv6
-- Публикация имени сети для потребителей (модулей инстансов)
+Модуль принимает один объект `network` со следующими полями:
 
-## Требования
+Исходные файлы модуля:
 
-- Terraform >= 1.0
-- Провайдер `terraform-lxd/lxd` настроен и доступен
-- Права на управление LXD на машине, где выполняется Terraform
-
-## Входные переменные (типичные)
-
-> Фактические переменные находятся в `variables.tf` модуля. Ниже — типичные поля, которые модуль поддерживает.
-
-- `name` (string) — имя сети в LXD (например, `lxdbr0`)
-- `ipv4_address` (string) — сеть в CIDR формате, используемая LXD (например, `192.168.200.1/24`)
-- `ipv4_nat` (bool) — включить NAT для сети (по умолчанию `true`)
-- `ipv4_dhcp_start` (string) — начальный адрес диапазона DHCP (например, `192.168.200.2`)
-- `ipv4_dhcp_end` (string) — конечный адрес диапазона DHCP
-- `ipv6_address` (string, optional) — CIDR IPv6 подсети
-- `management` (object, optional) — дополнительные параметры (mtu, routes и т.д.)
-
-Пример минимальных переменных в вызове:
+- [main.tf](main.tf)
+- [variables.tf](variables.tf)
+- [outputs.tf](outputs.tf)
 
 ```hcl
-module "lxd_network" {
-  source = "../modules/lxd_network"
-
-  name         = "lxdbr0"
-  ipv4_address = "192.168.200.1/24"
-  ipv4_nat     = true
+network = {
+  name               = string
+  nat                = bool
+  ipv4_address       = string
+  ipv6_address       = optional(string, "none")
+  dhcp               = bool
+  ipv4_dhcp_ranges   = optional(string, "")
+  dns_domain         = optional(string, "lxd")
+  dns_search         = optional(string, "lxd")
 }
 ```
 
-## Пример использования (с DHCP диапазоном)
+### Описание полей
+
+- `name` — имя сети в LXD
+- `nat` — включить NAT для сети
+- `ipv4_address` — IPv4 подсеть в CIDR формате, например `192.168.200.1/24`
+- `ipv6_address` — IPv6 подсеть, по умолчанию `"none"`
+- `dhcp` — включить DHCP
+- `ipv4_dhcp_ranges` — диапазон адресов DHCP, например `192.168.200.2-192.168.200.100`
+- `dns_domain` — домен DNS
+- `dns_search` — search domain для DNS
+
+## Пример использования
 
 ```hcl
 module "lxd_network" {
   source = "../modules/lxd_network"
 
-  name             = "lxdbr0"
-  ipv4_address     = "192.168.200.1/24"
-  ipv4_nat         = true
-  ipv4_dhcp_start  = "192.168.200.2"
-  ipv4_dhcp_end    = "192.168.200.100"
+  network = {
+    name             = "k8s-lxd-net"
+    nat              = true
+    dhcp             = true
+    ipv4_address     = "192.168.200.1/24"
+    ipv6_address     = "none"
+    ipv4_dhcp_ranges = "192.168.200.2-192.168.200.100"
+    dns_domain       = "lxd"
+    dns_search       = "lxd"
+  }
+}
+```
+
+## Пример использования вместе с модулем инстанса
+
+```hcl
+module "lxd_network" {
+  source = "../modules/lxd_network"
+
+  network = {
+    name             = "k8s-lxd-net"
+    nat              = true
+    dhcp             = true
+    ipv4_address     = "192.168.200.1/24"
+    ipv4_dhcp_ranges = "192.168.200.2-192.168.200.100"
+  }
 }
 
-module "instance" {
+module "k8s_master" {
   source = "../modules/lxd_instance"
+
   network_name = module.lxd_network.network_name
-  # ... остальные параметры
+
+  instance = {
+    name             = "k8s-master-1"
+    image            = "ubuntu:22.04"
+    ipv4_address     = "192.168.200.10"
+    cpu              = 2
+    memory           = "4GB"
+    cloud_init       = "#cloud-config\npackage_update: true"
+    root_disk_source = "default"
+    root_disk_size   = "20GB"
+  }
 }
 ```
 
-## Outputs (типичные)
+## Выходы
 
-- `network_name` — имя созданной LXD сети (для передачи в модуль `lxd_instance`)
-- `ipv4_subnet` — CIDR IPv4 подсети
-- `gateway` — адрес gateway внутри сети
+- `network_name` — имя созданной LXD сети
+- `ipv4_cidr` — IPv4 подсеть в CIDR формате
 
-## Рекомендации
+## Полезные команды
 
-- Если вы планируете использовать NAT, убедитесь, что хост, на котором запускается LXD, имеет настроенный доступ в интернет.
-- Для production может быть разумно управлять DHCP и IP-адресами вне LXD (например, через внешний DHCP), чтобы избежать конфликтов.
-- Проверяйте уникальность CIDR — повторное создание одинаковых подсетей может привести к конфликтам.
+```bash
+# посмотреть список сетей
+lxc network list
 
-## Отладка
-
-- Проверить созданную сеть:
-  ```bash
-  lxc network show lxdbr0
-  ```
-- Просмотреть список сетей:
-  ```bash
-  lxc network list
-  ```
-- Если инстансы не получают IP, проверьте настройки DHCP и диапазон адресов.
-- Для логов LXD используйте системные журналы: `journalctl -u snap.lxd.daemon` или `sudo journalctl -u lxd` в зависимости от установки.
-
-## Ограничения
-
-- Модуль управляет только конфигурацией LXD network. Настройка внешней маршрутизации/маршрутов вне LXD выходит за рамки модуля.
-- Трафик между сетями требует дополнительной настройки на хосте, если это нужно.
-
-## Примеры дополнительных параметров
-
-Если вам нужен нестандартный MTU, статические маршруты или дополнительные параметры, добавьте объект `management` в вызов модуля и пропишите нужные параметры в `main.tf` модуля.
-
-## Советы по безопасности
-
-- Не открывайте в публичный доступ подсети без необходимых правил NAT/фильтрации.
-- Ограничьте доступ к LXD только доверенным пользователям/CI-агентам.
-
-## Файлы модуля
-
-```
-lxd_network/
-├── main.tf
-├── variables.tf
-├── outputs.tf
-└── README.md
+# посмотреть детали сети
+lxc network show k8s-lxd-net
 ```
 
+## Замечания
+
+- Убедитесь, что подсеть не пересекается с уже существующими сетями в вашей инфраструктуре.
+- Если NAT отключён, доступ к внешним сетям для инстансов может быть недоступен.
+- Для работы DHCP важно правильно задать диапазон `ipv4_dhcp_ranges`.
 

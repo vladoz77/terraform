@@ -1,30 +1,23 @@
 # variables.tf
 variable "lxd_profile_name" {
   default = "instance_profile"
-  type = string
+  type    = string
 }
 
 variable "network_name" {
   type = string
 }
 
-variable "default_storage_pool" {
-  type = string
-  default = ""
-  description = "Storage pool by defaults"
-}
-
 variable "instance" {
   type = object({
-    name         = string
-    image        = string
-    type         = string
-    ipv4_address = string
-    cpu          = number
-    memory       = string
-    cloud_init   = string
-    root_pool_name    = string
-    root_disk_size = string
+    name             = string
+    image            = string
+    ipv4_address     = string
+    cpu              = number
+    memory           = string
+    cloud_init       = string
+    root_disk_source = string
+    root_disk_size   = string
   })
 }
 
