@@ -9,5 +9,6 @@ resource "lxd_network" "network" {
     "ipv4.dhcp.ranges" = var.network.ipv4_dhcp_ranges
     "dns.domain"   = var.network.dns_domain
     "dns.search"   = var.network.dns_search
+    "raw.dnsmasq"  = var.network.raw_dnsmasq
   }
 }
