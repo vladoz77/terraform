@@ -24,6 +24,9 @@ network = {
   dhcp = true
   dns_domain = "cluster.local"
   dns_search = "cluster.local"
+  raw_dnsmasq = <<-EOF
+    server=172.10.10.254
+  EOF
 }
 
 

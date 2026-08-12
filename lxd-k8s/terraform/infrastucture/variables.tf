@@ -34,6 +34,7 @@ variable "network" {
     dhcp         = bool
     dns_search   = string
     dns_domain   = string
+    raw_dnsmasq  = optional(string, "")
   })
   default = {
     name         = "lxdbr0"
@@ -43,6 +44,9 @@ variable "network" {
     dhcp         = true
     dns_search   = "lxd"
     dns_domain   = "lxd"
+    raw_dnsmasq  = <<-EOF
+      server=1.1.1.1
+    EOF
   }
 }
 

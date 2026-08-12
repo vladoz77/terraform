@@ -72,6 +72,7 @@ module "network" {
     dhcp         = var.network.dhcp
     dns_domain   = var.network.dns_domain
     dns_search   = var.network.dns_search
+    raw_dnsmasq  = var.network.raw_dnsmasq
   }
 }
 
