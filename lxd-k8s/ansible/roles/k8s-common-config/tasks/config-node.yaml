@@ -11,6 +11,7 @@
     enabled: true
     gpgcheck: true
     state: present
+    proxy: "{{ proxy_settings | default(omit)}}"
 
 - name: Install packages
   ansible.builtin.dnf:

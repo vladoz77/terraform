@@ -1,41 +1,39 @@
 # main.tf
-
-# Configure Terraform and required providers
 terraform {
   required_version = ">= 1.0"
-
   required_providers {
     lxd = {
       source  = "terraform-lxd/lxd"
-      version = ">= 2.5.0"
+      version = ">= 3.0.1"
     }
   }
 }
 
-# Create LXD volumes
-resource "lxd_volume" "volume" {
+# Create dedicated storage volumes for additional disks
+resource "lxd_storage_volume" "volumes" {
   for_each = var.volumes
-  
-  name         = "${var.instance.name}-${each.key}"  
-  pool         = each.value.pool != "" ? each.value.pool : var.default_storage_pool
-  content_type = "block"
-  
+
+  name = "${var.instance.name}-${each.key}"
+  pool = each.value.pool
+  content_type  = "block"
+
   config = {
     size = each.value.size
   }
 }
 
-# Create LXD instance
+# Create LXD instance (virtual machine)
 resource "lxd_instance" "instance" {
-  name = var.instance.name
-  image = var.instance.image
-  type = var.instance.type
-  profiles = [var.lxd_profile_name]
+  name      = var.instance.name
+  image     = var.instance.image
+  type      = "virtual-machine"
+  profiles  = [var.lxd_profile_name]
   ephemeral = false
 
-  limits = {
-    cpu    = var.instance.cpu
-    memory = var.instance.memory
+  config = {
+    "limits.cpu"     = tostring(var.instance.cpu)
+    "limits.memory"  = var.instance.memory
+    "user.user-data" = var.instance.cloud_init
   }
 
   # Add root disk
@@ -44,21 +42,30 @@ resource "lxd_instance" "instance" {
     type = "disk"
     properties = {
       path = "/"
-      pool = var.instance.root_pool_name
+      pool = var.instance.root_disk_source
       size = var.instance.root_disk_size
     }
   }
 
-  # Add additional volumes
+  # Add cloud init device
+  device {
+    name = "cloud-init"
+    type = "disk"
+    properties = {
+      source = "cloud-init:config"
+    }
+  }
+
+  # Add additional volumes as block devices
   dynamic "device" {
     for_each = var.volumes
-    
+
     content {
       name = device.key
       type = "disk"
       properties = {
-        source = lxd_volume.volume[device.key].name
-        pool   = device.value.pool != "" ? device.value.pool : var.default_storage_pool
+        pool   = device.value.pool
+        source = lxd_storage_volume.volumes[device.key].name
       }
     }
   }
@@ -68,37 +75,27 @@ resource "lxd_instance" "instance" {
     name = "eth0"
     type = "nic"
     properties = {
-      network = var.network_name
+      network        = var.network_name
       "ipv4.address" = var.instance.ipv4_address
     }
   }
-
-  config = {
-    "user.user-data" = var.instance.cloud_init
-  }
-
-  depends_on = [lxd_volume.volume]
 }
-
 
 # Wait until instance becomes available via SSH
 resource "null_resource" "wait_for_ssh" {
   depends_on = [lxd_instance.instance]
 
-  # Re-run the provisioner if instance IP or name changes
   triggers = {
     instance_ip   = var.instance.ipv4_address
     instance_name = var.instance.name
   }
 
-  # Provisioner to wait for SSH availability
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
     command = <<-EOT
       echo "Waiting for SSH on ${var.instance.name} (${var.instance.ipv4_address})..."
       timeout=${var.wait_timeout}
       while [ $timeout -gt 0 ]; do
-        # Сначала проверяем доступность порта
         if nc -z -w5 ${var.instance.ipv4_address} 22 2>/dev/null; then
           echo "SSH порт на ${var.instance.name} доступен"
           exit 0

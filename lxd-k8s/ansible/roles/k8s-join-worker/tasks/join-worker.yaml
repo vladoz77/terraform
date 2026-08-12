@@ -3,11 +3,13 @@
     path: "/etc/kubernetes/kubelet.conf"
   register: kubelet_conf
 
-- ansible.builtin.debug:
+- name: "{{ inventory_hostname }} is already worker node"
+  ansible.builtin.debug:
     msg: "{{ inventory_hostname  }} is already worker node"
   when: kubelet_conf.stat.exists
 
-- ansible.builtin.debug:
+- name: Show token
+  ansible.builtin.debug:
     var: token
 
 - name: Add worker node {{ inventory_hostname }}
