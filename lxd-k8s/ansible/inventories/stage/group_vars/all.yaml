@@ -27,7 +27,7 @@ packages:
 # Kubernetes versions
 kubernetesVersion: '1.33'
 kubernetesSubversion: '2'
-interface_name: enp5s0
+interface_name: eth0
 local_kubeconfig_dir: /home/vlad/.kube
 # Calico version
 calico_version: v3.31.0

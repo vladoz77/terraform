@@ -2,6 +2,10 @@
   community.general.timezone:
     name: Europe/Moscow
 
+- name: Wait for cloud-init to finish
+  ansible.builtin.command: cloud-init status --wait
+  changed_when: false
+
 - name: Add repo for k8s
   ansible.builtin.yum_repository:
     name: kubernetes
@@ -30,15 +34,15 @@
 - name: Start handler force
   meta: flush_handlers
 
-# - name: disable firewall
-#   ansible.builtin.service:
-#     name: firewalld
-#     state: stopped
-#     enabled: false
+#- name: disable firewall
+#  ansible.builtin.service:
+#    name: firewalld
+#    state: stopped
+#    enabled: false
 
-# - name: Disable SELinux
-#   ansible.posix.selinux:
-#     state: disabled
+- name: Disable SELinux
+  ansible.posix.selinux:
+     state: disabled
 
 - name: Load module
   community.general.modprobe:
