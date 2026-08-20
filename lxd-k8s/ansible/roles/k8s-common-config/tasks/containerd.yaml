@@ -36,19 +36,19 @@
     mode: '0755'
 
 - name: Enable dockerhub mirror on containerd
-  when: dockerhubMirror is true
   ansible.builtin.file:
     path: /etc/containerd/certs.d/docker.io
     state: directory
     mode: u=rw,g=r,o=r
+  when: dockerhubMirror | default(false)
 
 - name: Enable dockerhub mirror on containerd [file hosts.toml]
-  when: dockerhubMirror is true
   ansible.builtin.template:
     src: hosts.toml.j2
     dest: /etc/containerd/certs.d/docker.io/hosts.toml
     owner: root
     mode: u=rw,g=r,o=r
+  when: dockerhubMirror | default(false)
 
 - name: Create containerd config.toml
   ansible.builtin.shell: /usr/local/bin/containerd config default > /etc/containerd/config.toml
@@ -62,9 +62,22 @@
     sudo grep -A1 -lZR registry] /etc/containerd/config.toml | xargs -0 -l sudo sed  -i 's/config_path \= ""/config_path = "\/etc\/containerd\/certs.d"/g'
 
 - name: Add change Sandbox Image [config.toml]
-  when: sandbox_image is defined
   ansible.builtin.shell: |
     sed -i 's|sandbox_image = ".*"|sandbox_image = "{{ sandbox_image }}"|' /etc/containerd/config.toml
+  when: sandbox_image is defined
+
+- name: Ensure containerd systemd drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/containerd.service.d
+    state: directory
+    mode: '0755'
+  when: containerd_proxy_enabled | default(false)
+
+- name: Configure containerd proxy environment
+  ansible.builtin.template:
+    src: containerd-http-proxy.conf.j2
+    dest: /etc/systemd/system/containerd.service.d/http-proxy.conf
+  when: containerd_proxy_enabled | default(false)
 
 - name: restart containerd
   ansible.builtin.service:

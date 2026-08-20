@@ -1,26 +1,61 @@
 packages:
+- wget
+- iproute-tc
+- vim
+- git
+- bash-completion
 - nfs-utils
 - kubectl.x86_64
 - kubelet.x86_64
 - kubeadm.x86_64
 - ipvsadm
+- python3-pip
+- sysstat
+- jq
+- net-tools
+- tree
+- traceroute
 - iscsi-initiator-utils
 - nfs-utils
 - nfs4-acl-tools
+- tcpdump
+- unzip
 - cryptsetup
-
-# Kubernetes versions
-kubernetesVersion: '1.35'
-kubernetesSubversion: '0'
-containerd_version: '2.3.3'
-interface_name: enp5s0
-local_kubeconfig_dir: /home/vlad/.kube
+- tar
+- python3-packaging
 
 # Proxy settings 
 proxy_settings: http://10.84.101.69:10808
 
+# containerd config
+containerd_version: '2.3.3'
 
-# Calico version
+dockerhubMirror: true
+dockerhubMirrorURLs:
+- "https://mirror.gcr.io/v2"
+
+containerd_proxy_enabled: true
+containerd_proxy_url: "{{ proxy_settings | default(omit)}}"
+containerd_no_proxy:
+  - localhost
+  - 127.0.0.1
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 172.10.10.0/24  # node subnet
+  - 192.168.0.0/16
+  - .devhomelab.site
+  - .svc
+  - .cluster.local
+  - "{{ podSubnet }}"
+  - "{{ serviceSubnet }}"
+
+# Kubernetes versions
+kubernetesVersion: '1.35'
+kubernetesSubversion: '0'
+interface_name: eth0
+local_kubeconfig_dir: /home/vlad/.kube
+
+# Calico config
 calico_version: v3.31.3
 calico_encapsulation_type: NONE
 goldman_enabled: false
@@ -34,7 +69,7 @@ password: '8231'
 ha_enabled: false
 
 # Ebpf mode
-ebpf_enabled: false
+ebpf_enabled: true
 
 # network config
 podSubnet: 10.100.0.0/16
@@ -46,8 +81,3 @@ kubeproxy_mode_ipvs: true
 # Enable nodelocaldns (true or false)
 nodelocaldns: false
 nodelocaldns_address: 169.254.20.10
-
-# Config container runntime
-dockerhubMirror: false
-dockerhubMirrorURLs:
-- "https://mirror.gcr.io/v2"

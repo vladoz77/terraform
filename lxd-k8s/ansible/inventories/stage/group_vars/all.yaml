@@ -25,8 +25,8 @@ packages:
 - python3-packaging
 
 # Kubernetes versions
-kubernetesVersion: '1.33'
-kubernetesSubversion: '2'
+kubernetesVersion: '1.35'
+kubernetesSubversion: '0'
 interface_name: eth0
 local_kubeconfig_dir: /home/vlad/.kube
 # Calico version

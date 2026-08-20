@@ -1,10 +1,11 @@
-- name: Set timezone
-  community.general.timezone:
-    name: Europe/Moscow
-
+# tasks/config-node.yaml
 - name: Wait for cloud-init to finish
   ansible.builtin.command: cloud-init status --wait
   changed_when: false
+
+- name: Set timezone
+  community.general.timezone:
+    name: Europe/Moscow
 
 - name: Add repo for k8s
   ansible.builtin.yum_repository:

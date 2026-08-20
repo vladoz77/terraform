@@ -80,6 +80,21 @@ dockerhubMirrorURLs:
   - "https://mirror.gcr.io/v2"
   - "https://cr.yandex/mirror"
 
+# Proxy settings for containerd
+containerd_proxy_enabled: false
+containerd_proxy_url: "http://proxy_host:proxy_port"
+containerd_no_proxy:
+  - localhost
+  - 127.0.0.1
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - .devhomelab.site
+  - .svc
+  - .cluster.local
+  - .lxd.local
+  - .homelab.local
+
 
 # Sanbox image
 # k8s v3.11 -> registry.k8s.io/pause:3.10
